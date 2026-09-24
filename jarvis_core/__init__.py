@@ -25,6 +25,12 @@ from jarvis_core.research_service import (
     fetch_and_clean_url,
 )
 
+from jarvis_core.automation_agent import WindowsAutomationAgent, get_computer_agent
+from jarvis_core.tool_dispatcher import execute_tool_call, format_tool_response, guardrail_validation
+from jarvis_core.web_app import create_app
+from jarvis_core.boot import perform_system_boot_sequence, start_background_daemons, execute_boot_automation
+from jarvis_core.state import update_core_telemetry, get_telemetry_snapshot
+
 __all__ = [
     "JARVIS_DB_PATH",
     "ThreadSafeDB",
@@ -49,6 +55,17 @@ __all__ = [
     "autonomous_deep_research",
     "synthesize_technical_report",
     "fetch_and_clean_url",
+    "WindowsAutomationAgent",
+    "get_computer_agent",
+    "execute_tool_call",
+    "format_tool_response",
+    "guardrail_validation",
+    "create_app",
+    "perform_system_boot_sequence",
+    "start_background_daemons",
+    "execute_boot_automation",
+    "update_core_telemetry",
+    "get_telemetry_snapshot",
 ]
 
 

@@ -42,6 +42,9 @@ package-lock.json
 data/*.db*
 data/*.sqlite*
 data/*.jsonl*
+data/*_status.json
+data/chat_history.json
+data/jarvis_session.json
 data/*.mp3
 data/trending_news/
 data/known_faces/

@@ -5,13 +5,17 @@ import pytest
 # เพิ่ม Path เพื่อให้สามารถ import jarvis ได้
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Import functions from jarvis.py
-from jarvis import (
-    normalize_thai_text,
-    is_safe_path,
-    segment_text,
-    apply_nachapol_voice_protocol
-)
+# Import functions from modular subsystems
+try:
+    from jarvis_text_utils import normalize_thai_text, is_safe_path
+    from voice_protocol import segment_text, apply_nachapol_voice_protocol
+except ImportError:
+    from jarvis import (
+        normalize_thai_text,
+        is_safe_path,
+        segment_text,
+        apply_nachapol_voice_protocol
+    )
 
 def test_normalize_thai_text():
     # Test spaces formatting

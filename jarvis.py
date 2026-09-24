@@ -6578,9 +6578,10 @@ def execute_tool_call(tool_call, project_path, user_raw_message=""):
         "extract_spatial_cad_mesh": lambda a: extract_spatial_cad_mesh_operation(a.get("image_base64") or a.get("image")),
         "switch_mainframe_tactical_mode": lambda a: switch_mainframe_tactical_mode(a.get("mode_name")),
         "generate_and_render_hologram": lambda a: generate_and_render_hologram_operation(a.get("prompt")),
-        "compile_and_dispatch_os_payload": lambda a: compile_and_dispatch_os_payload_operation(a.get("user_instruction")),
-        "control_computer_agent": lambda a: __import__('jarvis_computer_agent').AgenticComputerController().execute_goal(a.get("goal", "วิเคราะห์หน้าจอและทำงานต่อไป")),
-        "agentic_computer_control": lambda a: run_dynamic_tool("agentic_computer_control", os.path.join(DYNAMIC_TOOLS_DIR, "agentic_computer_control.py"), a),
+        "control_computer_agent": lambda a: __import__('jarvis_core.automation_agent', fromlist=['']).get_computer_agent().execute_goal(a.get("goal") or a.get("task") or "วิเคราะห์หน้าจอและทำงานต่อไป"),
+        "execute_computer_action": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "execute_computer_action", "args": a}),
+        "get_screen_info": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "get_screen_info", "args": a}),
+        "agentic_computer_control": lambda a: __import__('jarvis_core.automation_agent', fromlist=['']).get_computer_agent().execute_goal(a.get("goal") or a.get("task") or "วิเคราะห์หน้าจอและทำงานต่อไป"),
         "hardware_controller": lambda a: run_dynamic_tool("hardware_controller", os.path.join(DYNAMIC_TOOLS_DIR, "hardware_controller.py"), a),
         "render_3d_workspace": lambda a: run_dynamic_tool("render_3d_workspace", os.path.join(DYNAMIC_TOOLS_DIR, "render_3d_workspace.py"), a),
         "simulate_electronic_circuit": lambda a: run_dynamic_tool("simulate_electronic_circuit", os.path.join(DYNAMIC_TOOLS_DIR, "simulate_electronic_circuit.py"), a),
@@ -7046,6 +7047,43 @@ def serve_temp_file(filename):
 def system_status_api():
     """API สำหรับให้ Frontend เช็คว่า Mainframe ออนไลน์อยู่หรือไม่"""
     return jsonify({"status": "online", "integrity": "nominal", "core": GROQ_MODEL})
+
+@app.route('/api/computer/execute', methods=['POST'])
+def api_computer_execute():
+    """Autonomous Computer Use & RPA Execution Endpoint"""
+    data = request.get_json(silent=True) or {}
+    goal = data.get("goal") or data.get("command") or data.get("task")
+    if not goal:
+        return jsonify({"status": "error", "message": "Missing 'goal' or 'command' in request."}), 400
+    from jarvis_core.automation_agent import get_computer_agent
+    result = get_computer_agent().execute_goal(goal)
+    return jsonify(result)
+
+@app.route('/api/computer/windows', methods=['GET'])
+def api_computer_windows():
+    """Windows GUI Inspection: open windows and active window"""
+    from jarvis_core.automation_agent import get_computer_agent
+    agent = get_computer_agent()
+    active = agent.get_active_window()
+    windows = agent.list_open_windows()
+    return jsonify({
+        "active_window": active.__dict__ if active else None,
+        "total_windows": len(windows),
+        "windows": [w.__dict__ for w in windows],
+    })
+
+@app.route('/api/computer/screenshot', methods=['GET'])
+def api_computer_screenshot():
+    """Capture screen and return base64 payload"""
+    from jarvis_core.automation_agent import get_computer_agent
+    agent = get_computer_agent()
+    b64_img = agent.get_screenshot_base64()
+    return jsonify({
+        "status": "success",
+        "image_base64": b64_img,
+        "width": agent.screen_width,
+        "height": agent.screen_height,
+    })
 
 @app.route('/api/cognitive/status', methods=['GET'])
 def get_cognitive_status_api():
@@ -10614,17 +10652,21 @@ if __name__ == "__main__":
     
     try:
         from jarvis_vad_bargein import AudioInteractionManager  # type: ignore
-        vad_manager = AudioInteractionManager()
+        vad_manager = AudioInteractionManager(confidence_threshold=0.65, silence_duration=0.7)
         
         def _on_barge_in():
             """
             Handle a VAD barge-in event by stopping local TTS playback immediately.
             """
-            logger.warning("[VAD] 🛑 Barge-in detected! Stopping local TTS playback.")
+            logger.warning("[VAD] 🛑 Barge-in detected! Stopping local TTS playback immediately.")
             import pygame
             if pygame and pygame.mixer.get_init():
                 try:
                     pygame.mixer.music.stop()
+                    try:
+                        pygame.mixer.music.unload()
+                    except Exception:
+                        pass
                 except Exception:
                     pass
             try:

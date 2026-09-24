@@ -47,10 +47,10 @@ class AudioInteractionManager:
 
     def __init__(self, 
                  confidence_threshold: float = 0.65,
-                 silence_duration: float = 1.3):
+                 silence_duration: float = 0.7):
         """
         :param confidence_threshold: ระดับความมั่นใจว่าเสียงที่เข้ามาคือเสียงพูด (0.0 ถึง 1.0)
-        :param silence_duration: ระยะเวลา(วินาที)ที่ต้องเงียบติดกัน ถึงจะถือว่า "พูดจบ"
+        :param silence_duration: ระยะเวลา(วินาที)ที่ต้องเงียบติดกัน ถึงจะถือว่า "พูดจบ" (default 0.7s สำหรับการสนทนาที่รวดเร็ว)
         """
         global _global_vad_manager
         _global_vad_manager = self
@@ -79,17 +79,20 @@ class AudioInteractionManager:
         
         self.pa = pyaudio.PyAudio() if pyaudio else None
         self.vad_model = None
+        self._using_energy_fallback = False
+        self._noise_floor = 400.0
         
         self._init_silero_vad()
 
     def _init_silero_vad(self) -> None:
-        """ดาวน์โหลด/โหลดโมเดล Silero VAD จาก PyTorch Hub"""
+        """ดาวน์โหลด/โหลดโมเดล Silero VAD จาก PyTorch Hub พร้อม Fallback ไปใช้ Energy Detector"""
         if not torch:
+            logging.warning("[JARVIS VAD] Torch unavailable. Using Adaptive RMS Energy VAD.")
+            self._using_energy_fallback = True
             return
             
         logging.info("[JARVIS VAD] Loading Silero VAD model (Local/Hub)...")
         try:
-            
             self.device = torch.device('cpu')
             model, utils = torch.hub.load(
                 repo_or_dir='snakers4/silero-vad',
@@ -99,9 +102,12 @@ class AudioInteractionManager:
             )
             self.vad_model = model.to(self.device)
             self.get_speech_timestamps = utils[0]
+            self._using_energy_fallback = False
             logging.info("[JARVIS VAD] Silero VAD model loaded successfully.")
         except Exception as e:
-            logging.error(f"[JARVIS VAD] Failed to load Silero VAD: {e}")
+            logging.warning(f"[JARVIS VAD] Silero VAD Hub load failed ({e}). Falling back to Adaptive RMS Energy VAD.")
+            self.vad_model = None
+            self._using_energy_fallback = True
 
     def set_state(self, new_state: Any) -> None:
         """ปรับสถานะของระบบ (Thread-safe) รองรับทั้ง Enum และข้ามโมดูล"""
@@ -124,9 +130,9 @@ class AudioInteractionManager:
             return self._current_state
 
     def _audio_processing_worker(self) -> None:
-        """เธรดสำหรับอัดเสียงและป้อนเข้า Silero VAD แบบ Real-time"""
-        if not self.pa or not self.vad_model:
-            logging.error("[JARVIS VAD] Missing dependencies (PyAudio or VAD Model). VAD stopped.")
+        """เธรดสำหรับอัดเสียงและประมวลผล VAD แบบ Real-time พร้อม Fast Barge-in"""
+        if not self.pa:
+            logging.error("[JARVIS VAD] PyAudio unavailable. VAD stopped.")
             self._is_running = False
             return
 
@@ -138,42 +144,50 @@ class AudioInteractionManager:
                 input=True,
                 frames_per_buffer=self.chunk_size
             )
-            logging.info("[JARVIS VAD] Microphone listening thread started.")
+            logging.info(f"[JARVIS VAD] Microphone listening thread active (Mode: {'Silero' if self.vad_model else 'Adaptive RMS Energy'}).")
             
-            torch.set_num_threads(1)
+            if torch:
+                torch.set_num_threads(1)
             
             while self._is_running:
-                
                 raw_data = stream.read(self.chunk_size, exception_on_overflow=False)
                 
-                audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32) / 32768.0
-                audio_tensor = torch.from_numpy(audio_np)
+                audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
                 
-                with torch.no_grad():
-                    speech_prob = self.vad_model(audio_tensor, self.sample_rate).item()
+                # Speech detection: Silero neural prob or fast RMS energy
+                if self.vad_model and torch:
+                    norm_audio = audio_np / 32768.0
+                    audio_tensor = torch.from_numpy(norm_audio)
+                    with torch.no_grad():
+                        speech_prob = self.vad_model(audio_tensor, self.sample_rate).item()
+                else:
+                    rms = np.sqrt(np.mean(audio_np ** 2))
+                    self._noise_floor = 0.95 * self._noise_floor + 0.05 * min(rms, self._noise_floor * 2)
+                    threshold = max(600.0, self._noise_floor * 2.2)
+                    speech_prob = 1.0 if rms > threshold else 0.0
                 
                 current_time = time.time()
                 state = self.get_state()
                 state_val = getattr(state, "value", state)
                 is_jarvis_speaking = (state_val == InteractionState.SPEAKING.value)
-                # Use higher threshold while speaking to prevent self-trigger from speaker output
+                
+                # Higher threshold while speaking to mitigate speaker echo
                 effective_threshold = 0.75 if is_jarvis_speaking else self.confidence_threshold
                 
                 if speech_prob > effective_threshold:
                     self._last_speech_time = current_time
                     
                     if not self._is_user_speaking:
-                        
                         self._is_user_speaking = True
                         
                         if is_jarvis_speaking:
-                            logging.warning("[JARVIS VAD] 🛑 BARGE-IN DETECTED! User interrupted Jarvis.")
+                            logging.warning("[JARVIS VAD] 🛑 BARGE-IN DETECTED! Stopping JARVIS playback immediately.")
+                            self.set_state(InteractionState.LISTENING)
                             if self.on_barge_in:
                                 try:
                                     self.on_barge_in()
                                 except Exception as be:
                                     logging.error(f"[JARVIS VAD] Barge-in callback error: {be}")
-                            self._current_state = InteractionState.LISTENING
                         else:
                             logging.info("[JARVIS VAD] Speech Started.")
                             if self.on_speech_start:
@@ -182,21 +196,25 @@ class AudioInteractionManager:
                                 except Exception as se:
                                     logging.error(f"[JARVIS VAD] Speech start callback error: {se}")
                 else:
-                    
                     if self._is_user_speaking:
-                        
                         if (current_time - self._last_speech_time) > self.silence_duration:
                             self._is_user_speaking = False
-                            logging.info("[JARVIS VAD] Speech Ended (Silence detected).")
+                            logging.info(f"[JARVIS VAD] Speech Ended (Silence duration: {self.silence_duration}s).")
                             if self.on_speech_end:
-                                self.on_speech_end()
+                                try:
+                                    self.on_speech_end()
+                                except Exception as ee:
+                                    logging.error(f"[JARVIS VAD] Speech end callback error: {ee}")
                                 
         except Exception as e:
             logging.error(f"[JARVIS VAD] Audio processing error: {e}")
         finally:
             if 'stream' in locals() and stream.is_active():
-                stream.stop_stream()
-                stream.close()
+                try:
+                    stream.stop_stream()
+                    stream.close()
+                except Exception:
+                    pass
             logging.info("[JARVIS VAD] Microphone thread stopped.")
 
     def start(self) -> None:

@@ -115,7 +115,7 @@ class STTModule:
         self,
         language: str = "th-TH",
         energy_threshold: int = 800,
-        pause_threshold: float = 1.5,
+        pause_threshold: float = 0.7,
         listen_timeout: float = 5.0,
         phrase_limit: float = 30.0,
     ) -> None:
@@ -123,11 +123,12 @@ class STTModule:
         Args:
             language: รหัสภาษาสำหรับ Google Speech Recognition (เช่น "th-TH", "en-US")
             energy_threshold: ค่า sensitivity ของ microphone (300-4000, ยิ่งต่ำยิ่งไวต่อเสียง)
-            pause_threshold: วินาทีที่หยุดพูดแล้วถือว่าจบคำสั่ง
+            pause_threshold: วินาทีที่หยุดพูดแล้วถือว่าจบคำสั่ง (0.7s เพื่อการตอบสนองที่กระชับ ไม่ต้องรอนาน)
             listen_timeout: วินาทีที่รอก่อนจะยอมแพ้ถ้าไม่ยินเสียงใดๆ เลย
             phrase_limit: วินาทีสูงสุดที่ยอมรับเสียงพูดต่อครั้ง
         """
         self.language = language
+        self.pause_threshold = pause_threshold
         self.listen_timeout = listen_timeout
         self.phrase_limit = phrase_limit
         self.is_listening: bool = False
@@ -358,7 +359,16 @@ class AudioPlayer:
             pass
 
     def _detect_play_method(self) -> Optional[str]:
-        """ตรวจหาวิธีเล่นเสียงที่มีในระบบ"""
+        """ตรวจหาวิธีเล่นเสียงที่มีในระบบ โดยใช้ pygame เป็นลำดับแรกเพื่อ Zero-latency in-process playback"""
+        try:
+            import pygame
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+            logger.info("AudioPlayer: ✅ Selected 'pygame' as primary fast in-process audio engine.")
+            return "pygame"
+        except Exception as pe:
+            logger.warning(f"AudioPlayer: pygame init failed ({pe}), falling back to external player.")
+
         try:
             result = subprocess.run(
                 ["ffplay", "-version"], capture_output=True, timeout=3
@@ -414,7 +424,20 @@ class AudioPlayer:
         """[Instant Barge-in] สั่งตัดเสียงพูดปัจจุบันทันที และล้างคิวที่รออยู่ทั้งหมด"""
         self._stop_playback = True
         
-        # 1. Kill running audio subprocess immediately
+        # 1. Stop pygame playback instantly if active
+        try:
+            import pygame
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+                try:
+                    pygame.mixer.music.unload()
+                except Exception:
+                    pass
+                logger.info("AudioPlayer: 🛑 Pygame music stopped and unloaded.")
+        except Exception:
+            pass
+
+        # 2. Kill running audio subprocess immediately if any
         if self._current_process and self._current_process.poll() is None:
             try:
                 self._current_process.terminate()
@@ -424,7 +447,7 @@ class AudioPlayer:
                 logger.warning(f"AudioPlayer: Failed to terminate process: {e}")
         self._current_process = None
 
-        # 2. Clear all queued audio files and clean up
+        # 3. Clear all queued audio files and clean up
         while not self._audio_queue.empty():
             try:
                 item = self._audio_queue.get_nowait()
@@ -436,14 +459,6 @@ class AudioPlayer:
                 self._audio_queue.task_done()
             except Exception:
                 break
-
-        # 3. Stop pygame music if active
-        try:
-            import pygame
-            if pygame.mixer.get_init():
-                pygame.mixer.music.stop()
-        except Exception:
-            pass
 
         self._is_playing = False
         self._notify_speaking_state(False)
@@ -467,11 +482,28 @@ class AudioPlayer:
         return self._is_playing or not self._audio_queue.empty()
 
     def _play_file(self, file_path: str) -> None:
-        """เล่นไฟล์เสียงโดยใช้วิธีที่ตรวจพบ รองรับการหยุดเล่นทันที"""
+        """เล่นไฟล์เสียงโดยใช้วิธีที่ตรวจพบ รองรับการหยุดเล่นทันทีแบบ Zero-latency"""
         self._stop_playback = False
         self._notify_speaking_state(True)
         try:
-            if self._play_method == "ffplay":
+            if self._play_method == "pygame":
+                try:
+                    import pygame
+                    if not pygame.mixer.get_init():
+                        pygame.mixer.init()
+                    pygame.mixer.music.load(file_path)
+                    pygame.mixer.music.play()
+                    while pygame.mixer.music.get_busy() and not self._stop_playback and self._is_running:
+                        time.sleep(0.02)
+                    if self._stop_playback or not self._is_running:
+                        pygame.mixer.music.stop()
+                    try:
+                        pygame.mixer.music.unload()
+                    except Exception:
+                        pass
+                except Exception as pge:
+                    logger.warning(f"AudioPlayer: pygame error ({pge}), trying fallback.")
+            elif self._play_method == "ffplay":
                 cmd = ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", file_path]
                 self._current_process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 while self._current_process and self._current_process.poll() is None:
@@ -740,7 +772,7 @@ class TTSModule:
     "bsod": "บีเอสโอดี", "bucket": "บักเก็ต", "buff": "บัฟ", 
     "bug": "บั๊ก", "build": "บิลด์", "bun": "บัน", 
     "business": "บิสซิเนส", "button": "บัตทอน", "c": "ซี", 
-    "c#": "ซีชาร์ป", "c\+\+": "ซีพลัสพลัส", "cable": "เคเบิล", 
+    "c#": "ซีชาร์ป", "c++": "ซีพลัสพลัส", "cable": "เคเบิล", 
     "cache": "แคช", "caddy": "แคดดี", "calendar": "แคเลนดาร์", 
     "call": "คอล", "callback": "คอลแบ็ก", "camera": "กล้อง", 
     "cancel": "แคนเซิล", "canvas": "แคนวาส", "capacity": "คาพาซิตี", 
@@ -1346,8 +1378,9 @@ class LocalPipelineController:
             daemon=True,
             name="BargeIn-Worker",
         )
+        self._bargein_thread.start()
         
-        logger.info("Pipeline: ✅ Started (Background Worker + AudioPlayer + Heartbeat + BargeIn DISABLED)")
+        logger.info("Pipeline: ✅ Started (Background Worker + AudioPlayer + Heartbeat + BargeIn Active)")
 
     def stop(self) -> None:
         """หยุดระบบอย่างปลอดภัย — รอ Queue ว่างก่อน"""

@@ -46,12 +46,14 @@ class JarvisNotifier:
     ):
         self._access_token = (
             access_token
-            or os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
+            if access_token is not None
+            else os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
         ).strip().strip('"').strip("'")
 
         self._owner_id = (
             owner_id
-            or os.getenv("LINE_OWNER_USER_ID", "")
+            if owner_id is not None
+            else os.getenv("LINE_OWNER_USER_ID", "")
         ).strip().strip('"').strip("'")
 
         self._executor = ThreadPoolExecutor(

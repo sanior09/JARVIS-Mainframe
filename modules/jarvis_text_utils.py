@@ -38,8 +38,8 @@ def normalize_thai_text(text: str) -> str:
     for p in common_thai_particles:
         text = re.sub(rf'([\u0e00-\u0e7f])\s+{p}\b', rf'\1{p}', text)
         
-    # แทนที่ newlines และ tabs ด้วยช่องว่างเดี่ยวในกรณีข้อความบรรทัดเดียว
-    text = re.sub(r'[\t]+', ' ', text)
+    # แทนที่ newlines และ tabs ด้วยช่องว่างเดี่ยว
+    text = re.sub(r'[\r\n\t]+', ' ', text)
     
     # ลบช่องว่างซ้ำ
     text = re.sub(r' {2,}', ' ', text)
