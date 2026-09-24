@@ -1,0 +1,16 @@
+{
+  "name": "Mark XLII",
+  "subtitle": "MODULAR ASSEMBLY SUIT",
+  "color_primary": "#C8222A",
+  "color_secondary": "#E8C020",
+  "arc_reactor_color": "#AADDFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 82,
+  "arc_intensity": 80,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "modular",
+  "description": "ชิ้นส่วนบินมาประกอบเอง — ควบคุมด้วยจิตใจ",
+  "saved_at": "2026-08-15T00:00:00"
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heimdall Radar - Tactical Flight Tracking</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            color: #0ff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .overlay-ui {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .header {
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 15, 20, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-left: 4px solid #0ff;
+            padding: 15px 25px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px #0ff;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            color: #88ffcc;
+        }
+
+        .stats-panel {
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 15, 20, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-box {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 5px;
+            min-width: 150px;
+        }
+        
+        .stat-box:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #88ffcc;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-shadow: 0 0 5px #0ff;
+        }
+
+        /* Custom plane marker */
+        .plane-icon {
+            font-size: 20px;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+            transition: transform 1s linear;
+        }
+
+        /* Leaflet popup customization */
+        .leaflet-popup-content-wrapper {
+            background: rgba(0, 20, 30, 0.9);
+            color: #0ff;
+            border: 1px solid #0ff;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .leaflet-popup-tip {
+            background: rgba(0, 20, 30, 0.9);
+            border: 1px solid #0ff;
+        }
+        .popup-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 3px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        /* Scanning line animation overlay */
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 10px #0ff;
+            z-index: 5;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: -5%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 105%; opacity: 0; }
+        }
+
+        /* Crosshair in center */
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .crosshair::before, .crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(0, 255, 255, 0.5);
+        }
+        .crosshair::before { top: 24px; left: -10px; width: 70px; height: 1px; }
+        .crosshair::after { top: -10px; left: 24px; width: 1px; height: 70px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="scanline"></div>
+    <div class="crosshair"></div>
+
+    <div class="overlay-ui header">
+        <h1>HEIMDALL RADAR</h1>
+        <p>AEROSPACE SURVEILLANCE MATRIX</p>
+    </div>
+
+    <div class="overlay-ui stats-panel">
+        <div class="stat-box">
+            <span class="stat-label">ACTIVE TARGETS</span>
+            <span class="stat-value" id="target-count">0</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">SYSTEM STATUS</span>
+            <span class="stat-value" style="color: #0f0;">ONLINE</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">LAST UPDATE</span>
+            <span class="stat-value" id="last-update">--:--:--</span>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize Map centered on Thailand
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([13.75, 100.50], 6);
+
+        // CartoDB Dark Matter tile layer for tactical aesthetic
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        // Plane icon generator using emoji/unicode (✈) or HTML
+        const createPlaneIcon = (rotation) => {
+            return L.divIcon({
+                className: 'plane-icon-container',
+                html: `<div class="plane-icon" style="transform: rotate(${rotation}deg);">✈</div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+        };
+
+        const markers = {}; // Store markers by callsign
+
+        async function fetchRadarData() {
+            try {
+                const response = await fetch('/tactical/heimdall/radar');
+                if (!response.ok) throw new Error("API Offline");
+                
+                const data = await response.json();
+                if (data.status === "success") {
+                    document.getElementById('target-count').innerText = data.total_flights_in_zone;
+                    document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+
+                    const currentFlights = new Set();
+
+                    data.sample_flights.forEach(flight => {
+                        if (!flight.latitude || !flight.longitude) return;
+                        
+                        currentFlights.add(flight.callsign);
+                        
+                        const latLng = [flight.latitude, flight.longitude];
+                        const heading = flight.true_track || 45; // Default if not provided
+                        
+                        const popupHtml = `
+                            <div class="popup-title">${flight.callsign}</div>
+                            <div><strong>Country:</strong> ${flight.country}</div>
+                            <div><strong>Altitude:</strong> ${Math.round(flight.altitude_m)} m</div>
+                            <div><strong>Velocity:</strong> ${Math.round(flight.velocity_ms)} m/s</div>
+                        `;
+
+                        if (markers[flight.callsign]) {
+                            // Update existing marker
+                            markers[flight.callsign].setLatLng(latLng);
+                            markers[flight.callsign].setIcon(createPlaneIcon(heading));
+                            markers[flight.callsign].setPopupContent(popupHtml);
+                        } else {
+                            // Create new marker
+                            const marker = L.marker(latLng, {
+                                icon: createPlaneIcon(heading)
+                            }).bindPopup(popupHtml).addTo(map);
+                            markers[flight.callsign] = marker;
+                        }
+                    });
+
+                    // Remove flights that left the area
+                    Object.keys(markers).forEach(callsign => {
+                        if (!currentFlights.has(callsign)) {
+                            map.removeLayer(markers[callsign]);
+                            delete markers[callsign];
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Radar sweep failed:", err);
+            }
+        }
+
+        // Initial fetch
+        fetchRadarData();
+
+        // Sweep every 10 seconds (OpenSky limit)
+        setInterval(fetchRadarData, 10000);
+    </script>
+</body>
+</html>

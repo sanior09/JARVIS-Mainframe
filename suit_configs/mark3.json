@@ -1,0 +1,16 @@
+{
+  "name": "Mark III",
+  "subtitle": "CLASSIC RED & GOLD",
+  "color_primary": "#C41E3A",
+  "color_secondary": "#FFD700",
+  "arc_reactor_color": "#00FFFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 70,
+  "arc_intensity": 75,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "classic",
+  "description": "ชุดแรกที่เป็นสีแดง-ทอง สัญลักษณ์ Iron Man",
+  "saved_at": "2026-08-15T00:00:00"
+}

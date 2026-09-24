@@ -1,0 +1,15 @@
+{
+  "name": "Mark XLV",
+  "subtitle": "AVENGERS: AGE OF ULTRON",
+  "color_primary": "#B81C2C",
+  "color_secondary": "#FFD000",
+  "arc_reactor_color": "#FFFFFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 88,
+  "arc_intensity": 90,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "description": "ใช้สู้กับ Ultron — ออกแบบให้บางเบากว่า Mark 42",
+  "saved_at": "2026-08-15T00:00:00"
+}

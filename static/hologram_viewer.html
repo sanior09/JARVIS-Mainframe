@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>J.A.R.V.I.S. Holographic Interface</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        canvas { display: block; }
+        #overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            pointer-events: none;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay">J.A.R.V.I.S. // HOLOGRAPHIC RENDER MATRIX</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        fetch('hologram_data.json')
+            .then(res => res.json())
+            .then(data => {
+                // If it's a 3D Workspace Graph
+                if (data.type === 'workspace_nodes') {
+                    document.body.innerHTML = '<div id="overlay">J.A.R.V.I.S. // WORKSPACE 3D MATRIX</div>';
+                    const script = document.createElement('script');
+                    script.src = "https://unpkg.com/3d-force-graph";
+                    script.onload = () => {
+                        const Graph = ForceGraph3D()(document.body)
+                            .graphData(data)
+                            .nodeLabel('id')
+                            .nodeAutoColorBy('group')
+                            .linkDirectionalParticles(2)
+                            .linkDirectionalParticleSpeed(d => d.value * 0.001);
+                    };
+                    document.head.appendChild(script);
+                    // Stop regular three.js animation
+                    scene.remove(group);
+                    return;
+                }
+
+                // If it's molecule data
+                if (data.type === 'molecule') {
+                    data.atoms.forEach(atom => {
+                        const geometry = new THREE.SphereGeometry(atom.size, 32, 32);
+                        const material = new THREE.MeshPhongMaterial({ 
+                            color: new THREE.Color(atom.color),
+                            emissive: new THREE.Color(atom.color).multiplyScalar(0.5),
+                            transparent: true,
+                            opacity: 0.8
+                        });
+                        const sphere = new THREE.Mesh(geometry, material);
+                        sphere.position.set(atom.x, atom.y, atom.z);
+                        group.add(sphere);
+                    });
+                } else if (data.type === 'graph') {
+                    // Render simple bar charts
+                    data.values.forEach((val, i) => {
+                        const geometry = new THREE.BoxGeometry(0.5, val, 0.5);
+                        const material = new THREE.MeshPhongMaterial({ color: 0x00ffcc, emissive: 0x005544 });
+                        const bar = new THREE.Mesh(geometry, material);
+                        bar.position.set(i * 1.5 - (data.values.length/2), val / 2, 0);
+                        group.add(bar);
+                    });
+                }
+            })
+            .catch(() => {
+                // Fallback demo torus
+                const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+                const material = new THREE.MeshPhongMaterial({ color: 0x00ffff, wireframe: true });
+                const torusKnot = new THREE.Mesh(geometry, material);
+                group.add(torusKnot);
+            });
+
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(10, 10, 10);
+        scene.add(light);
+        
+        const ambient = new THREE.AmbientLight(0x404040);
+        scene.add(ambient);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            group.rotation.x += 0.01;
+            group.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

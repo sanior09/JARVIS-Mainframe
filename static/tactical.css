@@ -1,0 +1,52 @@
+/* Sci-Fi HUD Styles for Tactical Command */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+body {
+    font-family: 'Share Tech Mono', monospace;
+    background-color: #050505;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.hud-panel {
+    background: rgba(0, 20, 30, 0.6);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.05), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    backdrop-filter: blur(4px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 255, 255, 0.05); 
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.3); 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.6); 
+}
+
+/* Threat Log Animation */
+@keyframes slideIn {
+    from { transform: translateX(-10px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.threat-entry {
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Leaflet Map Dark Mode Tweaks */
+.leaflet-container {
+    background-color: #050505 !important;
+}
+.leaflet-control-attribution {
+    background: rgba(0,0,0,0.7) !important;
+    color: #4ade80 !important;
+}

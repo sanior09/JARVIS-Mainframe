@@ -1,0 +1,16 @@
+{
+  "name": "Mark L",
+  "subtitle": "NANO TECH SUIT — INFINITY WAR",
+  "color_primary": "#A01828",
+  "color_secondary": "#E8B800",
+  "arc_reactor_color": "#FFFFFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 95,
+  "arc_intensity": 95,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "nanotech",
+  "description": "Nano-Particle เก็บในเหรียญ — Thanos War",
+  "saved_at": "2026-08-15T00:00:00"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Mark LXXXV",
+  "subtitle": "ENDGAME — FINAL SUIT",
+  "color_primary": "#8B0000",
+  "color_secondary": "#DAA520",
+  "arc_reactor_color": "#FFD700",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 100,
+  "arc_intensity": 100,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "infinity_stones",
+  "description": "สวมใส่ Infinity Stones — I am Iron Man",
+  "saved_at": "2026-08-15T00:00:00"
+}

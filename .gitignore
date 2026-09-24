@@ -1,0 +1,85 @@
+# ━━━ J.A.R.V.I.S. Git Ignore Configuration ━━━
+
+# Environment & Secrets
+.env
+.env.*
+*.pem
+*.key
+audit_payload.log
+
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+jarvis_env/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Standalone Sub-projects
+jarvis-mobile/
+
+# Node & Frontend Dependencies
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+.htmlhintrc
+package-lock.json
+
+# SQLite & Databases
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+data/*.db*
+data/*.sqlite*
+data/*.jsonl*
+data/*.mp3
+data/trending_news/
+data/known_faces/
+jarvis_checkpoints.sqlite
+
+# Vector Databases & Large Models
+chroma_db/
+jarvis_vector_db/
+personal_memories/
+models/
+test_3d_cache/
+
+# Audio & Media Caches
+tts_cache/
+system_cache/
+mobile_cache/
+temp_images/
+screenshots/
+backups/
+document_dropzone/
+learned_data/
+*.mp3
+*.wav
+
+# Logs & Temporary Files
+*.log
+reports/*.log
+scratch/
+temp_*.*
+
+# IDE & OS Files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store

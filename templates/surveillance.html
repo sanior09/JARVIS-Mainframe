@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S H A D O W B R O K E R | Global Surveillance</title>
+    <!-- Three.js & Globe.gl -->
+    <script src="//unpkg.com/three"></script>
+    <script src="//unpkg.com/globe.gl"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/static/surveillance.css?v=3">
+</head>
+<body>
+    <div id="scanline"></div>
+    <div id="crt-overlay"></div>
+    
+    <div class="dashboard-container">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <span class="crosshair-icon">⌖</span>
+                <h1>S H A D O W B R O K E R</h1>
+                <span class="subtitle">ระบบเฝ้าระวังภัยคุกคามระดับโลก</span>
+            </div>
+            <div class="header-right">
+                <span class="status online">สถานะ: ออนไลน์</span>
+                <span class="time" id="clock">00:00:00</span>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Left Panel -->
+            <aside class="side-panel left-panel">
+                <div class="panel-section">
+                    <h2>โหมดตรวจจับความร้อน (FLIR) <span class="badge">ทำงานอยู่</span></h2>
+                </div>
+                
+                <div class="panel-section">
+                    <h2>ชั้นข้อมูล (DATA LAYERS)</h2>
+                    <ul class="data-list">
+                        <li>
+                            <span class="label text-neon-green">■ กล้องวงจรปิดสาธารณะ</span>
+                            <span class="value" id="cctv-count">...</span>
+                        </li>
+                        <li>
+                            <span class="label">■ ศูนย์ข้อมูลเครือข่าย</span>
+                            <span class="value">1,402</span>
+                        </li>
+                        <li>
+                            <span class="label text-neon-red">■ อินเทอร์เน็ตขัดข้อง</span>
+                            <span class="value">6 <span class="arrow-up">▲</span></span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="panel-section">
+                    <h2>การเชื่อมต่อเครือข่ายเงา</h2>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 87%;"></div>
+                    </div>
+                    <div class="text-right text-small">ความปลอดภัย 87%</div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>ตัวกรองพื้นที่</h2>
+                    <select id="country-filter" class="cyber-select">
+                        <option value="ALL">ทุกพื้นที่ทั่วโลก</option>
+                        <option value="US">สหรัฐอเมริกา (US)</option>
+                        <option value="JP">ญี่ปุ่น (JP)</option>
+                        <option value="TH">ประเทศไทย (TH)</option>
+                        <option value="UK">สหราชอาณาจักร (UK)</option>
+                        <option value="RU">รัสเซีย (RU)</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Center Map -->
+            <section class="map-container">
+                <div id="map"></div>
+                <!-- Map Overlay UI -->
+                <div class="map-overlay-bottom">
+                    <div class="coord-box">
+                        <span class="label">พิกัดทางภูมิศาสตร์</span>
+                        <span class="value" id="current-coords">00.0000, 00.0000</span>
+                    </div>
+                    <div class="coord-box">
+                        <span class="label">สถานที่เป้าหมาย</span>
+                        <span class="value text-neon-green" id="current-loc">ไม่ระบุ</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel -->
+            <aside class="side-panel right-panel">
+                <div class="panel-section">
+                    <div class="search-box">
+                        <input type="text" placeholder="ค้นหาพิกัด, ชื่อสถานที่..." class="cyber-input">
+                        <button class="cyber-button">ระบุตำแหน่ง</button>
+                    </div>
+                </div>
+
+                <div class="panel-section live-feed-section">
+                    <h2 class="text-neon-red">!! สัญญาณภาพสด !!</h2>
+                    <div class="video-container" id="video-container">
+                        <div class="video-placeholder" id="video-placeholder">
+                            <p>กำลังรอสัญญาณภาพ...</p>
+                            <p class="blink">กรุณาเลือกเป้าหมายบนแผนที่</p>
+                        </div>
+                        <iframe id="cctv-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="display: none; width: 100%; height: 100%;"></iframe>
+                        <img id="cctv-stream" src="" alt="CCTV Stream" style="display: none;">
+                        <div class="video-overlay-text" id="cctv-name">ไม่มีเป้าหมาย</div>
+                    </div>
+                </div>
+
+                <div class="panel-section alerts-section">
+                    <h2>บันทึกการดักจับภัยคุกคาม</h2>
+                    <div class="alert-feed" id="alert-feed">
+                        <!-- Alerts will be injected here via JS -->
+                        <div class="alert-item threat-high">
+                            <div class="alert-header">
+                                <span class="alert-time">[11:59 AM]</span>
+                                <span class="alert-title">ด่วน > กระทรวงกลาโหม</span>
+                            </div>
+                            <div class="alert-body">
+                                ตรวจพบอากาศยานไม่ทราบฝ่ายเข้าใกล้เขตน่านฟ้าหวงห้าม เริ่มมาตรการสกัดกั้นทันที
+                            </div>
+                        </div>
+                        <div class="alert-item threat-medium">
+                            <div class="alert-header">
+                                <span class="alert-time">[11:54 AM]</span>
+                                <span class="alert-title">แจ้งเตือนระบบ</span>
+                            </div>
+                            <div class="alert-body">
+                                การเชื่อมต่อผ่านดาวเทียมถ่ายทอดสัญญาณสำเร็จลุล่วง
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Removed Leaflet JS -->
+    <!-- Custom JS -->
+    <script src="/static/static/surveillance.js?v=5"></script>
+</body>
+</html>

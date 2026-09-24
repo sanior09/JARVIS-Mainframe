@@ -1,0 +1,16 @@
+{
+  "name": "Mark II",
+  "subtitle": "SILVER CENTURION PROTOTYPE",
+  "color_primary": "#c0c0c0",
+  "color_secondary": "#a8a8a8",
+  "arc_reactor_color": "#ffffff",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 55,
+  "arc_intensity": 60,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "silver",
+  "description": "ต้นแบบโครเมียม — ทดสอบความสูง",
+  "saved_at": "2026-08-15T00:00:00"
+}

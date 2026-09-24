@@ -1,0 +1,16 @@
+{
+  "name": "Mark VI",
+  "subtitle": "TRIANGLE ARC REACTOR",
+  "color_primary": "#C41E3A",
+  "color_secondary": "#FFD700",
+  "arc_reactor_color": "#00FFFF",
+  "arc_reactor_shape": "triangle",
+  "repulsor_power": 80,
+  "arc_intensity": 85,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "triangle_reactor",
+  "description": "Arc Reactor รูปสามเหลี่ยม — Vibranium element ใหม่",
+  "saved_at": "2026-08-15T00:00:00"
+}

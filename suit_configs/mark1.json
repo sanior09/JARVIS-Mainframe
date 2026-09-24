@@ -1,0 +1,16 @@
+{
+  "name": "Mark I",
+  "subtitle": "THE ORIGINAL — CAVE BUILT",
+  "color_primary": "#4a4a4a",
+  "color_secondary": "#2a2a2a",
+  "arc_reactor_color": "#aaddff",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 30,
+  "arc_intensity": 40,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "first_suit",
+  "description": "สร้างในถ้ำ อัฟกานิสถาน ด้วยชิ้นส่วนขยะ",
+  "saved_at": "2026-08-15T00:00:00"
+}

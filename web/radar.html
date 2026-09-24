@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. Local Network Radar</title>
+    <link rel="stylesheet" href="/static/radar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="hud-overlay"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="/static/nachapol_logo.png" alt="Nachapol Industries" class="logo">
+            </div>
+            <div class="title-container">
+                <h1>LOCAL NETWORK RADAR</h1>
+                <p class="subtitle">TACTICAL SURVEILLANCE SYSTEM ACTIVE</p>
+            </div>
+            <div class="status-indicator">
+                <div class="dot blinking"></div>
+                <span>SCANNING</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Radar Visual -->
+            <div class="radar-section panel glass">
+                <div class="radar">
+                    <div class="sweep"></div>
+                    <div class="grid"></div>
+                    <div class="center-point"></div>
+                    <div id="radar-blips-container"></div>
+                </div>
+                <div class="radar-stats">
+                    <p>TOTAL DEVICES: <span id="total-devices" class="neon-text">0</span></p>
+                    <p>LAST SCAN: <span id="last-scan">--:--:--</span></p>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="data-section panel glass">
+                <div class="table-header">
+                    <h2>KNOWN MAC ADDRESSES</h2>
+                    <div class="decoration-line"></div>
+                </div>
+                <div class="table-container">
+                    <table class="tech-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>MAC ADDRESS</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mac-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>J.A.R.V.I.S. PROTOCOL // SECURE CONNECTION ESTABLISHED</p>
+        </footer>
+    </div>
+
+    <!-- Rename Modal -->
+    <div id="rename-modal" class="modal">
+        <div class="modal-content glass panel">
+            <h3>SET DEVICE ALIAS</h3>
+            <p class="subtitle" id="modal-mac-display"></p>
+            <input type="text" id="alias-input" class="tech-input" placeholder="e.g. Boss iPhone" autocomplete="off">
+            <div class="modal-actions">
+                <button id="cancel-btn" class="action-btn">CANCEL</button>
+                <button id="save-btn" class="action-btn status-safe">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/radar.js"></script>
+</body>
+</html>

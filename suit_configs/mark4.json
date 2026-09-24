@@ -1,0 +1,15 @@
+{
+  "name": "Mark IV",
+  "subtitle": "IMPROVED CLASSIC",
+  "color_primary": "#B22020",
+  "color_secondary": "#DAA520",
+  "arc_reactor_color": "#00DDFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 75,
+  "arc_intensity": 78,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "description": "ปรับปรุงจาก Mark III เพิ่มความทนทาน",
+  "saved_at": "2026-08-15T00:00:00"
+}

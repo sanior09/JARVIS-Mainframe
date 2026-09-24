@@ -1,0 +1,16 @@
+{
+  "name": "Mark XVII",
+  "subtitle": "HEARTBREAKER — HEAVY ASSAULT",
+  "color_primary": "#990000",
+  "color_secondary": "#FF6600",
+  "arc_reactor_color": "#FF4400",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 95,
+  "arc_intensity": 100,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "heartbreaker",
+  "description": "Unibeam พลังสูงสุด — ออกแบบสำหรับ Heavy Assault",
+  "saved_at": "2026-08-15T00:00:00"
+}

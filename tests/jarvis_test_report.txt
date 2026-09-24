@@ -1,0 +1,136 @@
+══════════════════════════════════════════════════════════════════════
+  J.A.R.V.I.S. SYSTEM DIAGNOSTIC REPORT
+  Generated: 2026-08-04 22:55:13
+══════════════════════════════════════════════════════════════════════
+  TOTAL TESTS : 55
+  ✅ PASSED   : 50
+  ⚠️  WARNINGS  : 4
+  ❌ FAILED   : 1
+  PASS RATE   : 90.9%
+══════════════════════════════════════════════════════════════════════
+
+  ❌ FAILED TESTS (ต้องแก้ไข) (1 รายการ)
+  ────────────────────────────────────────────────────────────
+  [FAIL] POST /ha/control - Home Automation Control
+        → HTTPConnectionPool(host='127.0.0.1', port=5050): Read timed out. (read timeout=10)
+
+  ⚠️  WARNINGS (ควรตรวจสอบ) (4 รายการ)
+  ────────────────────────────────────────────────────────────
+  [WARN] ENV: JARVIS_API_TOKEN
+        → ไม่พบหรือยังไม่ตั้งค่า
+  [WARN] ENV: HA_URL
+        → ไม่พบหรือยังไม่ตั้งค่า
+  [WARN] ENV: HA_TOKEN
+        → ไม่พบหรือยังไม่ตั้งค่า
+  [WARN] ตาราง 'conversations'
+        → ไม่พบตารางนี้
+
+  ✅ PASSED TESTS (50 รายการ)
+  ────────────────────────────────────────────────────────────
+  [PASS] เชื่อมต่อ Flask Server
+        → HTTP 200
+  [PASS] Main Application
+        → jarvis.py (466.0 KB)
+  [PASS] HUD Interface
+        → index.html (14.0 KB)
+  [PASS] HUD Styles
+        → style.css (20.3 KB)
+  [PASS] HUD Script
+        → script.js (124.7 KB)
+  [PASS] Launcher BAT
+        → run_jarvis.bat (3.7 KB)
+  [PASS] SQLite Database
+        → jarvis_memory.db (112.0 KB)
+  [PASS] Voice Engine
+        → local_engine.py (48.5 KB)
+  [PASS] Dynamic Island
+        → dynamic_island.py (18.5 KB)
+  [PASS] พบไฟล์ .env
+        → c:\JARVIS\.env
+  [PASS] ENV: GROQ_API_KEY
+        → ตั้งค่าแล้ว (********)
+  [PASS] ENV: LINE_CHANNEL_ACCESS_TOKEN
+        → ตั้งค่าแล้ว (********)
+  [PASS] ENV: GEMINI_API_KEY
+        → ตั้งค่าแล้ว (********)
+  [PASS] พบไฟล์: Event Bus Core
+        → event_bus_core.py
+  [PASS] พบไฟล์: Neural IPC Channel
+        → neural_ipc.py
+  [PASS] พบไฟล์: Episodic Memory
+        → jarvis_episodic_memory.py
+  [PASS] พบไฟล์: Autonomous Evolution
+        → jarvis_evolution.py
+  [PASS] พบไฟล์: Autonomous Learning
+        → jarvis_learning.py
+  [PASS] พบไฟล์: Deep Thought Core
+        → deep_thought_core.py
+  [PASS] พบไฟล์: Neural Network (Risk Analysis)
+        → neural_network_example.py
+  [PASS] พบไฟล์: Windows OS Agent
+        → agent_windows_core.py
+  [PASS] พบไฟล์: Edge TTS Module
+        → jarvis_tts_edge.py
+  [PASS] พบไฟล์: VAD Barge-In
+        → jarvis_vad_bargein.py
+  [PASS] พบไฟล์: Local Voice Pipeline
+        → local_engine.py
+  [PASS] เปิด Database ได้
+        → พบตาราง: memories, sqlite_sequence, tasks, calendar_events, user_profile, holograms, hologram_queues, telemetry_history
+  [PASS] ตาราง 'user_profile'
+        → 1 records
+  [PASS] ตาราง 'holograms'
+        → 76 records
+  [PASS] ตาราง 'knowledge_graph'
+        → 7 records
+  [PASS] GET /api/status - สถานะระบบ
+        → HTTP 200 OK
+  [PASS] GET /api/telemetry - ข้อมูล CPU/RAM/Disk
+        → HTTP 200 OK
+  [PASS] GET /api/quota - Groq API Quota
+        → HTTP 200 OK
+  [PASS] GET /api/neuro_status - Neuro Status
+        → HTTP 200 OK
+  [PASS] GET /api/voice/status - สถานะ Voice Engine
+        → HTTP 200 OK
+  [PASS] GET /api/holograms - ดึง Holograms
+        → HTTP 200 OK
+  [PASS] GET /api/knowledge-graph - Knowledge Graph
+        → HTTP 200 OK
+  [PASS] GET /api/spatial/calibration - Spatial Calibration
+        → HTTP 200 OK
+  [PASS] GET /api/telemetry - ดึงข้อมูล
+        → HTTP 200 OK
+  [PASS] Telemetry field 'cpu'
+        → 0.0
+  [PASS] Telemetry field 'ram'
+        → 94.8
+  [PASS] Telemetry field 'disk'
+        → 76.7
+  [PASS] POST /tts - Text-to-Speech ทำงาน
+        → HTTP 200 OK
+  [PASS] POST /api/voice/say - Say Direct
+        → HTTP 200 OK
+  [PASS] POST /api/voice/trigger - Voice Trigger
+        → HTTP 200 OK
+  [PASS] POST /chat - ระบบสนทนา AI (Groq)
+        → HTTP 200 OK
+  [PASS] AI ตอบกลับได้
+        → Response: ระบบทำงานปกติครับ!...
+  [PASS] GET /api/status - ดึงข้อมูล HA Status
+        → HTTP 200 OK
+  [PASS] Home Assistant เชื่อมต่อ
+        → unknown
+  [PASS] GET /api/holograms - ดึง Hologram ทั้งหมด
+        → HTTP 200 OK
+  [PASS] POST /api/holograms - สร้าง Hologram ใหม่
+        → HTTP 200 OK
+  [PASS] POST /api/voice/text - ส่งข้อความเสมือนพูด
+        → HTTP 200 OK
+
+══════════════════════════════════════════════════════════════════════
+  หมายเหตุ:
+  - FAIL = ระบบนี้ไม่ทำงาน ต้องแก้ไข
+  - WARN = ระบบทำงานได้บางส่วน หรือยังไม่ตั้งค่า
+  - PASS = ระบบทำงานปกติ
+══════════════════════════════════════════════════════════════════════

@@ -1,0 +1,16 @@
+{
+  "name": "Mark VII",
+  "subtitle": "AVENGERS SUIT",
+  "color_primary": "#C41E3A",
+  "color_secondary": "#FFD700",
+  "arc_reactor_color": "#00EEFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 85,
+  "arc_intensity": 88,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "bracelet_deploy",
+  "description": "Deploy จากสร้อยข้อมือ — ใช้ในศึก Avengers",
+  "saved_at": "2026-08-15T00:00:00"
+}

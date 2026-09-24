@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS HUD Interface</title>
+    <script>window.JARVIS_TOKEN = "{{ api_token }}";</script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        /* Hologram JARVIS Animation Overrides */
+        .hologram-window {
+            opacity: 0;
+            transform: scale(0.5) rotateX(30deg);
+            animation: hologram-entry 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border-left: 3px solid var(--jarvis-blue, #00c8ff);
+            box-shadow: -5px 0 15px rgba(0, 200, 255, 0.25);
+            backdrop-filter: blur(10px) brightness(1.2);
+        }
+
+        @keyframes hologram-entry {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(30px) rotateX(20deg);
+                filter: brightness(5);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0) rotateX(0deg);
+                filter: brightness(1);
+            }
+        }
+
+        .hologram-exit {
+            animation: hologram-exit 0.35s ease-in forwards !important;
+            pointer-events: none;
+        }
+
+        @keyframes hologram-exit {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                filter: brightness(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.9) translateY(40px) rotateY(10deg);
+                filter: brightness(0);
+            }
+        }
+
+        /* Responsive UI Optimization for iPhone 13 & iPad Air 6 (Portrait) */
+        @media only screen and (max-width: 480px) and (orientation: portrait) {
+            body {
+                background-size: 20px 20px;
+                overflow: hidden;
+            }
+            .hud-container {
+                padding: 10px;
+            }
+            .neural-core-container {
+                transform: translate(-50%, -60%) scale(0.35);
+                top: 48%;
+            }
+            .control-panel {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+                width: calc(100% - 20px);
+                z-index: 1010;
+            }
+            .nachapol-btn {
+                font-size: 7.5px;
+                padding: 5px 2px;
+                letter-spacing: 0.5px;
+                text-align: center;
+                white-space: nowrap;
+                clip-path: none;
+                border-radius: 3px;
+            }
+            #camera-container {
+                top: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 240px;
+                height: 135px;
+                border-radius: 4px;
+            }
+            #calibration-panel {
+                top: 215px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 240px;
+                max-height: 160px;
+                overflow-y: auto;
+                font-size: 8px;
+            }
+            .calibration-header {
+                font-size: 8px;
+            }
+            .slider-group label {
+                font-size: 8px;
+            }
+            #chat-log {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                height: 110px;
+                bottom: 110px;
+                padding: 6px;
+                font-size: 0.7rem;
+                background: rgba(0, 15, 15, 0.85);
+            }
+            .input-area {
+                left: 10px;
+                right: 10px;
+                bottom: 50px;
+                width: auto;
+            }
+            input {
+                padding: 8px 10px;
+                font-size: 10.5px;
+            }
+            #attach-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            .ambiance-tag {
+                top: auto;
+                bottom: 230px;
+                left: 15px;
+                font-size: 0.55rem;
+                letter-spacing: 1px;
+            }
+            #status-bar {
+                bottom: 8px;
+                font-size: 0.6rem;
+                width: 90%;
+                text-align: center;
+            }
+            .hologram-window {
+                width: calc(100% - 20px) !important;
+                max-width: 280px;
+                left: 10px !important;
+                right: 10px !important;
+                min-height: 130px;
+                font-size: 0.7rem;
+            }
+            .hologram-header {
+                font-size: 0.55rem;
+            }
+            .hologram-content {
+                font-size: 0.7rem;
+            }
+        @media only screen and (min-width: 481px) and (max-width: 1024px) and (orientation: portrait) {
+            .neural-core-container {
+                transform: translate(-50%, -50%) scale(0.68);
+            }
+            .control-panel {
+                top: 20px;
+                right: 20px;
+                left: auto;
+                gap: 8px;
+                display: flex;
+                flex-direction: column;
+                z-index: 1010;
+            }
+            .nachapol-btn {
+                font-size: 10px;
+                padding: 8px 15px;
+            }
+            #camera-container {
+                top: 20px;
+                left: 20px;
+                width: 260px;
+                height: 146px;
+            }
+            #calibration-panel {
+                top: 180px;
+                left: 20px;
+                width: 260px;
+            }
+            #chat-log {
+                left: 20px;
+                bottom: 120px;
+                width: 320px;
+                height: 300px;
+                background: rgba(0, 15, 15, 0.8);
+            }
+            .input-area {
+                left: 20px;
+                bottom: 50px;
+                width: 320px;
+            }
+            .ambiance-tag {
+                top: auto;
+                bottom: 430px;
+                left: 20px;
+            }
+            #status-bar {
+                bottom: 25px;
+                font-size: 0.75rem;
+            }
+            .hologram-window {
+                max-width: 90vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- [SYSTEM DIAGNOSTIC] ส่วนที่ทำให้เสียงวนลูปมักเกิดจากการใส่ attribute 'loop' ในแท็กด้านล่างนี้ -->
+    <!-- วิธีแก้: ตรวจสอบให้แน่ใจว่าไม่มีคำว่า loop อยู่ในแท็ก audio -->
+
+    <div class="hud-container">
+        <!-- Original Ring HUD -->
+        <div class="neural-core-container">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+            <div class="ring ring-4">
+                <div class="inner-core"></div>
+            </div>
+            <div class="ring ring-5"></div>
+            <div class="ring ring-6"></div>
+            <div class="core-text" id="core-status">J.A.R.V.I.S.</div>
+        </div>
+        
+        <!-- Neuro Status Panel (Right Side) -->
+        <div id="neuro-status-panel" style="display: none;">
+            <div class="neuro-header">NEUROLOGIC - CORTEX STATUS</div>
+            <div class="neuro-grid">
+                <div class="neuro-row"><span class="neuro-label">PREFRONTAL</span><span class="neuro-val" id="n-pref">ACTIVE</span></div>
+                <div class="neuro-row"><span class="neuro-label">MOTOR</span><span class="neuro-val" id="n-moto">IDLE</span></div>
+                <div class="neuro-row"><span class="neuro-label">SENSORY</span><span class="neuro-val" id="n-sens">ONLINE</span></div>
+                <div class="neuro-row"><span class="neuro-label">LANGUAGE</span><span class="neuro-val" id="n-lang">LISTENING</span></div>
+                <div class="neuro-row"><span class="neuro-label">MEMORY</span><span class="neuro-val" id="n-memo">SYNCED</span></div>
+                <div class="neuro-row"><span class="neuro-label">DOPAMINE</span><span class="neuro-val" id="n-dopa">STABLE</span></div>
+                <div class="neuro-row"><span class="neuro-label">CORTISOL</span><span class="neuro-val" id="n-cort">LOW</span></div>
+            </div>
+        </div>
+        <div id="status-bar"></div>
+        <div id="agent-matrix" style="margin-top: 10px; padding: 10px; border: 1px solid rgba(0, 200, 255, 0.3); border-radius: 5px; background: rgba(0, 20, 40, 0.6); display: none;">
+            <div style="font-size: 0.6rem; color: #00c8ff; margin-bottom: 5px; letter-spacing: 1px; text-transform: uppercase;">◆ Multi-Agent Subsystems</div>
+            <div id="agent-matrix-content" style="font-size: 0.55rem; color: #fff; line-height: 1.4;"></div>
+        </div>
+    </div>
+
+    <!-- Live Data Terminal (Top-Right) -->
+    <div id="live-data-terminal" style="display: none;">
+        <div class="terminal-header">LIVE DATA STREAM</div>
+        <div id="terminal-content"></div>
+    </div>
+
+    <div id="current-ambiance" class="ambiance-tag">SYSTEM IDLE</div>
+
+    <div id="camera-container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="vision-overlay"></canvas>
+        <div id="qr-toast-link" style="display: none; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(255, 102, 0, 0.9); border: 1px solid #ff9933; padding: 6px 12px; border-radius: 20px; font-family: 'Orbitron', monospace; font-size: 10px; color: #fff; box-shadow: 0 0 15px rgba(255, 102, 0, 0.6); z-index: 1005; cursor: pointer; text-align: center; white-space: nowrap; pointer-events: all;"></div>
+        <div id="laser-range-display">LASER RANGE: AWAITING...</div>
+    </div>
+    <div id="chat-log"></div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="AWAITING COMMAND..."
+            onkeypress="if(event.key === 'Enter') sendMessage(this.value); if(event.key === 'Enter') this.value = '';">
+        <button class="nachapol-btn"
+            onclick="sendMessage(document.getElementById('user-input').value); document.getElementById('user-input').value = '';">SEND</button>
+    </div>
+
+    <div class="control-panel">
+        <button class="nachapol-btn" onclick="toggleCamera()">VISION: OFF</button>
+        <button class="nachapol-btn" id="thermal-toggle" onclick="toggleThermalMode()">THERMAL: OFF</button>
+        <button class="nachapol-btn" id="spatial-toggle" onclick="toggleSpatialMode()">SPATIAL SCANNER</button>
+        <button class="nachapol-btn" id="office-toggle" onclick="toggleAgentOffice()">AGENT OFFICE</button>
+        <button class="nachapol-btn" onclick="triggerRhythmSync()">RHYTHM SYNC</button>
+        <button class="nachapol-btn" onclick="closeAllHolograms()">CLOSE ALL HOLOGRAMS</button>
+        <button class="nachapol-btn btn-reset" onclick="resetMemory()">PURGE MEMORY</button>
+    </div>
+
+    <!-- Homography Calibration Overlay Panel -->
+    <div id="calibration-panel">
+        <div class="calibration-header">HOMOGRAPHY CALIBRATION MATRIX</div>
+        <div class="calibration-grid">
+            <div class="slider-group">
+                <label>Translate X (h02): <span id="val-tx">0</span>px</label>
+                <input type="range" id="slider-tx" min="-80" max="80" value="0">
+            </div>
+            <div class="slider-group">
+                <label>Translate Y (h12): <span id="val-ty">0</span>px</label>
+                <input type="range" id="slider-ty" min="-80" max="80" value="0">
+            </div>
+            <div class="slider-group">
+                <label>Scale Factor: <span id="val-scale">1.00</span></label>
+                <input type="range" id="slider-scale" min="0.5" max="2.0" step="0.05" value="1.0">
+            </div>
+            <div class="slider-group">
+                <label>Rotation: <span id="val-rot">0.00</span> rad</label>
+                <input type="range" id="slider-rot" min="-0.5" max="0.5" step="0.01" value="0">
+            </div>
+            <div class="slider-group">
+                <label>Skew / Perspective: <span id="val-persp">0.0000</span></label>
+                <input type="range" id="slider-persp" min="-0.002" max="0.002" step="0.0001" value="0">
+            </div>
+        </div>
+        <button class="nachapol-btn" onclick="saveCalibration()"
+            style="width: 100%; margin-top: 10px; font-size: 9px; padding: 6px;">SAVE MATRIX TO DB</button>
+    </div>
+
+    <!-- Performance & Telemetry HUD Panel -->
+    <div id="metrics-panel">
+        <div class="metrics-header" onclick="toggleMetricsPanel()">
+            <div class="metrics-title-wrap">
+                <span class="metrics-pulse"></span>
+                <span class="metrics-title">GROQ TELEMETRY</span>
+            </div>
+            <button id="metrics-toggle-btn" class="metrics-toggle-btn" title="Toggle Metrics Panel">−</button>
+        </div>
+        <div class="metrics-body" id="metrics-body">
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <span class="metric-label">TOKENS TODAY</span>
+                    <span class="metric-val" id="metric-tokens">0</span>
+                    <div class="metric-sub" id="metric-tokens-sub">P: 0 | C: 0</div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">AVG LATENCY</span>
+                    <span class="metric-val" id="metric-latency">0.0s</span>
+                    <div class="metric-sub" id="metric-latency-sub">0 ms</div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">SUCCESS RATE</span>
+                    <span class="metric-val" id="metric-success">100%</span>
+                    <div class="metric-sub" id="metric-requests-sub">0 calls</div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">ACTIVE MODEL</span>
+                    <span class="metric-val" id="metric-model" style="font-size: 10px;">qwen3.8-27b</span>
+                    <div class="metric-sub" id="metric-status-sub">STATUS: ONLINE</div>
+                </div>
+            </div>
+            <div class="metrics-trend-box">
+                <div class="metrics-trend-header">
+                    <span>ACTIVITY STREAM</span>
+                    <span id="metric-rate-badge">READY</span>
+                </div>
+                <div class="metrics-sparkline" id="metrics-sparkline">
+                    <!-- Real-time dynamic bars -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Quota Display -->
+    <div id="quota-display">GROQ API: PENDING...</div>
+
+    <!-- CDN Libraries: jsQR, Three.js and OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

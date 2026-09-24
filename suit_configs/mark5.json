@@ -1,0 +1,16 @@
+{
+  "name": "Mark V",
+  "subtitle": "SUITCASE SUIT — PORTABLE",
+  "color_primary": "#CC0000",
+  "color_secondary": "#C0C0C0",
+  "arc_reactor_color": "#88CCFF",
+  "arc_reactor_shape": "circle",
+  "repulsor_power": 45,
+  "arc_intensity": 50,
+  "helmet_open": false,
+  "unibeam_active": false,
+  "armor_deployed": true,
+  "special": "briefcase",
+  "description": "พับเก็บในกระเป๋าเดินทางได้",
+  "saved_at": "2026-08-15T00:00:00"
+}

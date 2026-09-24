@@ -1,0 +1,394 @@
+:root {
+    --bg-color: #050b14;
+    --neon-blue: #00f3ff;
+    --neon-blue-glow: rgba(0, 243, 255, 0.4);
+    --neon-red: #ff003c;
+    --glass-bg: rgba(10, 20, 35, 0.7);
+    --glass-border: rgba(0, 243, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--neon-blue);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%),
+        linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Glassmorphism Panels */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.05);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.logo-container {
+    width: 250px;
+}
+
+.logo {
+    max-width: 100%;
+    filter: drop-shadow(0 0 8px var(--neon-blue-glow));
+    /* The logo is white/gray in the image, you can tint it if needed via SVG or CSS, but drop-shadow is nice */
+}
+
+.title-container h1 {
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px var(--neon-blue);
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--neon-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.blinking {
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Main Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    flex: 1;
+}
+
+.panel {
+    border-radius: 10px;
+    padding: 25px;
+}
+
+/* Radar Animation */
+.radar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.radar {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-blue);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px var(--neon-blue-glow), inset 0 0 30px var(--neon-blue-glow);
+    background: radial-gradient(circle, rgba(0,243,255,0.1) 0%, rgba(0,0,0,0) 70%);
+}
+
+.radar .grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 49.5%, var(--glass-border) 49.5%, var(--glass-border) 50.5%, transparent 50.5%),
+        linear-gradient(0deg, transparent 49.5%, var(--glass-border) 49.5%, var(--glass-border) 50.5%, transparent 50.5%);
+    border-radius: 50%;
+}
+
+.radar .grid::before, .radar .grid::after {
+    content: '';
+    position: absolute;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radar .grid::before {
+    width: 66%;
+    height: 66%;
+}
+
+.radar .grid::after {
+    width: 33%;
+    height: 33%;
+}
+
+.radar .center-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--neon-blue);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.radar .sweep {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 0;
+    left: 50%;
+    background: conic-gradient(from 0deg, transparent 70%, rgba(0, 243, 255, 0.8) 100%);
+    transform-origin: 0% 100%;
+    animation: sweep 4s linear infinite;
+}
+
+@keyframes sweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.blip {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #fff, 0 0 15px var(--neon-blue);
+    animation: blip-fade 4s infinite;
+}
+
+@keyframes blip-fade {
+    0% { opacity: 0; transform: scale(0.5); }
+    10% { opacity: 1; transform: scale(1.5); }
+    20% { opacity: 0.8; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1); }
+}
+
+.radar-stats {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.8;
+}
+
+.neon-text {
+    text-shadow: 0 0 5px var(--neon-blue);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Data Table */
+.table-header {
+    margin-bottom: 20px;
+}
+
+.table-header h2 {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.decoration-line {
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), transparent);
+    margin-top: 10px;
+    width: 50%;
+}
+
+.table-container {
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 6px;
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--neon-blue);
+    border-radius: 3px;
+}
+
+.tech-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+}
+
+.tech-table th {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid var(--neon-blue);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+}
+
+.tech-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--glass-border);
+    transition: background 0.3s;
+}
+
+.tech-table tbody tr:hover {
+    background: rgba(0, 243, 255, 0.1);
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.status-safe {
+    background: rgba(0, 243, 255, 0.1);
+    color: var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+}
+
+.status-warning {
+    background: rgba(255, 0, 60, 0.1);
+    color: var(--neon-red);
+    border: 1px solid var(--neon-red);
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.3);
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 5px 15px;
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background: var(--neon-blue);
+    color: var(--bg-color);
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* Footer */
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.5;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 15px;
+}
+
+/* Modal Styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+    animation: fadeIn 0.3s;
+}
+
+.modal-content {
+    width: 400px;
+    text-align: center;
+    padding: 30px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+}
+
+.modal-content h3 {
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.modal-content .subtitle {
+    margin-bottom: 20px;
+}
+
+.tech-input {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid var(--neon-blue);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.tech-input:focus {
+    box-shadow: 0 0 10px var(--neon-blue-glow);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
