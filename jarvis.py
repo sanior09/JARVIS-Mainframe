@@ -1583,7 +1583,8 @@ try:
     import jarvis_memory_consolidation  # type: ignore
     CORE_BELIEFS = jarvis_memory_consolidation.get_core_beliefs(chroma_client)
     if CORE_BELIEFS:
-        logger.info(f"[BOOT] Loaded Core Beliefs:\n{CORE_BELIEFS}")
+        logger.info("[BOOT] Synaptic Core Beliefs & Identity Matrix ...... ONLINE")
+        logger.debug(f"[BOOT] Loaded Core Beliefs:\n{CORE_BELIEFS}")
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     logger.error(f"[BOOT] Failed to load core beliefs: {e}")
     CORE_BELIEFS = ""
