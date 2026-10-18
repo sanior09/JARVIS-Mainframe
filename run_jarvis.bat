@@ -28,32 +28,22 @@ echo %BLUE%      _   ^| ^|/ /\ \ ^|  _  / \ \/ /   ^| ^|  \___ \ %RESET%
 echo %BLUE%     ^| ^|__^| / ____ \^| ^| \ \  \  /   _^| ^|_ ____) ^|%RESET%
 echo %BLUE%      \____/_/    \_\_^|  \_\  \/   ^|_____^|_____/ %RESET%
 echo %CYAN%  ========================================================================%RESET%
-echo %WHITE%                JUST A RATHER VERY INTELLIGENT SYSTEM%RESET%
-echo %CYAN%                    Powered by Nachapol Industries%RESET%
+python scripts\boot_fx.py --type "                JUST A RATHER VERY INTELLIGENT SYSTEM" white 0.010
+python scripts\boot_fx.py --type "                    Powered by Nachapol Industries" cyan 0.010
 echo.
-echo %CYAN%  [ SYSTEM BOOT SEQUENCE INITIATED ]%RESET%
+python scripts\boot_fx.py --type "  [ SYSTEM BOOT SEQUENCE INITIATED ]" cyan 0.012
 echo.
 
 :: Simulate loading (Typewriter Effect)
-python --version >nul 2>&1
-if %errorlevel% equ 0 (
-    python scripts\boot_fx.py --type "  [!] Initializing Cognitive Matrix..." white 0.015
-    ping 127.0.0.1 -n 2 >nul
-    python scripts\boot_fx.py --type "  [!] Establishing Neural Pathways..." white 0.015
-    ping 127.0.0.1 -n 2 >nul
-    python scripts\boot_fx.py --type "  [!] Loading Autonomous Evolution Protocol..." white 0.015
-    ping 127.0.0.1 -n 2 >nul
-) else (
-    echo %WHITE%  [!] Initializing Cognitive Matrix...%RESET%
-    ping 127.0.0.1 -n 2 >nul
-    echo %WHITE%  [!] Establishing Neural Pathways...%RESET%
-    ping 127.0.0.1 -n 2 >nul
-    echo %WHITE%  [!] Loading Autonomous Evolution Protocol...%RESET%
-    ping 127.0.0.1 -n 2 >nul
-)
+python scripts\boot_fx.py --type "  [!] Initializing Cognitive Matrix..." white 0.014
+ping 127.0.0.1 -n 2 >nul
+python scripts\boot_fx.py --type "  [!] Establishing Neural Pathways..." white 0.014
+ping 127.0.0.1 -n 2 >nul
+python scripts\boot_fx.py --type "  [!] Loading Autonomous Evolution Protocol..." white 0.014
+ping 127.0.0.1 -n 2 >nul
 echo.
 
-echo %CYAN%  [ VERIFYING SYSTEM INTEGRITY ]%RESET%
+python scripts\boot_fx.py --type "  [ VERIFYING SYSTEM INTEGRITY ]" cyan 0.012
 :: ตรวจสอบ Python Installation
 for /f "tokens=*" %%i in ('python -c "import site; print(site.getsitepackages()[0])" 2^>nul') do set "PY_SITE_PACKAGES=%%i"
 if defined PY_SITE_PACKAGES (
@@ -90,7 +80,7 @@ for %%P in (%REQUIRED_PACKAGES%) do (
 python scripts\boot_fx.py --status "Neural Dependencies: 19/19 Packages" "SYNCED"
 echo.
 
-echo %CYAN%  [ PURGING TEMPORARY CACHE ]%RESET%
+python scripts\boot_fx.py --type "  [ PURGING TEMPORARY CACHE ]" cyan 0.012
 del /s /q *.log >nul 2>&1
 python scripts\boot_fx.py --status "System Cache & Execution Logs" "OPTIMIZED"
 echo.
@@ -112,7 +102,7 @@ if exist "modules\agent_windows_core.py" (
 )
 
 echo.
-echo %CYAN%  [ SYNAPSE CALIBRATION SEQUENCE ]%RESET%
+python scripts\boot_fx.py --type "  [ SYNAPSE CALIBRATION SEQUENCE ]" cyan 0.012
 python scripts\boot_fx.py --bar "Loading Neural Matrix & Synaptic Buffer" 0.75
 echo.
 python scripts\boot_fx.py --status "Synaptic Knowledge Store (ChromaDB)" "CONNECTED"

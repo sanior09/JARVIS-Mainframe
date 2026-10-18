@@ -47,10 +47,16 @@ def loading_bar(label: str = "Synthesizing Neural Matrix", duration: float = 0.7
     sys.stdout.write(f"  {GREEN}✔ COMPLETE{RESET}\n")
     sys.stdout.flush()
 
-def status_item(label: str, status: str = "Active", delay: float = 0.05):
+def status_item(label: str, status: str = "Active", delay: float = 0.04):
+    sys.stdout.write(f"  {GREEN}✔{RESET} {WHITE}")
+    for ch in label:
+        sys.stdout.write(ch)
+        sys.stdout.flush()
+        time.sleep(0.008)
+    sys.stdout.write(RESET + " ")
     dots_count = max(2, 46 - len(label))
     dots = "." * dots_count
-    sys.stdout.write(f"  {GREEN}✔{RESET} {WHITE}{label}{RESET} {CYAN}{dots}{RESET} {GREEN}[ {status} ]{RESET}\n")
+    sys.stdout.write(f"{CYAN}{dots}{RESET} {GREEN}[ {status} ]{RESET}\n")
     sys.stdout.flush()
     time.sleep(delay)
 
