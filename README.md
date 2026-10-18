@@ -27,41 +27,6 @@
   <img src="docs/images/architecture_map.png" alt="J.A.R.V.I.S. System Architecture Blueprint" width="100%">
 </p>
 
-```mermaid
-graph LR
-    subgraph S1["Stage 1: User Clients"]
-        HUD["Desktop Dynamic Island"]
-        MOB["Expo Mobile App"]
-        VCE["Voice & Audio Engine"]
-    end
-
-    subgraph S2["Stage 2: Gateways & IPC Bus"]
-        PIPE["Named Pipe (jarvis_island_pipe)"]
-        API["Flask Hub (:5050)"]
-        VISION["Multimodal Ingestor"]
-    end
-
-    subgraph S3["Stage 3: Cognitive AI Brain"]
-        ROUTER["Neural AI Router (jarvis_core/ai_router.py)"]
-        LLM["Multi-LLM Pool (Groq/Gemini/Ollama)"]
-        MEM["Synaptic Vector Memory & Graph"]
-    end
-
-    subgraph S4["Stage 4: OS Execution Engine"]
-        WIN["Windows Autonomous Agent"]
-        SCR["Screen Takeover & Laser HUD"]
-        MEDIA["Video Automator & ComfyUI"]
-    end
-
-    subgraph S5["Stage 5: Persistence & Observability"]
-        QUOTA["AI Quota Tracker (ai_quota_tracker.py)"]
-        DOG["Watchdog & Auto-Healer (24/7)"]
-        DB[("SQLite & Synaptic Store")]
-    end
-
-    S1 --> S2 --> S3 --> S4 --> S5
-```
-
 ---
 
 ## 🚀 Quick Start (Nachapol Protocol)
