@@ -1233,7 +1233,7 @@ TOOLS_DEFINITION = [
                 "properties": {
                     "phone_number": {
                         "type": "string",
-                        "description": "หมายเลขโทรศัพท์ที่ต้องการตรวจสอบ (เช่น '06-3021-9386', '0812345678', '02xxxxxxx')"
+                        "description": "หมายเลขโทรศัพท์ที่ต้องการตรวจสอบ (เช่น '081-234-5678', '0891234567', '02xxxxxxx')"
                     }
                 },
                 "required": ["phone_number"]

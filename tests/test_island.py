@@ -160,7 +160,7 @@ def run_automated_demo():
 
     # 7. Smart Alert Toast Banners
     print("\n[7/9] 🚨 Smart Alert / Toast Banner: การแจ้งเตือนสองบรรทัด...")
-    send_toast_to_island("LINE Message", "คุณซาเนียร์: จาร์วิส รันระบบ Dynamic Island เรียบร้อยหรือยังครับ", icon="💬")
+    send_toast_to_island("LINE Message", "เจ้านาย: จาร์วิส รันระบบ Dynamic Island เรียบร้อยหรือยังครับ", icon="💬")
     time.sleep(5.0)
 
     # 8. Status Indicators

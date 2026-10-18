@@ -12,7 +12,7 @@ class VoiceBiometricsEngine:
     """
     def __init__(self, owner_name: str = "Admin"):
         self.owner_name = owner_name
-        self.whitelisted_users = [owner_name, "Nachapol"]
+        self.whitelisted_users = [owner_name]
         self.is_voice_locked = True
         
     def verify_voice_print(self, audio_data=None, user_identifier: str = "") -> bool:

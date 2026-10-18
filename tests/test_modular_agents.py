@@ -76,7 +76,7 @@ class TestModularAgents(unittest.TestCase):
         res = synthesize_technical_report(
             topic="Test Modular Architecture",
             findings="J.A.R.V.I.S. Core Services successfully extracted into modular services.",
-            sources=["https://github.com/sanio/jarvis"]
+            sources=["https://github.com/JARVIS-Mainframe/core"]
         )
         self.assertEqual(res["status"], "success")
         self.assertTrue(os.path.exists(res["filepath"]))

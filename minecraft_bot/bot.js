@@ -84,7 +84,9 @@ let guardInterval = null;
 let mcData = null;
 
 function getBoss() {
-    return bot.players['Sanior09'] || Object.values(bot.players).find(p => p.username !== bot.username);
+    const targetBoss = process.env.MC_BOSS_NAME || '';
+    if (targetBoss && bot.players[targetBoss]) return bot.players[targetBoss];
+    return Object.values(bot.players).find(p => p.username !== bot.username);
 }
 
 bot.on('spawn', () => {
@@ -196,7 +198,7 @@ function handleRecallToBoss(forceTp = false) {
     isWorking = false;
     try { bot.stopDigging(); } catch (e) {}
     const boss = getBoss();
-    const bossName = boss ? boss.username : 'Sanior09';
+    const bossName = boss ? boss.username : (process.env.MC_BOSS_NAME || 'Player');
 
     if (forceTp) {
         bot.pathfinder.setGoal(null);

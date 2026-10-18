@@ -132,7 +132,7 @@ THAI_COLLOQUIAL_MAP = {
 def resolve_target_handles(target: str) -> List[str]:
     """
     Quad-Layer Thai-to-English Handle Resolver:
-    Layer 1: Non-Thai handle passed directly (e.g. 'nachapol' -> ['nachapol']).
+    Layer 1: Non-Thai handle passed directly (e.g. 'johndoe' -> ['johndoe']).
     Layer 2: Strip Thai honorifics (น้อง, พี่, คุณ, ไอ้, อี, หมอ, ช่าง, จ่า, สารวัตร).
     Layer 3: Colloquial Thai & English-loan dictionary matching (returns list of spellings).
     Layer 4: Algorithmic RTGS phonetic transliteration via PyThaiNLP with phonetic suffix extensions.

@@ -23,13 +23,13 @@ TOOL_SCHEMA = {
     "type": "function",
     "function": {
         "name": "hunt_username_osint",
-        "description": "Perform OSINT reconnaissance to track down and list all online accounts across TikTok, Instagram, GitHub, Telegram, Reddit, Steam, YouTube, etc. for a person, individual, target, contact, or username. Use this whenever the user asks to investigate, stalk, look up social accounts, or find information about a specific person or name using natural language (e.g., 'ไปหาข้อมูลของโดนัทมาให้หน่อย', 'ช่วยสืบประวัติน้องโดนัท', 'ส่องไอจีกับติ๊กต็อกคนนี้', 'หาประวัติคนชื่อ...').",
+        "description": "Perform OSINT reconnaissance to track down and list all online accounts across TikTok, Instagram, GitHub, Telegram, Reddit, Steam, YouTube, etc. for a person, individual, target, contact, or username. Use this whenever the user asks to investigate, stalk, look up social accounts, or find information about a specific person or name using natural language (e.g., 'ไปหาข้อมูลของสมชายมาให้หน่อย', 'ช่วยสืบประวัตินายบ๊อบ', 'ส่องไอจีกับติ๊กต็อกคนนี้', 'หาประวัติคนชื่อ...').",
         "parameters": {
             "type": "object",
             "properties": {
                 "username": {
                     "type": "string",
-                    "description": "Target person's name, nickname, or online handle to investigate (e.g., 'donut', 'nachapol'). If given in Thai (e.g., 'โดนัท', 'น้องโดนัท'), transliterate/convert to the Romanized handle ('donut') or pass directly."
+                    "description": "Target person's name, nickname, or online handle to investigate (e.g., 'johndoe', 'somchai'). If given in Thai (e.g., 'สมชาย', 'น้องมายด์'), transliterate/convert to the Romanized handle ('somchai') or pass directly."
                 },
                 "mode": {
                     "type": "string",
