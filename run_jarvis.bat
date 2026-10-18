@@ -21,15 +21,15 @@ set "RESET=%ESC%[0m"
 cls
 echo.
 echo %CYAN%  ========================================================================%RESET%
-echo %BLUE%           _    _     _______      _______  _____ %RESET%
-echo %BLUE%          ^| ^|  / \   ^|  __ \ \    / /_   _^|/ ____^|%RESET%
-echo %BLUE%          ^| ^| /  \  ^| ^|__) \ \  / /  ^| ^| ^| (___  %RESET%
-echo %BLUE%      _   ^| ^|/ /\ \ ^|  _  / \ \/ /   ^| ^|  \___ \ %RESET%
-echo %BLUE%     ^| ^|__^| / ____ \^| ^| \ \  \  /   _^| ^|_ ____) ^|%RESET%
-echo %BLUE%      \____/_/    \_\_^|  \_\  \/   ^|_____^|_____/ %RESET%
+echo %BLUE%                     _    _     _______      _______  _____ %RESET%
+echo %BLUE%                    ^| ^|  / \   ^|  __ \ \    / /_   _^|/ ____^|%RESET%
+echo %BLUE%                    ^| ^| /  \  ^| ^|__) \ \  / /  ^| ^| ^| (___  %RESET%
+echo %BLUE%                _   ^| ^|/ /\ \ ^|  _  / \ \/ /   ^| ^|  \___ \ %RESET%
+echo %BLUE%               ^| ^|__^| / ____ \^| ^| \ \  \  /   _^| ^|_ ____) ^|%RESET%
+echo %BLUE%                \____/_/    \_\_^|  \_\  \/   ^|_____^|_____/ %RESET%
 echo %CYAN%  ========================================================================%RESET%
-python scripts\boot_fx.py --type "                JUST A RATHER VERY INTELLIGENT SYSTEM" white 0.010
-python scripts\boot_fx.py --type "                    Powered by Nachapol Industries" cyan 0.010
+python scripts\boot_fx.py --type "                   JUST A RATHER VERY INTELLIGENT SYSTEM" white 0.010
+python scripts\boot_fx.py --type "                       Powered by Nachapol Industries" cyan 0.010
 echo.
 python scripts\boot_fx.py --type "  [ SYSTEM BOOT SEQUENCE INITIATED ]" cyan 0.012
 echo.
