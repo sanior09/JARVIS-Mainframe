@@ -60,22 +60,34 @@ pip install -r requirements.txt
 *(รองรับ PyQt6, Edge-TTS, LangGraph, MediaPipe, OpenCV, Flask, Groq, Google Generative AI และไลบรารีทั้งหมดครบถ้วน)*
 
 ### 3. ตั้งค่าสภาพแวดล้อม (`.env`)
-แก้ไขไฟล์ `.env` และใส่คีย์ของท่าน:
+คัดลอกไฟล์ `.env.example` เป็น `.env` และระบุคีย์บริการที่ท่านใช้งาน:
 ```env
-# AI Providers
+# AI Providers (Groq, Gemini, Ollama)
 GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_FAST_MODEL=qwen/qwen3.8-27b
+GROQ_STT_MODEL=whisper-large-v3
 GEMINI_API_KEY=your_gemini_api_key
-ANTHROPIC_API_KEY=your_claude_api_key
-DEEPSEEK_API_KEY=your_deepseek_api_key
 OLLAMA_MODEL=qwen2.5:1.5b
 
-# Voice & Media Subsystems
-ELEVENLABS_API_KEY=your_elevenlabs_key
-EDGE_TTS_VOICE=th-TH-PremwadeeNeural
-
-# IoT & Smart Lab
+# Smart Home & IoT (Home Assistant)
+HOME_ASSISTANT_URL=http://homeassistant.local:8123
 HOME_ASSISTANT_TOKEN=your_token
-LINE_CHANNEL_ACCESS_TOKEN=your_token
+
+# LINE Messaging API & Remote Webhook
+LINE_CHANNEL_ACCESS_TOKEN=your_line_token
+LINE_CHANNEL_SECRET=your_line_secret
+NGROK_PUBLIC_URL=https://your-domain.ngrok-free.app
+
+# Gmail & Notifications
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=xxxx xxxx xxxx xxxx
+
+# External APIs & Hardware
+OPENWEATHER_API_KEY=your_weather_key
+YOUTUBE_API_KEY=your_youtube_key
+DEEPGRAM_API_KEY=your_deepgram_key
+COMPUTER_CONTROL_MODE=background
 ```
 
 ### 4. เริ่มปฏิบัติการระบบ (System Execution)
@@ -135,7 +147,7 @@ npx expo start
 - **Agent Council & Tree of Thoughts:** ระบบจำลองบอร์ดบริหาร AI (LangGraph) อภิปรายและหาข้อสรุปในงานวิศวกรรมที่ซับซ้อน
 - **Neural AI Router & Provider Pool (`ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq, Gemini, Claude, DeepSeek หรือ Local Qwen ตามความเหมาะสมของประเภทงาน
 - **Cognitive Evolution & Memory Consolidation (`jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ระหว่างที่ระบบอยู่ในสถานะ Sleep
-- **Autonomous Ingestion Engine:** แอบอ่านและซึมซับเอกสารจาก `science_project/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
+- **Autonomous Ingestion Engine:** ตรวจจับและซึมซับเอกสารจาก `document_dropzone/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
 - **Hardware Governor & Cluster Offloader:** ตรวจสอบภาระเครื่องและ Offload งานประมวลผลขึ้น Cloud หรือโหนด LAN อัตโนมัติเมื่อฮาร์ดแวร์โอเวอร์โหลด
 
 ### 📊 2. AI Quota Governor & Cost Protection (`modules/ai_quota_tracker.py`)
