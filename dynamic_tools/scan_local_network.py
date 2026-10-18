@@ -20,13 +20,15 @@ def execute(args):
     Entry point for JARVIS to scan local network using cyber_inspector.py.
     """
     try:
-        # Run cyber_inspector as a subprocess to avoid event loop conflicts
-        script_path = os.path.join(r"c:\JARVIS", "cyber_inspector.py")
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        script_path = os.path.join(base_dir, "modules", "cyber_inspector.py")
+        if not os.path.exists(script_path):
+            script_path = os.path.join(base_dir, "cyber_inspector.py")
         result = subprocess.run(
             ["python", script_path], 
             capture_output=True, 
             text=True, 
-            cwd=r"c:\JARVIS",
+            cwd=base_dir,
             timeout=30  # Assuming scan takes 5-10s
         )
         

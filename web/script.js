@@ -1254,9 +1254,9 @@ async function sendMessage(message = null, imageData = null) {
     const userDiv = document.createElement('div');
     userDiv.className = 'message user';
     if (finalImage) {
-        userDiv.innerHTML = '<strong>SANIOR:</strong> ' + (text ? text + ' ' : '') + '<span style="color: var(--neon-green); font-size: 10px;">[IMAGE ATTACHED]</span>';
+        userDiv.innerHTML = '<strong>USER:</strong> ' + (text ? text + ' ' : '') + '<span style="color: var(--neon-green); font-size: 10px;">[IMAGE ATTACHED]</span>';
     } else {
-        userDiv.innerHTML = '<strong>SANIOR:</strong> ' + text;
+        userDiv.innerHTML = '<strong>USER:</strong> ' + text;
     }
     const chatLogEl = document.getElementById('chat-log');
     if (chatLogEl) {

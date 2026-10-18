@@ -18,7 +18,8 @@ from typing import Any, Dict, Optional
 
 logger = logging.getLogger("JarvisCoreBridge")
 
-JARVIS_CORE_DIR = Path(r"C:\JarvisCore")
+_local_core = Path(__file__).resolve().parent.parent / "models" / "jarvis_core"
+JARVIS_CORE_DIR = Path(os.getenv("JARVIS_CORE_DIR", str(_local_core if _local_core.exists() else Path(r"C:\JarvisCore"))))
 CHECKPOINT_PATH = JARVIS_CORE_DIR / "model_ckpt.pt"
 
 

@@ -28,7 +28,8 @@ TOOL_SCHEMA = {
 def read_screen_context(args):
     question = args.get("question", "สรุปข้อมูลสำคัญทั้งหมดบนหน้าจอนี้")
     
-    load_dotenv(r"c:\JARVIS\.env")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    load_dotenv(os.path.join(base_dir, ".env"))
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return "เกิดข้อผิดพลาด: ไม่พบ GEMINI_API_KEY ในไฟล์ .env"

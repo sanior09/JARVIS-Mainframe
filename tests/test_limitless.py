@@ -3,7 +3,7 @@ import json
 import os
 
 # Add JARVIS to path
-sys.path.append(r"c:\JARVIS")
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dynamic_tools.code_interpreter import code_interpreter
 from dynamic_tools.browser_agent import universal_browser_agent

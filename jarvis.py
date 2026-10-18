@@ -9992,7 +9992,7 @@ def verify_user_endpoint():
         import os
         
         # 1. ตรวจสอบรูปภาพต้นฉบับ
-        known_face_path = r"c:\JARVIS\data\known_faces\owner.jpg"
+        known_face_path = os.path.join(BASE_DIR, "data", "known_faces", "owner.jpg")
         if not os.path.exists(known_face_path):
             logger.warning("[FACE ID] Missing owner.jpg reference photo")
             return jsonify({
@@ -10002,8 +10002,8 @@ def verify_user_endpoint():
             })
             
         # 2. ถ่ายภาพหรือใช้ภาพล่าสุดจาก Vision Daemon
-        latest_vision_path = r"c:\JARVIS\data\latest_vision.jpg"
-        temp_cap_path = r"c:\JARVIS\system_cache\temp_face_scan.jpg"
+        latest_vision_path = os.path.join(BASE_DIR, "data", "latest_vision.jpg")
+        temp_cap_path = os.path.join(BASE_DIR, "system_cache", "temp_face_scan.jpg")
         
         scan_image = None
         if os.path.exists(latest_vision_path):

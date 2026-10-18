@@ -1,6 +1,6 @@
 # 🛠️ คู่มือประกอบชุดสแกนความร้อน DIY ด้วย MLX90640 (งบประหยัด)
 **Project:** `STARK-DIY-THERMAL-MLX90640`  
-**Location:** [`c:\JARVIS\hardware\mlx90640_diy_guide.md`](file:///c:/JARVIS/hardware/mlx90640_diy_guide.md)  
+**Location:** `hardware/mlx90640_diy_guide.md`  
 **Hardware Cost:** ~900 - 1,450 บาท
 
 ---

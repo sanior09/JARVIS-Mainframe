@@ -47,13 +47,14 @@ def toggle_guard_mode(args):
         if pid:
             return "ระบบเฝ้าบ้านกำลังทำงานอยู่แล้วครับ"
             
-        script_path = os.path.join(r"c:\JARVIS", "modules", daemon_script)
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        script_path = os.path.join(base_dir, "modules", daemon_script)
         if not os.path.exists(script_path):
-            script_path = os.path.join(r"c:\JARVIS", daemon_script)
+            script_path = os.path.join(base_dir, daemon_script)
         if not os.path.exists(script_path):
             return "เปิดระบบไม่ได้ครับ ไม่พบไฟล์หลัก"
             
-        subprocess.Popen(["python", script_path], cwd=r"c:\JARVIS")
+        subprocess.Popen(["python", script_path], cwd=base_dir)
         return "ระบบเฝ้าบ้าน ทำงานครับเจ้านาย 🛡️"
         
     elif action == "stop":

@@ -29,8 +29,8 @@ TOOL_SCHEMA = {
 }
 
 def get_all_shortcuts():
-    user_profile = os.environ.get("USERPROFILE", "C:\\Users\\sanio")
-    public_desktop = "C:\\Users\\Public\\Desktop"
+    user_profile = os.environ.get("USERPROFILE") or os.path.expanduser("~")
+    public_desktop = os.environ.get("PUBLIC", "C:\\Users\\Public") + "\\Desktop"
     
     search_paths = [
         os.path.join(user_profile, "Desktop"),

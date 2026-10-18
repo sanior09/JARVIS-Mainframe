@@ -1,7 +1,7 @@
 # 📋 Stark Industries // AR Smart Glasses (Meta Quest 3 Style) Hardware BOM
 **Project Codename:** `STARK-AR-GLASSES-SPATIAL`  
-**Location:** [`c:\JARVIS\hardware\ar_smart_glasses_bom.md`](file:///c:/JARVIS/hardware/ar_smart_glasses_bom.md)  
-**Connected Subsystems:** [`modules/holographic_gestures.py`](file:///c:/JARVIS/modules/holographic_gestures.py) | [`modules/gesture_controller.py`](file:///c:/JARVIS/modules/gesture_controller.py)
+**Location:** `hardware/ar_smart_glasses_bom.md`  
+**Connected Subsystems:** [`modules/holographic_gestures.py`](../modules/holographic_gestures.py) | [`modules/gesture_controller.py`](../modules/gesture_controller.py)
 
 ---
 

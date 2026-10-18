@@ -12,7 +12,8 @@ from deepface import DeepFace
 logger = logging.getLogger("VisionDaemon")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [%(levelname)s] %(name)s: %(message)s")
 
-CACHE_DIR = r"c:\JARVIS\data"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CACHE_DIR = os.path.join(BASE_DIR, "data")
 LATEST_FRAME_PATH = os.path.join(CACHE_DIR, "latest_vision.jpg")
 
 class VisionDaemon(threading.Thread):
@@ -71,7 +72,7 @@ class VisionDaemon(threading.Thread):
                 # Run DeepFace check max once every 3 seconds to save CPU
                 if now - self.last_face_check > 3:
                     self.last_face_check = now
-                    known_face_path = r"c:\JARVIS\data\known_faces\owner.jpg"
+                    known_face_path = os.path.join(CACHE_DIR, "known_faces", "owner.jpg")
                     if os.path.exists(known_face_path):
                         try:
                             # ใช้วิธีวิเคราะห์ใบหน้า (ถ้าไม่เจอหน้าคนในภาพ มันจะโยน ValueError)
@@ -93,8 +94,11 @@ class VisionDaemon(threading.Thread):
                                 if not self.is_locked:
                                     logger.warning("Intruder detected! Locking system...")
                                     self.is_locked = True
+                                    overlay_script = os.path.join(BASE_DIR, "modules", "lockdown_overlay.py")
+                                    if not os.path.exists(overlay_script):
+                                        overlay_script = os.path.join(BASE_DIR, "lockdown_overlay.py")
                                     self.lockdown_proc = subprocess.Popen(
-                                        [sys.executable, r"c:\JARVIS\lockdown_overlay.py"],
+                                        [sys.executable, overlay_script],
                                         stdin=subprocess.PIPE
                                     )
                                     # ยิงแจ้งเตือน LINE

@@ -19,7 +19,7 @@ def execute(args):
     Creates a ZIP archive of the JARVIS source code.
     Excludes large folders like __pycache__, venv, node_modules, data, backups.
     """
-    base_dir = r"c:\JARVIS"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     backup_dir = os.path.join(base_dir, "backups")
     
     if not os.path.exists(backup_dir):

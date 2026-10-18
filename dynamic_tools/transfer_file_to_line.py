@@ -64,13 +64,14 @@ def transfer_file_to_line(args):
         return f"ไม่พบไฟล์ที่ชื่อ '{file_name}' ในระบบครับเจ้านาย"
         
     try:
-        load_dotenv(r"c:\JARVIS\.env")
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        load_dotenv(os.path.join(base_dir, ".env"))
         ngrok_url = os.getenv("NGROK_PUBLIC_URL", "").strip().rstrip('/')
         
         if not ngrok_url:
             return "ไม่สามารถส่งไฟล์ได้เนื่องจาก NGROK_PUBLIC_URL ไม่ได้ตั้งค่าไว้ครับ"
             
-        save_dir = r"c:\JARVIS\system_cache\temp_files"
+        save_dir = os.path.join(base_dir, "system_cache", "temp_files")
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
             

@@ -27,7 +27,7 @@ class Config:
         self.DB_PATH: str = os.path.join(self.SAFE_ZONE_PATH, "data", "jarvis_memory.db")
         self.STATUS_FILE: str = os.path.join(self.SAFE_ZONE_PATH, "data", "os_agent_status.json")
         self.LOG_FILE: str = os.path.join(self.SAFE_ZONE_PATH, "reports", "agent_core.log")
-        self.AUDIT_LOG_FILE: str = os.path.join(r"c:\JARVIS", "audit_payload.log")
+        self.AUDIT_LOG_FILE: str = os.path.join(self.SAFE_ZONE_PATH, "audit_payload.log")
         self.VISION_MODEL: str = "llama-3.2-90b-vision-preview"
 
 config = Config()

@@ -29,8 +29,9 @@ TOOL_SCHEMA = {
 
 def analyze_webcam(args):
     question = args.get("question", "อธิบายสิ่งที่คุณเห็นในภาพนี้เป็นภาษาไทย")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     try:
-        latest_frame_path = r"c:\JARVIS\data\latest_vision.jpg"
+        latest_frame_path = os.path.join(base_dir, "data", "latest_vision.jpg")
         if not os.path.exists(latest_frame_path):
             return "ไม่พบข้อมูลภาพจากระบบ Continuous Vision ครับเจ้านาย (กรุณาตรวจสอบว่า Vision Daemon ทำงานอยู่หรือไม่)"
             
@@ -55,11 +56,11 @@ def analyze_webcam(args):
         result_msg = response.choices[0].message.content.strip()
         
         # Prepare image for LINE Bot
-        load_dotenv(r"c:\JARVIS\.env")
+        load_dotenv(os.path.join(base_dir, ".env"))
         ngrok_url = os.getenv("NGROK_PUBLIC_URL", "").strip().rstrip('/')
         
         if ngrok_url:
-            save_dir = r"c:\JARVIS\system_cache\temp_images"
+            save_dir = os.path.join(base_dir, "system_cache", "temp_images")
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
             filename = f"webcam_{int(time.time())}.jpg"

@@ -1,7 +1,7 @@
 # 📋 Stark Industries // Tactical Infrared & Structural Scanner Hardware BOM
 **Project Codename:** `STARK-THERMAL-IR-NDT`  
-**Location:** [`c:\JARVIS\hardware\infrared_thermal_scanner_bom.md`](file:///c:/JARVIS/hardware/infrared_thermal_scanner_bom.md)  
-**Connected Subsystem:** [`modules/jarvis_thermal_scanner.py`](file:///c:/JARVIS/modules/jarvis_thermal_scanner.py)
+**Location:** `hardware/infrared_thermal_scanner_bom.md`  
+**Connected Subsystem:** [`modules/jarvis_thermal_scanner.py`](../modules/jarvis_thermal_scanner.py)
 
 ---
 

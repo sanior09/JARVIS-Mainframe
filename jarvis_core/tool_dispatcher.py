@@ -17,7 +17,7 @@ import threading
 from typing import Any, Dict, List, Optional
 
 import requests
-from jarvis_core.config import DYNAMIC_TOOLS_DIR, MODULES_DIR
+from jarvis_core.config import DYNAMIC_TOOLS_DIR, MODULES_DIR, BASE_DIR
 from jarvis_core.state import increment_metric
 from jarvis_core.automation_agent import get_computer_agent
 
@@ -271,7 +271,7 @@ def execute_tool_call(tool_call: dict, project_path: str = "", user_raw_message:
             try:
                 subprocess.Popen(
                     ["node", "launch.js"],
-                    cwd=r"c:\JARVIS\minecraft_bot",
+                    cwd=os.path.join(BASE_DIR, "minecraft_bot"),
                     creationflags=subprocess.CREATE_NEW_CONSOLE
                 )
                 return "🚀 เริ่มการทำงาน J.A.R.V.I.S. Companion แล้วครับ! กำลังสแกนหาห้อง LAN ใน Minecraft เพื่อเข้าเกมอัตโนมัติครับเจ้านาย"

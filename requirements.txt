@@ -1,40 +1,61 @@
+# ━━━ Core Web & System ━━━
 requests
 pyautogui
-duckduckgo-search
-chromadb
 psutil
 beautifulsoup4
 python-dotenv
 Flask
 flask-cors
+waitress
+pydantic
+Pillow
+pyperclip
+pynput
+pywin32; sys_platform == 'win32'
+WMI; sys_platform == 'win32'
+keyboard
+
+# ━━━ AI & LLM Orchestration ━━━
+groq
+google-generativeai
+langchain-core
 langgraph>=0.2.0
 langgraph-checkpoint-sqlite
-langchain-core
+chromadb
 aiosqlite
-tensorflow
-scikit-learn
+SQLAlchemy
+duckduckgo-search
+
+# ━━━ Audio, Voice & Media ━━━
+edge-tts
+pygame
+sounddevice
+aiohttp
+websockets
+deepgram-sdk
+
+# ━━━ Data Science & ML ━━━
 numpy
-google-generativeai
-wikipedia
-youtube-transcript-api
+scipy
+pandas
+scikit-learn
+matplotlib
+networkx
+APScheduler
+
+# ━━━ Document Processing & Utilities ━━━
 PyPDF2
 python-docx
 openpyxl
-pandas
+wikipedia
+youtube-transcript-api
+feedparser
+cryptography
 
-# Super AGI (Phase 1-7) Dependencies
-mediapipe
+# ━━━ Computer Vision & Desktop UI ━━━
 opencv-python
-aiohttp
-websockets
-scipy
-matplotlib
-networkx
-groq
-edge-tts
-APScheduler
-WMI
-keyboard
-SQLAlchemy
-redis>=5.0
+mediapipe
 PyQt6
+
+# ━━━ Messaging & Integration ━━━
+line-bot-sdk

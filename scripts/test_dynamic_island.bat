@@ -1,5 +1,5 @@
 @echo off
 title JARVIS Dynamic Island Test
-cd /d c:\JARVIS
-python scratch\test_dynamic_island.py
+cd /d "%~dp0.."
+python modules\dynamic_island.py
 pause

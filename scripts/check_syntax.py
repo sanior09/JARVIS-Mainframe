@@ -29,4 +29,5 @@ def check_syntax_in_dir(directory):
         print(f"Found {error_count} files with errors.")
 
 if __name__ == "__main__":
-    check_syntax_in_dir(r"c:\JARVIS")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    check_syntax_in_dir(base_dir)

@@ -1,7 +1,7 @@
 # 📋 Stark Industries // Tactical Laser Microphone Hardware BOM
 **Project Codename:** `STARK-RECON-LASER-MIC`  
-**Location:** [`c:\JARVIS\hardware\laser_microphone_bom.md`](file:///c:/JARVIS/hardware/laser_microphone_bom.md)  
-**Connected Subsystem:** [`modules/jarvis_recon_audio.py`](file:///c:/JARVIS/modules/jarvis_recon_audio.py)
+**Location:** `hardware/laser_microphone_bom.md`  
+**Connected Subsystem:** [`modules/jarvis_recon_audio.py`](../modules/jarvis_recon_audio.py)
 
 ---
 

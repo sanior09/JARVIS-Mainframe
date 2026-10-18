@@ -16,7 +16,7 @@ TOOL_SCHEMA = {
             "properties": {
                 "target_folder": {
                     "type": "string",
-                    "description": "(Optional) โฟลเดอร์วิดีโอที่ต้องการเปิดใช้งานคู่กับ CapCut เช่น 'C:\\Users\\sanio\\Videos\\JARVIS'"
+                    "description": "(Optional) โฟลเดอร์วิดีโอที่ต้องการเปิดใช้งานคู่กับ CapCut เช่น 'C:\\Users\\User\\Videos'"
                 }
             }
         }
