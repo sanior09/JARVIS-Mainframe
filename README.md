@@ -89,12 +89,15 @@ NGROK_PUBLIC_URL=https://your-domain.ngrok-free.app
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=xxxx xxxx xxxx xxxx
 
-# External APIs & Hardware
+# External APIs & User Identity
 OPENWEATHER_API_KEY=your_weather_key
 YOUTUBE_API_KEY=your_youtube_key
 DEEPGRAM_API_KEY=your_deepgram_key
+OWNER_NAME=Sir
 COMPUTER_CONTROL_MODE=background
 ```
+> 💡 **การปรับแต่งข้อมูลผู้ใช้งาน (Personalization):**  
+> สามารถกำหนดชื่อที่ต้องการให้ J.A.R.V.I.S. เรียกขานท่านได้ใน `.env` ที่ตัวแปร `OWNER_NAME` (เช่น `OWNER_NAME=เจ้านาย` หรือ `OWNER_NAME=Sir`)
 
 ### 4. เริ่มปฏิบัติการระบบ (System Execution)
 
@@ -186,7 +189,7 @@ npx expo start
 
 ### 🕵️ 8. Subconscious Engine & Cyber Security Guard
 - **Subconscious Brain (`modules/jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
-- **Uncensored Dark Mode Routing (`jarvis_core/ai_router.py`):** สลับสมองไปยัง Local Uncensored Model โดยอัตโนมัติเมื่องานเกี่ยวข้องกับการทดสอบความปลอดภัยทางไซเบอร์
+- **Uncensored Dark Mode (Autonomous Pentest Switching) (`jarvis_core/ai_router.py`):** แตกต่างจาก AI ทั่วไปที่มักถูกบล็อกด้วย Safety Guardrail เมื่อถามเรื่องความปลอดภัยไซเบอร์ — J.A.R.V.I.S. มีระบบตรวจจับคำสั่ง Ethical Hacking & Pentesting อัตโนมัติ เพื่อสลับสมองจาก Cloud ไปยัง **Local Uncensored Model (Qwen 27B Uncensored / Dolphin)** ประมวลผลแบบ Local ในเครื่อง 100% ไร้การเซ็นเซอร์ และรักษาความลับของระบบได้อย่างสมบูรณ์แบบ
 - **Cyber Inspector & Network Scanner (`modules/cyber_inspector.py`):** ตรวจจับอุปกรณ์บนเครือข่าย Wi-Fi/LAN สแกนพอร์ต และประเมินความปลอดภัยเบื้องต้น
 
 ---
