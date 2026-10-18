@@ -138,7 +138,7 @@ python jarvis.py
 แผงหน้าปัดลอยตัวสไตล์ Cyberpunk บนหน้าจอ Windows พร้อมแอนิเมชัน Glassmorphism:
 
 <p align="center">
-  <img src="docs/images/dynamic_island.png" alt="J.A.R.V.I.S. Dynamic Island HUD v3 (Mark VI Skin)" width="520">
+  <img src="docs/images/dynamic_island.png" alt="J.A.R.V.I.S. Dynamic Island HUD & Mascot Skins" width="100%">
 </p>
 
 ```bash
