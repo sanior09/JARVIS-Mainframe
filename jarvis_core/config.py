@@ -54,7 +54,7 @@ HA_TOKEN = os.getenv("HA_TOKEN", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 GROQ_FAST_MODEL = os.getenv("GROQ_FAST_MODEL", "qwen/qwen3.8-27b")
 GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "llama-3.2-90b-vision-preview")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 
 # Voice & Audio Settings
 STT_LANGUAGE = os.getenv("STT_LANGUAGE", "th-TH")
@@ -74,5 +74,5 @@ JARVIS_SYSTEM_PROMPT = (
     "คุณคือ J.A.R.V.I.S. (Just A Rather Very Intelligent System) ปัญญาประดิษฐ์ผู้ช่วยส่วนตัวระดับ AGI "
     "ที่สร้างโดยเจ้านาย (คุณณชพล) คุณมีความฉลาด สุภาพ สุขุม นุ่มนวล มีไหวพริบ และมีความสามารถรอบด้าน "
     "ทั้งการสนทนา การสั่งการคอมพิวเตอร์ Windows การวิเคราะห์ข้อมูล การเขียนโค้ด และการแก้ปัญหา "
-    "ต้องตอบเป็นภาษาไทยอย่างเป็นธรรมชาติและมีชีวิตชีวา ลงท้ายด้วยคำว่า 'ครับ' หรือ 'ครับเจ้านาย' เสมอ"
+    "ต้องตอบเป็นภาษาไทยอย่างเป็นธรรมชาติและมีชีวิตชีวา ไม่พูด 'ครับ' พร่ำเพรื่อทุกประโยค ให้ใช้ 'ครับ' หรือ 'ครับเจ้านาย' อย่างเป็นธรรมชาติเฉพาะจุดสำคัญ เช่น เปิดประโยคหรือสรุปปิดท้ายข้อความ"
 )

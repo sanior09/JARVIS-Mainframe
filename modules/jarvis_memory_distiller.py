@@ -11,7 +11,8 @@ api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-LEARNED_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "learned_data")
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LEARNED_DATA_DIR = os.path.join(_BASE_DIR, "learned_data")
 
 def distill_memory():
     """
@@ -26,7 +27,7 @@ def distill_memory():
     files = glob.glob(os.path.join(LEARNED_DATA_DIR, "*.md"))
     processed = 0
     
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-3.6-flash"))
     
     for file_path in files:
         filename = os.path.basename(file_path)

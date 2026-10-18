@@ -8,7 +8,8 @@ from jarvis_core.ai_router import call_groq_model
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [PREDICTIVE] %(message)s")
 load_dotenv(override=True)
 
-CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "learned_data", "predictive_cache")
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CACHE_DIR = os.path.join(_BASE_DIR, "learned_data", "predictive_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 class PredictiveEngine:

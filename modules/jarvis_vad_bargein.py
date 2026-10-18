@@ -46,11 +46,11 @@ class AudioInteractionManager:
     """
 
     def __init__(self, 
-                 confidence_threshold: float = 0.65,
-                 silence_duration: float = 0.7):
+                 confidence_threshold: float = 0.45,
+                 silence_duration: float = 0.5):
         """
-        :param confidence_threshold: ระดับความมั่นใจว่าเสียงที่เข้ามาคือเสียงพูด (0.0 ถึง 1.0)
-        :param silence_duration: ระยะเวลา(วินาที)ที่ต้องเงียบติดกัน ถึงจะถือว่า "พูดจบ" (default 0.7s สำหรับการสนทนาที่รวดเร็ว)
+        :param confidence_threshold: ระดับความมั่นใจว่าเสียงที่เข้ามาคือเสียงพูด (ลดเหลือ 0.45 เพื่อให้หูไวขึ้น)
+        :param silence_duration: ระยะเวลา(วินาที)ที่ต้องเงียบติดกัน ถึงจะถือว่า "พูดจบ" (ลดเหลือ 0.5s เพื่อให้ตอบโต้เร็วขึ้น)
         """
         global _global_vad_manager
         _global_vad_manager = self
@@ -72,6 +72,8 @@ class AudioInteractionManager:
         
         self._is_user_speaking = False
         self._last_speech_time = time.time()
+        self._speaking_started_at: float = 0.0  # Timestamp when JARVIS started speaking
+        self.barge_in_gate_delay: float = 1.2   # Seconds to ignore mic after TTS starts (speaker echo gate)
         
         self.on_speech_start: Optional[Callable[[], None]] = None
         self.on_speech_end: Optional[Callable[[], None]] = None
@@ -123,6 +125,10 @@ class AudioInteractionManager:
                 new_name = getattr(target, "name", str(target))
                 logging.info(f"[JARVIS VAD] State changed: {old_name} -> {new_name}")
                 self._current_state = target
+                # Track when JARVIS starts speaking for echo gate
+                target_val = getattr(target, "value", target)
+                if target_val == InteractionState.SPEAKING.value:
+                    self._speaking_started_at = time.time()
 
     def get_state(self) -> InteractionState:
         """ดึงสถานะปัจจุบันของระบบ"""
@@ -171,17 +177,23 @@ class AudioInteractionManager:
                 state_val = getattr(state, "value", state)
                 is_jarvis_speaking = (state_val == InteractionState.SPEAKING.value)
                 
-                # Higher threshold while speaking to mitigate speaker echo
-                effective_threshold = 0.75 if is_jarvis_speaking else self.confidence_threshold
+                # Higher threshold + gate delay while speaking to mitigate speaker echo/feedback
+                # For the first `barge_in_gate_delay` seconds after TTS starts, block barge-in entirely
+                time_since_speaking = current_time - self._speaking_started_at
+                in_echo_gate = is_jarvis_speaking and (time_since_speaking < self.barge_in_gate_delay)
+                effective_threshold = 0.92 if is_jarvis_speaking else self.confidence_threshold
                 
-                if speech_prob > effective_threshold:
+                if speech_prob > effective_threshold and not in_echo_gate:
                     self._last_speech_time = current_time
                     
-                    if not self._is_user_speaking:
+                    was_user_speaking = self._is_user_speaking
+                    if not was_user_speaking:
                         self._is_user_speaking = True
-                        
+                        self._current_speech_max_rms = 0.0
+                        self._current_speech_start = current_time
+
                         if is_jarvis_speaking:
-                            logging.warning("[JARVIS VAD] 🛑 BARGE-IN DETECTED! Stopping JARVIS playback immediately.")
+                            logging.warning(f"[JARVIS VAD] 🛑 BARGE-IN DETECTED! (prob={speech_prob:.2f}, t+{time_since_speaking:.2f}s) Stopping JARVIS playback immediately.")
                             self.set_state(InteractionState.LISTENING)
                             if self.on_barge_in:
                                 try:
@@ -195,10 +207,40 @@ class AudioInteractionManager:
                                     self.on_speech_start()
                                 except Exception as se:
                                     logging.error(f"[JARVIS VAD] Speech start callback error: {se}")
+
+                    # Track max energy for tone analysis
+                    rms_current = np.sqrt(np.mean(audio_np ** 2)) if 'audio_np' in locals() else 0.0
+                    if rms_current > getattr(self, '_current_speech_max_rms', 0.0):
+                        self._current_speech_max_rms = rms_current
                 else:
                     if self._is_user_speaking:
                         if (current_time - self._last_speech_time) > self.silence_duration:
                             self._is_user_speaking = False
+                            
+                            # --- AUDIO TONE ANALYSIS ---
+                            try:
+                                speech_duration = current_time - getattr(self, '_current_speech_start', current_time) - self.silence_duration
+                                max_rms = getattr(self, '_current_speech_max_rms', 0.0)
+                                relative_loudness = max_rms / max(1.0, self._noise_floor)
+                                
+                                tone = "neutral"
+                                # Brief utterances (< 1.5s) like wake words ("จาร์วิส", "ครับ") or short commands should not trigger 'stressed'
+                                if speech_duration < 1.5:
+                                    tone = "neutral"
+                                elif relative_loudness > 6.0 and 1.5 <= speech_duration < 3.0:
+                                    tone = "stressed"  # Genuine loud urgency
+                                elif relative_loudness < 2.0 and speech_duration > 3.0:
+                                    tone = "relaxed"   # Soft and elongated
+                                elif relative_loudness > 3.5 and speech_duration >= 2.5:
+                                    tone = "focused"   # Loud and steady (explaining intensely)
+                                    
+                                if tone != "neutral":
+                                    from jarvis_mood import update_mood_from_audio
+                                    update_mood_from_audio(tone)
+                            except Exception as te:
+                                logging.debug(f"[JARVIS VAD] Tone analysis error: {te}")
+                            # ---------------------------
+                            
                             logging.info(f"[JARVIS VAD] Speech Ended (Silence duration: {self.silence_duration}s).")
                             if self.on_speech_end:
                                 try:

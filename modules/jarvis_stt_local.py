@@ -38,7 +38,7 @@ class HybridSTTEngine:
     local_compute_type: str = "int8"
 
     # Targeted domain vocabulary prompt for Thai speech (Keywords only to prevent Whisper prompt continuation hallucination)
-    VOCABULARY_PROMPT: str = "จาร์วิส, Jarvis, AI, ระบบผู้ช่วย"
+    VOCABULARY_PROMPT: str = "จาร์วิส, Jarvis, AI, ระบบผู้ช่วย, เซิร์ฟเวอร์, โค้ด, บอร์ด, อะคริลิค, รีเลย์, Python, พลังงาน, วิเคราะห์, หน้าจอ"
 
     def __new__(cls) -> HybridSTTEngine:
         if cls._instance is None:
@@ -120,6 +120,12 @@ class HybridSTTEngine:
             "เช็คสตาร์ดักคอม": "เช็คสถานะคอม",
             "เช็กสถานะ": "เช็คสถานะ",
             "เชคสถานะ": "เช็คสถานะ",
+            "ไฟดับ": "ปิดไฟ",
+            "เป็ดไฟ": "เปิดไฟ",
+            "เซิฟเวอ": "เซิร์ฟเวอร์",
+            "เซิพเวอ": "เซิร์ฟเวอร์",
+            "พายธอน": "Python",
+            "อคริลิค": "อะคริลิค",
         }
         corrected_text = text
         for wrong, right in typo_map.items():
@@ -150,7 +156,8 @@ class HybridSTTEngine:
             "ซับไทยโดย", "แปลโดย", "กดไลค์", "กดแชร์", "กดติดตาม", "subscribe",
             "ขอบคุณสำหรับการรับชม", "ขอบคุณที่รับชม", "สำหรับวันนี้ขอลาไปก่อน",
             "พบกันใหม่คลิปหน้า", "พบกันใหม่", "amaraorg", "subtitles", "สนับสนุนช่อง",
-            "สั่งงานทั่วไปและถามตอบ", "บทสนทนาภาษาไทย", "กับผู้ช่วยจาร์วิสสั่งงาน"
+            "สั่งงานทั่วไปและถามตอบ", "บทสนทนาภาษาไทย", "กับผู้ช่วยจาร์วิสสั่งงาน",
+            "รับชมคลิป", "วีดีโอนี้", "ช่องยูทูป", "youtube", "บรรยายไทย"
         ]
         for b in boilerplate_substrings:
             if b in norm:
@@ -158,7 +165,8 @@ class HybridSTTEngine:
 
         # Isolated single-token hallucinations on low audio / mic noise
         isolated_tokens = [
-            "ที่ผม", "พิสดิ์", "ขอบคุณครับ", "ขอบคุณค่ะ"
+            "ที่ผม", "พิสดิ์", "ขอบคุณครับ", "ขอบคุณค่ะ", "อืม", "อือ", "อ้า", 
+            "สวัสดี", "สวัสดีครับ", "สวัสดีค่ะ", "โอเค", "อ่า", "ฮัลโหล"
         ]
         if norm in isolated_tokens:
             return True

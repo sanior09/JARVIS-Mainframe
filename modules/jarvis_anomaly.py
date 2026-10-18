@@ -87,7 +87,7 @@ def check_anomaly() -> str:
             alert_msg = f"🚨 [ANOMALY DETECTED]: CPU: {cpu}% | RAM: {ram}%. พฤติกรรมระบบผิดปกติจากค่าเฉลี่ยที่เรียนรู้ไว้!"
             
             try:
-                base_dir = os.path.dirname(os.path.abspath(__file__))
+                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 load_dotenv(os.path.join(base_dir, ".env"))
                 line_token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
                 line_user_id = os.getenv("LINE_USER_ID")

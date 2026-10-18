@@ -42,15 +42,16 @@ def sync_ip(port: int = 5050) -> bool:
     with open(APP_JS_PATH, "r", encoding="utf-8") as f:
         content = f.read()
 
-    pattern = r"const\s+JARVIS_HOST\s*=\s*['\"][^'\"]+['\"];"
+    pattern = r"const\s+(DEFAULT_LOCAL_HOST|JARVIS_HOST)\s*=\s*['\"][^'\"]+['\"];"
     match = re.search(pattern, content)
 
     if not match:
-        print("[!] Could not locate 'const JARVIS_HOST' in App.js.")
+        print("[!] Could not locate 'const DEFAULT_LOCAL_HOST' or 'const JARVIS_HOST' in App.js.")
         return False
 
+    var_name = match.group(1)
     old_decl = match.group(0)
-    new_decl = f"const JARVIS_HOST = '{target_host}';"
+    new_decl = f"const {var_name} = '{target_host}';"
 
     if old_decl == new_decl:
         print(f"[*] Mobile IP is up to date: {target_host}")
@@ -60,7 +61,7 @@ def sync_ip(port: int = 5050) -> bool:
     with open(APP_JS_PATH, "w", encoding="utf-8") as f:
         f.write(updated_content)
 
-    print(f"[✓] JARVIS Mobile Host synchronized to: {target_host}")
+    print(f"[OK] JARVIS Mobile Host synchronized to: {target_host}")
     return True
 
 

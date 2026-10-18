@@ -31,8 +31,7 @@ TOOL_SCHEMA = {
                     "enum": ["all", "social", "entertainment", "news"],
                     "description": "หมวดหมู่ที่ต้องการ: all (ทั้งหมด), social (ไวรัลโซเชียล), entertainment (บันเทิงดารา), news (ข่าวเด่น)"
                 }
-            },
-            "required": []
+            }
         }
     }
 }

@@ -10,8 +10,7 @@ TOOL_SCHEMA = {
         "description": "Perform an active network sweep using the Enterprise Cyber Inspector module to find active IoT/computing devices and check for known vulnerabilities (CVEs).",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

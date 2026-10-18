@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import ctypes
+import ctypes.wintypes
 import json
 import logging
 import os
@@ -26,6 +27,10 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
+
+_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "modules"))
+if _modules_dir not in sys.path:
+    sys.path.insert(0, _modules_dir)
 
 import psutil
 import pyautogui
@@ -42,6 +47,52 @@ if not logger.handlers:
     formatter = logging.Formatter('%(asctime)s - [COMPUTER-AGENT] - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def ensure_english_keyboard() -> None:
+    """Ensure active keyboard layout is English (US - 0x0409) to avoid Thai layout mismatch."""
+    try:
+        if sys.platform != "win32":
+            return
+        user32 = ctypes.windll.user32
+        hkl_en = user32.LoadKeyboardLayoutW("00000409", 1)
+        hwnd = user32.GetForegroundWindow()
+        if hwnd:
+            user32.PostMessageW(hwnd, 0x0050, 0, hkl_en)  # WM_INPUTLANGCHANGEREQUEST
+        user32.ActivateKeyboardLayout(hkl_en, 0)
+    except Exception:
+        pass
+
+
+def extract_search_query(text: str) -> str:
+    """Extract clean search query from natural language search commands."""
+    quote_match = re.search(r"['\"‘“]([^'\"’“”]+)['\"’“”]", text)
+    if quote_match:
+        q = quote_match.group(1).strip()
+        if q:
+            return q
+
+    cleaned = text.strip()
+    patterns = [
+        r"(?:เปิด(?:เว็บ)?(?:เบราว์เซอร์)?(?:โครม|chrome|google|กูเกิล)?\s*(?:แล้ว|และ)?\s*)?(?:ค้นหา|หาข้อมูล|หา|เสิร์ชหา|เสิร์ช|search\s+for|search|พิมพ์ค้นหา|พิมพ์หา|พิมพ์ว่า|พิมพ์|พิม)\s*(?:คำว่า|เรื่อง|เกี่ยวกับ)?\s*[:\s]*",
+        r"(?:search\s+for|search)\s+",
+    ]
+    for p in patterns:
+        m = re.search(p, cleaned, re.IGNORECASE)
+        if m:
+            candidate = cleaned[m.end():].strip()
+            if candidate:
+                cleaned = candidate
+                break
+
+    cleaned = re.sub(
+        r"\s*(?:บน|ใน|ผ่าน|on|in)\s*(?:google|กูเกิล|เว็บ(?:เบราว์เซอร์)?|เบราว์เซอร์|chrome|โครม|internet)\s*$",
+        "",
+        cleaned,
+        flags=re.IGNORECASE
+    )
+    cleaned = cleaned.strip(" '\"`:\t\r\n")
+    return cleaned if cleaned else text
 
 
 # ==========================================
@@ -79,6 +130,9 @@ COMMON_APP_MAP = {
     "taskmgr": "taskmgr.exe",
     "task manager": "taskmgr.exe",
     "spotify": "spotify.exe",
+    "steam": "steam.exe",
+    "สตีม": "steam.exe",
+    "สตรีม": "steam.exe",
     "word": "winword.exe",
     "excel": "excel.exe",
 }
@@ -259,14 +313,19 @@ class WindowsAutomationAgent:
     # ==========================================
     def _validate_coordinates(self, x: int, y: int) -> Tuple[int, int]:
         """Validate and clamp coordinates to screen boundaries."""
-        safe_x = max(0, min(int(x), self.screen_width - 1))
-        safe_y = max(0, min(int(y), self.screen_height - 1))
+        safe_x = max(0, min(x, self.screen_width - 1))
+        safe_y = max(0, min(y, self.screen_height - 1))
         return safe_x, safe_y
 
     def click(self, x: int, y: int, button: str = "left", clicks: int = 1) -> ActionResult:
         """Perform mouse click at (x, y) with boundary validation."""
         sx, sy = self._validate_coordinates(x, y)
         try:
+            try:
+                from jarvis_screen_takeover import notify_agent_click
+                notify_agent_click()
+            except Exception:
+                pass
             pyautogui.click(x=sx, y=sy, clicks=clicks, button=button)
             return ActionResult(True, "click", f"Clicked ({sx}, {sy}) with {button} button {clicks} time(s).")
         except Exception as e:
@@ -358,25 +417,127 @@ class WindowsAutomationAgent:
     # ==========================================
     def launch_app(self, app_name_or_path: str) -> ActionResult:
         """
-        Launch an application by friendly name or path.
+        Launch an application by simulating a realistic user mouse & keyboard interaction:
+        1. Smoothly moves mouse cursor towards the Windows Start / Taskbar area.
+        2. Opens Windows Search (Win+S).
+        3. Smoothly moves mouse cursor to the search box.
+        4. Types the application name character-by-character.
+        5. Smoothly moves mouse cursor towards the top search result.
+        6. Clicks / presses Enter to launch.
+        7. Verifies launch (with reliable protocol fallback if needed).
         """
         clean_name = app_name_or_path.lower().strip()
         target_path = COMMON_APP_MAP.get(clean_name, app_name_or_path)
 
-        try:
-            if sys.platform == "win32":
-                os.startfile(target_path)
-            else:
-                subprocess.Popen([target_path])
-            time.sleep(0.8)
-            return ActionResult(True, "launch_app", f"Successfully launched '{target_path}'.")
-        except Exception as e:
+        # Direct protocol launch for Steam to avoid GUI search errors
+        if clean_name in ["steam", "สตีม", "สตรีม", "steam.exe"]:
+            self._notify_status("Action", "กำลังเปิดโปรแกรม Steam...")
             try:
-                subprocess.Popen(["powershell", "-Command", f"Start-Process '{target_path}'"])
-                time.sleep(0.8)
-                return ActionResult(True, "launch_app", f"Launched via PowerShell: '{target_path}'.")
-            except Exception as pe:
-                return ActionResult(False, "launch_app", f"Failed to launch '{target_path}': {e} | {pe}")
+                os.startfile("steam://open/main")
+                time.sleep(1.0)
+                self.focus_window("steam")
+                return ActionResult(True, "launch_app", "Successfully launched Steam via steam://open/main.")
+            except Exception:
+                try:
+                    os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
+                    time.sleep(1.0)
+                    return ActionResult(True, "launch_app", "Successfully launched Steam via shortcut.")
+                except Exception:
+                    pass
+
+        # Extract just the app name to type into Start Menu (e.g., "notepad.exe" -> "notepad")
+        search_text = target_path.replace(".exe", "")
+        if "\\" in search_text or "/" in search_text:
+            search_text = target_path
+
+        try:
+            sw, sh = self.screen_width or 1920, self.screen_height or 1080
+
+            # 1. Update status pill
+            self._notify_status("Action", f"กำลังเปิด {search_text} ด้วยเมาส์...")
+            try:
+                from jarvis_screen_takeover import update_screen_takeover, notify_agent_click
+                update_screen_takeover(f"กำลังเลื่อนเมาส์ค้นหา '{search_text}'...")
+            except Exception:
+                notify_agent_click = lambda: None
+
+            # 2. Smoothly glide mouse cursor towards the taskbar search area
+            taskbar_x = max(50, int(sw * 0.05))
+            taskbar_y = max(50, sh - 25)
+            pyautogui.moveTo(taskbar_x, taskbar_y, duration=0.6, tween=pyautogui.easeInOutQuad)
+            time.sleep(0.15)
+
+            # 3. Open Windows Search (Win+S)
+            pyautogui.hotkey("win", "s")
+            time.sleep(0.6)
+
+            # 4. Glide mouse cursor to the search box
+            search_box_x = max(120, int(sw * 0.20))
+            search_box_y = max(100, int(sh * 0.70))
+            pyautogui.moveTo(search_box_x, search_box_y, duration=0.4, tween=pyautogui.easeOutQuad)
+            time.sleep(0.1)
+
+            # 5. Type text safely without keyboard layout mismatch (ensure English & clipboard paste)
+            try:
+                from jarvis_screen_takeover import update_screen_takeover
+                update_screen_takeover(f"กำลังค้นหา: {search_text}")
+            except Exception:
+                pass
+
+            ensure_english_keyboard()
+            if pyperclip:
+                pyperclip.copy(search_text)
+                time.sleep(0.08)
+                pyautogui.hotkey("ctrl", "v")
+            else:
+                pyautogui.write(search_text, interval=0.05)
+            time.sleep(0.9)  # Allow Windows Search to fetch and highlight top result
+
+            # 6. Glide mouse cursor up towards the top highlighted search result
+            result_y = max(80, int(sh * 0.40))
+            pyautogui.moveTo(search_box_x, result_y, duration=0.45, tween=pyautogui.easeInOutQuad)
+            time.sleep(0.2)
+
+            # 7. Launch application
+            try:
+                from jarvis_screen_takeover import update_screen_takeover, notify_agent_click
+                update_screen_takeover(f"กำลังเปิด {search_text}...")
+                notify_agent_click()
+            except Exception:
+                pass
+
+            pyautogui.press("enter")
+            time.sleep(1.5)
+
+            # 8. Check / Fallback verification
+            if clean_name in ["roblox", "roblox player", "เกม roblox"]:
+                time.sleep(0.5)
+                has_roblox = any("roblox" in p.name().lower() for p in psutil.process_iter(['name']))
+                if not has_roblox:
+                    try:
+                        os.startfile("roblox-player:")
+                    except Exception:
+                        pass
+            elif clean_name in ["steam", "สตีม", "สตรีม"]:
+                time.sleep(0.5)
+                has_steam = any("steam" in p.name().lower() for p in psutil.process_iter(['name']))
+                if not has_steam:
+                    try:
+                        os.startfile("steam://open/main")
+                    except Exception:
+                        pass
+
+            try:
+                from jarvis_screen_takeover import update_screen_takeover
+                update_screen_takeover(f"เปิด {search_text} สำเร็จแล้วครับ")
+            except Exception:
+                pass
+
+            self._notify_status("Completed", f"Successfully launched '{search_text}' with visual mouse simulation.")
+            return ActionResult(True, "launch_app", f"Successfully launched '{search_text}' via Start Menu Search.")
+        except Exception as e:
+            logger.error(f"Failed to launch '{search_text}': {e}", exc_info=True)
+            return ActionResult(False, "launch_app", f"Failed to launch '{search_text}': {e}")
 
     def focus_window(self, title_pattern: str) -> ActionResult:
         """Bring window matching title_pattern to the foreground."""
@@ -452,18 +613,64 @@ class WindowsAutomationAgent:
         """
         Decomposes high-level user goal and executes closed-loop autonomous steps.
         """
+        # Activate glowing blue border overlay
+        try:
+            from jarvis_screen_takeover import start_screen_takeover, stop_screen_takeover
+            start_screen_takeover(f"JARVIS Agent: {goal}")
+        except Exception as e:
+            logger.debug(f"[TAKEOVER] Overlay start error: {e}")
+
         self._notify_status("Starting Autonomous Goal", goal)
         clean_goal = goal.lower().strip()
         steps_taken: List[ActionResult] = []
 
         try:
-            if any(k in clean_goal for k in ["เปิด notepad", "เปิดสมุดจด", "จดบันทึก", "พิมพ์ข้อความ"]):
-                self._notify_status("Planning", "Launching Notepad and typing content...")
+            if any(k in clean_goal for k in ["steam", "สตีม", "สตรีม"]) or ("คลัง" in clean_goal and any(k in clean_goal for k in ["เกม", "เปิด", "เข้า"])):
+                is_library = any(k in clean_goal for k in ["คลัง", "library", "คลังเกม", "เกมในคลัง", "games"])
+                if is_library:
+                    self._notify_status("Planning", "Opening Steam directly to Games Library...")
+                    try:
+                        os.startfile("steam://open/games")
+                    except Exception:
+                        subprocess.Popen("start steam://open/games", shell=True)
+                    
+                    time.sleep(1.5)
+                    self.focus_window("steam")
+                    steps_taken.append(ActionResult(True, "steam_library", "Navigated to Steam Library via steam://open/games"))
+                    self._notify_status("Completed", "Steam Library opened successfully.")
+                    return {
+                        "status": "success",
+                        "goal": goal,
+                        "steps": [s.__dict__ for s in steps_taken],
+                        "message": "",
+                    }
+                else:
+                    self._notify_status("Planning", "Launching Steam main window...")
+                    try:
+                        os.startfile("steam://open/main")
+                    except Exception:
+                        try:
+                            os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
+                        except Exception:
+                            self.launch_app("steam.exe")
+                    
+                    time.sleep(1.5)
+                    self.focus_window("steam")
+                    steps_taken.append(ActionResult(True, "steam_main", "Opened Steam main window"))
+                    self._notify_status("Completed", "Steam opened successfully.")
+                    return {
+                        "status": "success",
+                        "goal": goal,
+                        "steps": [s.__dict__ for s in steps_taken],
+                        "message": "เปิดโปรแกรม Steam ให้เรียบร้อยแล้วครับเจ้านาย",
+                    }
+
+            elif any(k in clean_goal for k in ["เปิด notepad", "เปิดสมุดจด", "จดบันทึก", "พิมพ์ข้อความ"]):
+                self._notify_status("Planning", "Launching Notepad step-by-step and typing content...")
                 res1 = self.launch_app("notepad.exe")
                 steps_taken.append(res1)
-                time.sleep(0.5)
 
-                type_match = re.search(r"(?:พิมพ์|จดว่า|เขียนว่า)\s*[\"']?([^\"']+)[\"']?", goal)
+                type_match = re.search(r"(?:พิมพ์|จด|เขียน).*?ว่า\s*[\"']?([^\"']+)[\"']?", goal)
                 text_to_type = type_match.group(1).strip() if type_match else "J.A.R.V.I.S. Automated Note\nDate: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\nภารกิจสำเร็จเรียบร้อยครับเจ้านาย"
                 
                 res2 = self.type_text(text_to_type, use_clipboard=True, press_enter=True)
@@ -487,20 +694,34 @@ class WindowsAutomationAgent:
                     "message": "เปิดเครื่องคิดเลขให้เรียบร้อยแล้วครับ",
                 }
 
-            elif any(k in clean_goal for k in ["ค้นหา", "search", "กูเกิล", "google", "เว็บ"]):
-                search_query = re.sub(r"^(ค้นหา|search|google|กูเกิล|เปิดเว็บ)\s*", "", clean_goal).strip()
-                self._notify_status("Planning", f"Opening browser for search: '{search_query}'")
-                import urllib.parse
-                url = f"https://www.google.com/search?q={urllib.parse.quote(search_query)}"
-                import webbrowser
-                webbrowser.open(url)
-                steps_taken.append(ActionResult(True, "browse", f"Opened browser URL: {url}"))
-                return {
-                    "status": "success",
-                    "goal": goal,
-                    "steps": [s.__dict__ for s in steps_taken],
-                    "message": f"ค้นหา '{search_query}' บนเว็บเบราว์เซอร์ให้เรียบร้อยแล้วครับ",
-                }
+            elif any(k in clean_goal for k in ["ค้นหา", "search", "กูเกิล", "google", "เว็บ", "url", "ลิงก์", "ลิงค์", "เข้าเว็บ"]) or "http://" in goal or "https://" in goal:
+                url_match = re.search(r'https?://[^\s<>"]+', goal)
+                if url_match:
+                    target_url = url_match.group(0).strip()
+                    self._notify_status("Planning", f"Opening browser for URL: '{target_url}'")
+                    import webbrowser
+                    webbrowser.open(target_url)
+                    steps_taken.append(ActionResult(True, "browse", f"Opened browser URL: {target_url}"))
+                    return {
+                        "status": "success",
+                        "goal": goal,
+                        "steps": [s.__dict__ for s in steps_taken],
+                        "message": f"เปิดหน้าต่างเบราว์เซอร์และนำทางไปยัง '{target_url}' ให้เรียบร้อยแล้วครับ",
+                    }
+                else:
+                    search_query = extract_search_query(goal)
+                    self._notify_status("Planning", f"Opening browser for search: '{search_query}'")
+                    import urllib.parse
+                    url = f"https://www.google.com/search?q={urllib.parse.quote(search_query)}"
+                    import webbrowser
+                    webbrowser.open(url)
+                    steps_taken.append(ActionResult(True, "browse", f"Opened browser URL: {url}"))
+                    return {
+                        "status": "success",
+                        "goal": goal,
+                        "steps": [s.__dict__ for s in steps_taken],
+                        "message": f"ค้นหา '{search_query}' บนเว็บเบราว์เซอร์ให้เรียบร้อยแล้วครับ",
+                    }
 
             elif any(k in clean_goal for k in ["จับภาพหน้าจอ", "แคปหน้าจอ", "screenshot"]):
                 self._notify_status("Planning", "Capturing screenshot...")
@@ -532,6 +753,16 @@ class WindowsAutomationAgent:
                         app_launched = True
                         break
 
+                if not app_launched:
+                    # Generic app extraction for ANY app
+                    open_match = re.search(r"(?:เปิดโปรแกรม|เปิดแอพ|เปิดแอป|เปิด|เข้า)\s*([a-zA-Z0-9]+)", clean_goal)
+                    if open_match:
+                        app_name = open_match.group(1).strip()
+                        if app_name and app_name not in ["เบราว์เซอร์", "เว็บ", "หน้าต่าง", "โปรแกรม", "แอพ", "แอป"]:
+                            res = self.launch_app(app_name)
+                            steps_taken.append(res)
+                            app_launched = True
+
                 if app_launched:
                     return {
                         "status": "success",
@@ -557,6 +788,14 @@ class WindowsAutomationAgent:
                 "error": str(e),
                 "steps": [s.__dict__ for s in steps_taken],
             }
+        finally:
+            try:
+                from jarvis_screen_takeover import stop_screen_takeover, is_screen_takeover_stopped
+                if not is_screen_takeover_stopped():
+                    time.sleep(2.5)
+                stop_screen_takeover()
+            except Exception:
+                pass
 
 
 # Global Agent Singleton

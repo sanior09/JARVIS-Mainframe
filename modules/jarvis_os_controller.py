@@ -48,7 +48,7 @@ class JarvisOSController:
     telemetry checks, command execution, and GUI automation with guardrails.
     """
 
-    def __init__(self, max_cpu: float = 90.0, max_ram: float = 90.0):
+    def __init__(self, max_cpu: float = 100.0, max_ram: float = 100.0):
         self.max_cpu = max_cpu
         self.max_ram = max_ram
         # PyAutoGUI safety features

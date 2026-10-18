@@ -1289,6 +1289,24 @@ async function sendMessage(message = null, imageData = null) {
             body: JSON.stringify({ message: text, image: finalImage })
         });
 
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            clearImageSelection();
+            const inputEl = document.getElementById('user-input');
+            if (inputEl) inputEl.value = '';
+            neuralCore.classList.remove('thinking');
+            isThinking = false;
+            
+            const data = await response.json();
+            if (data.response) {
+                enqueueTtsChunk(data.response, textSpan);
+                statusBar.innerText = 'SYSTEM READY';
+                if (data.standby === true) document.body.classList.add('standby-mode');
+                else if (data.standby === false) document.body.classList.remove('standby-mode');
+            }
+            return;
+        }
+
         clearImageSelection();
         const inputEl = document.getElementById('user-input');
         if (inputEl) inputEl.value = '';
@@ -2768,47 +2786,10 @@ function startTelemetryPolling() {
                     statusBar.innerText = `${tacticalStr} CPU: ${data.cpu}% | RAM: ${data.ram}% | SYS RISK: ${data.risk_percent}% ${hrAlert}`;
                 }
 
-                // [Cognitive Thought Stream HUD Integration]
-                const hasStatus = data.os_agent_status && data.os_agent_status !== "";
-                const hasThought = data.os_agent_thought && data.os_agent_thought !== "";
-                if (hasStatus || hasThought) {
-                    let agentHud = document.getElementById('agent-status-hud');
-                    if (!agentHud) {
-                        agentHud = document.createElement('div');
-                        agentHud.id = 'agent-status-hud';
-                        agentHud.style.position = 'fixed';
-                        agentHud.style.bottom = '80px';
-                        agentHud.style.right = '30px';
-                        agentHud.style.width = '340px';
-                        agentHud.style.padding = '15px';
-                        agentHud.style.background = 'rgba(0, 102, 255, 0.15)';
-                        agentHud.style.border = '1px solid rgba(0, 229, 255, 0.6)';
-                        agentHud.style.borderLeft = '3px solid #00e5ff';
-                        agentHud.style.borderRadius = '2px';
-                        agentHud.style.color = '#00e5ff';
-                        agentHud.style.fontFamily = "'Orbitron', sans-serif";
-                        agentHud.style.fontSize = '11px';
-                        agentHud.style.boxShadow = '0 0 20px rgba(0, 102, 255, 0.3), inset 0 0 10px rgba(0, 229, 255, 0.1)';
-                        agentHud.style.zIndex = '9999';
-                        agentHud.style.backdropFilter = 'blur(8px)';
-                        agentHud.style.pointerEvents = 'none';
-                        agentHud.style.transition = 'opacity 0.5s ease-in-out';
-                        document.body.appendChild(agentHud);
-                    }
-                    agentHud.style.opacity = '1';
-                    let hudContent = `<div style="color:#ffffff; margin-bottom:8px; font-weight:bold; letter-spacing:2px; font-size:10px;">[COGNITIVE THOUGHT STREAM]</div>`;
-                    if (hasThought) {
-                        hudContent += `<div style="color:#ff9800; font-size:10px; margin-bottom:6px; line-height:1.4;">🧠 Thinking: ${data.os_agent_thought}</div>`;
-                    }
-                    if (hasStatus) {
-                        hudContent += `<div style="color:#00e5ff; font-size:11px;"><span style="color:#00e5ff;">▶</span> Status: ${data.os_agent_status}<span style="animation: blink 1s infinite;">_</span></div>`;
-                    }
-                    agentHud.innerHTML = hudContent;
-                } else {
-                    const agentHud = document.getElementById('agent-status-hud');
-                    if (agentHud) {
-                        agentHud.style.opacity = '0';
-                    }
+                // [Cognitive Thought Stream HUD Integration] - Removed by user request
+                const agentHud = document.getElementById('agent-status-hud');
+                if (agentHud) {
+                    agentHud.remove();
                 }
 
                 if (data.risk_percent > 70 && (Date.now() - lastTelemetryAlertTime > 300000)) {

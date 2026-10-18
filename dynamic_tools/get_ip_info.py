@@ -5,7 +5,19 @@ Created: 2026-09-14 09:11:41.321410
 
 import socket, json, urllib.request
 
-def get_ip_info(params: dict) -> dict:
+TOOL_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "get_ip_info",
+        "description": "ดึงข้อมูล IP ภายใน (Local LAN IP) และ IP สาธารณะ (Public IP) ของระบบ JARVIS",
+        "parameters": {
+            "type": "object",
+            "properties": {}
+        }
+    }
+}
+
+def get_ip_info(params=None) -> dict:
     # Get local IP
     try:
         hostname = socket.gethostname()

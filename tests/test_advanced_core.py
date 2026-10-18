@@ -1,9 +1,14 @@
 import asyncio
 import logging
+import pytest
 from advanced_subsystem_core import JarvisAdvancedSubsystemFacade
 from advanced_subsystem_core.domain.models import HardwareTelemetry
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+
+@pytest.fixture
+def facade():
+    return JarvisAdvancedSubsystemFacade()
 
 async def mock_telemetry_provider() -> HardwareTelemetry:
     """Mocks hardware telemetry indicating a gradual overload."""

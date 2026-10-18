@@ -14,25 +14,44 @@ print("กำลังค้นหาไมโครโฟนทั้งหม�
 
 mics = sr.Microphone.list_microphone_names()
 valid_mics = []
+seen_names = set()
+
+import pyaudio
+p = pyaudio.PyAudio()
 
 for i, name in enumerate(mics):
     # กรองพวก Virtual Audio ออกบางส่วนเพื่อให้ดูง่ายขึ้น
     if "Voicemeeter" not in name and "CABLE" not in name and "Steam Streaming" not in name:
-        valid_mics.append((i, name))
-        print(f"[{i}] {name}")
+        try:
+            dev_info = p.get_device_info_by_index(i)
+            # เช็คว่าเป็น input device จริงๆ (มีช่องรับเสียง) ไม่ใช่ลำโพง
+            if dev_info.get('maxInputChannels', 0) > 0:
+                clean_name = name.strip()
+                # Windows API มักจะตัดชื่อไมค์เหลือ 31 ตัวอักษร ทำให้เกิดชื่อซ้ำ เราจึงเช็คแค่ 25 ตัวแรก
+                base_name = clean_name[:25].lower()
+                if base_name not in seen_names:
+                    seen_names.add(base_name)
+                    display_idx = len(valid_mics)
+                    valid_mics.append((i, clean_name))
+                    print(f"[{display_idx}] {clean_name}")
+        except Exception:
+            pass
 
-print("\n(หมายเหตุ: ซ่อนไมค์จำลอง Voicemeeter และ Steam Streaming เพื่อให้เลือกง่ายขึ้น)")
+p.terminate()
+
+print("\n(หมายเหตุ: กรองอุปกรณ์ Output (ลำโพง) และซ่อนไมค์ที่ชื่อซ้ำกัน เพื่อให้เลือกง่ายขึ้น)")
 print("=" * 60)
 
 try:
-    choice = input("👉 โปรดพิมพ์ตัวเลขหน้าไมโครโฟนที่คุณต้องการใช้ (เช่น 12 หรือ 42) แล้วกด Enter: ")
-    idx = int(choice.strip())
+    choice = input("👉 โปรดพิมพ์ตัวเลขหน้าไมโครโฟนที่คุณต้องการใช้ (เช่น 0, 1 หรือ 2) แล้วกด Enter: ")
+    display_idx = int(choice.strip())
     
-    if idx < 0 or idx >= len(mics):
+    if display_idx < 0 or display_idx >= len(valid_mics):
         print("\n❌ ตัวเลขไม่ถูกต้อง! โปรดรันสคริปต์นี้ใหม่")
         sys.exit(1)
         
-    print(f"\n✅ คุณเลือก: [{idx}] {mics[idx]}")
+    idx, selected_name = valid_mics[display_idx]
+    print(f"\n✅ คุณเลือก: [{display_idx}] {selected_name}")
     
     # อัปเดตไฟล์ .env
     env_path = os.path.join(os.path.dirname(__file__), ".env")

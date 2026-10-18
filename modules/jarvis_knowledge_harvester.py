@@ -12,7 +12,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-LEARNED_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "learned_data")
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LEARNED_DATA_DIR = os.path.join(_BASE_DIR, "learned_data")
 
 def save_to_learned_data(title: str, content: str):
     """

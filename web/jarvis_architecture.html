@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.R.V.I.S. System Architecture | Archify Interactive Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #070b14;
+      --bg-panel: rgba(13, 20, 36, 0.9);
+      --bg-card: rgba(17, 26, 48, 0.82);
+      --bg-card-hover: rgba(28, 43, 77, 0.98);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(0, 229, 255, 0.45);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-cyan: #00e5ff;
+      --accent-blue: #38bdf8;
+      --accent-purple: #c084fc;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --grid-dot: rgba(255, 255, 255, 0.06);
+      --font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-canvas: #f8fafc;
+      --bg-panel: rgba(255, 255, 255, 0.95);
+      --bg-card: rgba(241, 245, 249, 0.92);
+      --bg-card-hover: rgba(226, 232, 240, 0.98);
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-bright: rgba(2, 132, 199, 0.45);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --accent-cyan: #0284c7;
+      --accent-blue: #2563eb;
+      --accent-purple: #9333ea;
+      --accent-green: #059669;
+      --accent-amber: #d97706;
+      --accent-red: #dc2626;
+      --grid-dot: rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      height: 60px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #00e5ff, #8b5cf6);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+
+    .brand-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .brand-title h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-theme="light"] .brand-title h1 {
+      background: linear-gradient(90deg, #0f172a, #334155);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title span {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-code);
+    }
+
+    .badge-archify {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-radius: 12px;
+      font-size: 10px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 6px 12px 6px 32px;
+      color: var(--text-main);
+      font-size: 12px;
+      font-family: var(--font-ui);
+      outline: none;
+      width: 180px;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      background: rgba(255, 255, 255, 0.08);
+      width: 230px;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-dim);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(56, 189, 248, 0.15));
+      border: 1px solid var(--border-bright);
+      color: var(--accent-cyan);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.35), rgba(56, 189, 248, 0.25));
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    /* Canvas Viewport */
+    #viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      background-image: radial-gradient(var(--grid-dot) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+
+    #viewport.panning {
+      cursor: grabbing;
+    }
+
+    #canvas {
+      position: absolute;
+      transform-origin: 0 0;
+      width: 2500px;
+      height: 1100px;
+      top: 0;
+      left: 0;
+    }
+
+    /* SVG Connections Layer */
+    #connections-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .wire-glow {
+      fill: none;
+      stroke-width: 6px;
+      opacity: 0.12;
+      transition: opacity 0.2s, stroke-width 0.2s;
+    }
+
+    .wire {
+      fill: none;
+      stroke-width: 2.2px;
+      transition: stroke-width 0.2s, stroke 0.2s, opacity 0.2s;
+    }
+
+    .wire.wire-cyan { stroke: rgba(0, 229, 255, 0.65); }
+    .wire.wire-blue { stroke: rgba(56, 189, 248, 0.65); }
+    .wire.wire-purple { stroke: rgba(192, 132, 252, 0.65); }
+    .wire.wire-green { stroke: rgba(52, 211, 153, 0.65); }
+    .wire.wire-amber { stroke: rgba(251, 191, 36, 0.65); }
+
+    .wire-glow.wire-cyan { stroke: #00e5ff; }
+    .wire-glow.wire-blue { stroke: #38bdf8; }
+    .wire-glow.wire-purple { stroke: #c084fc; }
+    .wire-glow.wire-green { stroke: #34d399; }
+    .wire-glow.wire-amber { stroke: #fbbf24; }
+
+    /* Highlight state on hover */
+    .wire.highlighted {
+      stroke-width: 3.5px;
+      opacity: 1;
+    }
+    .wire-glow.highlighted {
+      opacity: 0.45;
+      stroke-width: 10px;
+    }
+    .wire.dimmed, .wire-glow.dimmed {
+      opacity: 0.06;
+    }
+
+    .packet-dot {
+      r: 4;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    /* Group Boundaries */
+    .group-box {
+      position: absolute;
+      border-radius: 16px;
+      border: 1px dashed;
+      background: rgba(13, 20, 36, 0.38);
+      backdrop-filter: blur(8px);
+      padding: 16px;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .group-box {
+      background: rgba(241, 245, 249, 0.55);
+    }
+
+    .group-box.group-cyan {
+      border-color: rgba(0, 229, 255, 0.32);
+      box-shadow: inset 0 0 40px rgba(0, 229, 255, 0.02);
+    }
+    .group-box.group-blue {
+      border-color: rgba(56, 189, 248, 0.32);
+      box-shadow: inset 0 0 40px rgba(56, 189, 248, 0.02);
+    }
+    .group-box.group-purple {
+      border-color: rgba(168, 85, 247, 0.32);
+      box-shadow: inset 0 0 40px rgba(168, 85, 247, 0.02);
+    }
+    .group-box.group-green {
+      border-color: rgba(16, 185, 129, 0.32);
+      box-shadow: inset 0 0 40px rgba(16, 185, 129, 0.02);
+    }
+    .group-box.group-amber {
+      border-color: rgba(245, 158, 11, 0.32);
+      box-shadow: inset 0 0 40px rgba(245, 158, 11, 0.02);
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .group-cyan .group-header { color: var(--accent-cyan); }
+    .group-blue .group-header { color: var(--accent-blue); }
+    .group-purple .group-header { color: var(--accent-purple); }
+    .group-green .group-header { color: var(--accent-green); }
+    .group-amber .group-header { color: var(--accent-amber); }
+
+    /* Node Cards */
+    .node-card {
+      position: absolute;
+      width: 250px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+      z-index: 20;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .node-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 229, 255, 0.15);
+    }
+
+    .node-card.selected {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px var(--accent-cyan), 0 12px 30px rgba(0, 229, 255, 0.3);
+    }
+
+    .node-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .node-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .node-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .node-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .node-type-badge {
+      font-size: 9px;
+      font-family: var(--font-code);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .node-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 7px;
+    }
+
+    .node-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .tag {
+      font-size: 9px;
+      font-family: var(--font-code);
+      padding: 2px 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: var(--text-dim);
+    }
+
+    .tag-cyan { color: var(--accent-cyan); border-color: rgba(0, 229, 255, 0.3); background: rgba(0, 229, 255, 0.08); }
+    .tag-blue { color: var(--accent-blue); border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08); }
+    .tag-purple { color: var(--accent-purple); border-color: rgba(192, 132, 252, 0.3); background: rgba(192, 132, 252, 0.08); }
+    .tag-green { color: var(--accent-green); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.08); }
+    .tag-amber { color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.08); }
+
+    /* Floating Zoom Toolbar */
+    .zoom-toolbar {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      z-index: 50;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .zoom-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: transparent;
+      color: var(--text-main);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .zoom-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .zoom-level {
+      font-size: 11px;
+      font-family: var(--font-code);
+      color: var(--text-muted);
+      padding: 0 6px;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    /* Side Inspector Drawer */
+    #inspector {
+      position: absolute;
+      top: 60px;
+      right: -420px;
+      width: 390px;
+      height: calc(100vh - 60px);
+      background: var(--bg-panel);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border-subtle);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.35);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 90;
+      transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    #inspector.open { right: 0; }
+
+    .inspector-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .inspector-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .inspector-subtitle { font-size: 11px; font-family: var(--font-code); color: var(--accent-cyan); margin-top: 3px; }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      border-radius: 6px;
+    }
+    .close-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.08); }
+
+    .inspector-section { display: flex; flex-direction: column; gap: 6px; }
+    .inspector-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); }
+
+    .inspector-code-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-code);
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+
+    .inspector-list { display: flex; flex-direction: column; gap: 6px; }
+    .inspector-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      font-size: 11px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Clean Interactive Wire Badges (Hidden by default, Reveal on Hover!) */
+    .wire-label {
+      position: absolute;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 10px;
+      font-family: var(--font-code);
+      font-weight: 600;
+      background: rgba(13, 20, 36, 0.96);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-bright);
+      color: #00e5ff;
+      z-index: 30;
+      transform: translate(-50%, -50%) scale(0.85);
+      pointer-events: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 229, 255, 0.25);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .wire-label.visible,
+    .always-show-labels .wire-label {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+    }
+
+    [data-theme="light"] .wire-label {
+      background: rgba(255, 255, 255, 0.98);
+      border-color: rgba(2, 132, 199, 0.45);
+      color: #0284c7;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 0 10px rgba(2, 132, 199, 0.2);
+    }
+
+    .peer-hover {
+      border-color: var(--border-bright) !important;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3) !important;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <circle cx="6" cy="6" r="3"/>
+          <circle cx="18" cy="18" r="3"/>
+          <circle cx="18" cy="6" r="3"/>
+          <path d="M6 9v6a3 3 0 0 0 3 3h6" stroke="#fff" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+      <div class="brand-title">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h1>J.A.R.V.I.S. Core Architecture</h1>
+          <span class="badge-archify">Archify Interactive Blueprint</span>
+        </div>
+        <span>Clean 5-Stage Pipeline • Zero Wire Overlap</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search component (e.g. LLM, HUD)...">
+      </div>
+
+      <button class="btn" id="btnToggleAnimation">
+        <span id="animIcon">⚡</span> Flow: Active
+      </button>
+
+      <button class="btn" id="btnToggleLabels" title="Toggle wire labels: Hover only vs Always visible">
+        <span id="labelsIcon">🏷️</span> Labels: Hover
+      </button>
+
+      <button class="btn" id="btnTheme">
+        <span id="themeIcon">☀️</span> Light Mode
+      </button>
+
+      <button class="btn btn-primary" id="btnExport">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Pan & Zoom Viewport -->
+  <div id="viewport">
+    <div id="canvas">
+      <!-- SVG Wires Layer -->
+      <svg id="connections-layer">
+        <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="glow"/>
+            <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+          </filter>
+        </defs>
+      </svg>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 1: USER CLIENTS (CYAN)
+           ═════════════════════════════════════════════════════════════ -->
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 1: USER CLIENTS (CYAN)
+           ═════════════════════════════════════════════════════════════ -->
+      <div class="group-box group-cyan" style="left: 40px; top: 75px; width: 290px; height: 535px;">
+        <div class="group-header">
+          <span>🖥️ 1. User Clients</span>
+        </div>
+      </div>
+
+      <!-- Node 1: Dynamic Island HUD -->
+      <div class="node-card" id="node-hud" style="left: 60px; top: 130px; width: 250px;" data-id="hud">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🏝️</div>
+            <div>
+              <div class="node-name">Dynamic Island HUD</div>
+              <div class="node-type-badge tag-cyan">Desktop Notch</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Top-of-screen floating notch, 7 mascot skins, audio waveform, and notification toasts.</div>
+        <div class="node-tags">
+          <span class="tag tag-cyan">modules/dynamic_island.py</span>
+          <span class="tag">60 FPS</span>
+        </div>
+      </div>
+
+      <!-- Node 2: Mobile App Client -->
+      <div class="node-card" id="node-mobile" style="left: 60px; top: 275px; width: 250px;" data-id="mobile">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">📱</div>
+            <div>
+              <div class="node-name">Mobile Companion App</div>
+              <div class="node-type-badge tag-cyan">React Native</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Remote smartphone control, live chat, LLM model switcher, and quota monitor.</div>
+        <div class="node-tags">
+          <span class="tag tag-cyan">jarvis-mobile/</span>
+          <span class="tag">Expo Go</span>
+        </div>
+      </div>
+
+      <!-- Node 3: Voice Engine -->
+      <div class="node-card" id="node-voice" style="left: 60px; top: 420px; width: 250px;" data-id="voice">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🎙️</div>
+            <div>
+              <div class="node-name">Voice & Audio Engine</div>
+              <div class="node-type-badge tag-cyan">Whisper & TTS</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Mic capture, energy VAD, Whisper transcription, and Edge-TTS voice replies.</div>
+        <div class="node-tags">
+          <span class="tag tag-cyan">modules/voice_engine.py</span>
+          <span class="tag">Streaming</span>
+        </div>
+      </div>
+
+
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 2: GATEWAYS & IPC BUS (BLUE)
+           ═════════════════════════════════════════════════════════════ -->
+      <div class="group-box group-blue" style="left: 360px; top: 75px; width: 290px; height: 535px;">
+        <div class="group-header">
+          <span>🔌 2. Gateways & IPC Bus</span>
+        </div>
+      </div>
+
+      <!-- Node 4: IPC Named Pipe -->
+      <div class="node-card" id="node-ipc" style="left: 380px; top: 130px; width: 250px;" data-id="ipc">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">⚡</div>
+            <div>
+              <div class="node-name">Local Named Pipe Bus</div>
+              <div class="node-type-badge tag-blue">Windows IPC</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Sub-2ms local named pipe connecting jarvis.py with dynamic_island.py without network overhead.</div>
+        <div class="node-tags">
+          <span class="tag tag-blue">\\.\pipe\jarvis_island</span>
+          <span class="tag">&lt; 2ms</span>
+        </div>
+      </div>
+
+      <!-- Node 5: FastAPI WebSocket Gateway -->
+      <div class="node-card" id="node-apigateway" style="left: 380px; top: 275px; width: 250px;" data-id="apigateway">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🌐</div>
+            <div>
+              <div class="node-name">FastAPI WebSocket Hub</div>
+              <div class="node-type-badge tag-blue">REST & Sockets</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Asynchronous hub routing mobile chat, token authorization, and model switching commands.</div>
+        <div class="node-tags">
+          <span class="tag tag-blue">modules/jarvis_mobile_api.py</span>
+          <span class="tag">:8000</span>
+        </div>
+      </div>
+
+      <!-- Node 6: File & Multimodal Ingest -->
+      <div class="node-card" id="node-ingest" style="left: 380px; top: 420px; width: 250px;" data-id="ingest">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">📂</div>
+            <div>
+              <div class="node-name">Multimodal Ingestor</div>
+              <div class="node-type-badge tag-blue">File & OCR</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Processes dragged desktop files, screenshots, and camera snapshots for multimodal analysis.</div>
+        <div class="node-tags">
+          <span class="tag tag-blue">OpenCV & OCR</span>
+          <span class="tag">Multimodal</span>
+        </div>
+      </div>
+
+
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 3: COGNITIVE AI BRAIN (PURPLE)
+           ═════════════════════════════════════════════════════════════ -->
+      <div class="group-box group-purple" style="left: 680px; top: 75px; width: 310px; height: 535px;">
+        <div class="group-header">
+          <span>🧠 3. Cognitive AI Brain</span>
+        </div>
+      </div>
+
+      <!-- Node 7: Intent & Tool Dispatcher -->
+      <div class="node-card" id="node-intent" style="left: 705px; top: 130px; width: 260px;" data-id="intent">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🎯</div>
+            <div>
+              <div class="node-name">Intent & Tool Router</div>
+              <div class="node-type-badge tag-purple">Central Dispatch</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Evaluates intent: System Control, Code Execution, Media, or Complex Conversational Queries.</div>
+        <div class="node-tags">
+          <span class="tag tag-purple">jarvis.py</span>
+          <span class="tag">Dispatcher</span>
+        </div>
+      </div>
+
+      <!-- Node 8: Neural AI Router -->
+      <div class="node-card" id="node-router" style="left: 705px; top: 250px; width: 260px;" data-id="router">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🔀</div>
+            <div>
+              <div class="node-name">Neural AI Router</div>
+              <div class="node-type-badge tag-purple">Multi-LLM Core</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Smart router monitoring free quota limits and triggering auto-failover across Groq, Gemini & Claude.</div>
+        <div class="node-tags">
+          <span class="tag tag-purple">jarvis_core/ai_router.py</span>
+          <span class="tag">Auto-Fallback</span>
+        </div>
+      </div>
+
+      <!-- Node 9: LLM Provider Cluster -->
+      <div class="node-card" id="node-llm" style="left: 705px; top: 370px; width: 260px;" data-id="llm">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">⚡</div>
+            <div>
+              <div class="node-name">LLM Provider Pool</div>
+              <div class="node-type-badge tag-purple">Cloud Inference</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Groq (Llama 3.3 70B), Google Gemini 2.5, DeepSeek R1, and Anthropic Claude 3.5 Sonnet.</div>
+        <div class="node-tags">
+          <span class="tag tag-purple">Groq / Gemini</span>
+          <span class="tag">Claude / DeepSeek</span>
+        </div>
+      </div>
+
+      <!-- Node 10: Sliding Context Memory -->
+      <div class="node-card" id="node-memory" style="left: 705px; top: 490px; width: 260px;" data-id="memory">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">💭</div>
+            <div>
+              <div class="node-name">Context Memory Buffer</div>
+              <div class="node-type-badge tag-purple">Sliding Window</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Maintains 10-turn conversation history, optimizes token payloads, and saves session facts.</div>
+        <div class="node-tags">
+          <span class="tag tag-purple">Thread-Safe</span>
+          <span class="tag">Token Buffer</span>
+        </div>
+      </div>
+
+
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 4: OS EXECUTION & TOOLS (GREEN)
+           ═════════════════════════════════════════════════════════════ -->
+      <div class="group-box group-green" style="left: 1020px; top: 75px; width: 310px; height: 535px;">
+        <div class="group-header">
+          <span>⚙️ 4. OS Execution Engine</span>
+        </div>
+      </div>
+
+      <!-- Node 11: Windows Automation -->
+      <div class="node-card" id="node-winauto" style="left: 1045px; top: 130px; width: 260px;" data-id="winauto">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🪟</div>
+            <div>
+              <div class="node-name">Windows OS Controller</div>
+              <div class="node-type-badge tag-green">Win32 & Shell</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Direct control of volume, app launching, window snapping, and background processes.</div>
+        <div class="node-tags">
+          <span class="tag tag-green">win32gui / PowerShell</span>
+          <span class="tag">Native API</span>
+        </div>
+      </div>
+
+      <!-- Node 12: Media & Audio Subsystem -->
+      <div class="node-card" id="node-media" style="left: 1045px; top: 250px; width: 260px;" data-id="media">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🎵</div>
+            <div>
+              <div class="node-name">Media & Audio Subsystem</div>
+              <div class="node-type-badge tag-green">Playback Sync</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Windows media session sync, Spotify track info, and playback broadcast to HUD marquee.</div>
+        <div class="node-tags">
+          <span class="tag tag-green">Winsdk Media</span>
+          <span class="tag">Marquee Sync</span>
+        </div>
+      </div>
+
+      <!-- Node 13: Browser Subagent -->
+      <div class="node-card" id="node-browser" style="left: 1045px; top: 370px; width: 260px;" data-id="browser">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">🌐</div>
+            <div>
+              <div class="node-name">Browser Subagent</div>
+              <div class="node-type-badge tag-green">Web Agent</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Autonomous browser agent executing deep online research, DOM navigation, and web tasks.</div>
+        <div class="node-tags">
+          <span class="tag tag-green">Subagent API</span>
+          <span class="tag">DOM Actions</span>
+        </div>
+      </div>
+
+      <!-- Node 14: Code Runner & Terminal -->
+      <div class="node-card" id="node-terminal" style="left: 1045px; top: 490px; width: 260px;" data-id="terminal">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">💻</div>
+            <div>
+              <div class="node-name">Code Runner & Sandbox</div>
+              <div class="node-type-badge tag-green">Process Host</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Executes shell commands, builds modules, runs python scripts, and manages virtual environments.</div>
+        <div class="node-tags">
+          <span class="tag tag-green">PowerShell</span>
+          <span class="tag">Subprocess</span>
+        </div>
+      </div>
+
+
+      <!-- ═════════════════════════════════════════════════════════════
+           STAGE 5: PERSISTENCE & OBSERVABILITY (AMBER FOUNDATION)
+           (Spans underneath Stage 3 Brain & Stage 4 Execution!)
+           ═════════════════════════════════════════════════════════════ -->
+      <div class="group-box group-amber" style="left: 680px; top: 635px; width: 670px; height: 185px;">
+        <div class="group-header">
+          <span>🗄️ 5. Persistence & Observability</span>
+        </div>
+      </div>
+
+      <!-- Node 15: ThreadSafe SQLite DB (Directly under Memory Buffer!) -->
+      <div class="node-card" id="node-db" style="left: 705px; top: 685px; width: 270px;" data-id="db">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">💾</div>
+            <div>
+              <div class="node-name">ThreadSafe SQLite DB</div>
+              <div class="node-type-badge tag-amber">Storage Engine</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Synchronized SQLite database for user configs, memory vectors, daily request counters, and metrics.</div>
+        <div class="node-tags">
+          <span class="tag tag-amber">data/jarvis.db</span>
+          <span class="tag">WAL Mode</span>
+        </div>
+      </div>
+
+      <!-- Node 16: AI Quota Tracker (Aligned under the open central corridor!) -->
+      <div class="node-card" id="node-quota" style="left: 1045px; top: 685px; width: 270px;" data-id="quota">
+        <div class="node-top">
+          <div class="node-title-group">
+            <div class="node-icon">📊</div>
+            <div>
+              <div class="node-name">AI Quota Tracker</div>
+              <div class="node-type-badge tag-amber">Telemetry</div>
+            </div>
+          </div>
+        </div>
+        <div class="node-desc">Tracks daily Groq & Gemini API usage, latency metrics, and warns before rate-limits hit.</div>
+        <div class="node-tags">
+          <span class="tag tag-amber">modules/ai_quota_tracker.py</span>
+          <span class="tag">Live Gauges</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Zoom Toolbar -->
+  <div class="zoom-toolbar">
+    <button class="zoom-btn" id="btnZoomOut" title="Zoom Out">-</button>
+    <span class="zoom-level" id="zoomLevelText">100%</span>
+    <button class="zoom-btn" id="btnZoomIn" title="Zoom In">+</button>
+    <div style="width: 1px; height: 16px; background: var(--border-subtle); margin: 0 2px;"></div>
+    <button class="zoom-btn" id="btnZoomFit" title="Fit to Screen" style="font-size: 11px;">Fit</button>
+    <button class="zoom-btn" id="btnZoomReset" title="Reset (100%)" style="font-size: 11px;">1:1</button>
+  </div>
+
+  <!-- Component Detail Inspector Drawer -->
+  <aside id="inspector">
+    <div class="inspector-header">
+      <div>
+        <div class="inspector-title" id="inspName">Component Inspector</div>
+        <div class="inspector-subtitle" id="inspType">SELECT ANY NODE TO INSPECT</div>
+      </div>
+      <button class="close-btn" id="btnCloseInspector">✕</button>
+    </div>
+
+    <div class="inspector-section">
+      <div class="inspector-section-label">Health & Status</div>
+      <div class="badge-status">
+        <span class="pulse-dot"></span>
+        <span id="inspStatus">ONLINE • HEALTHY</span>
+      </div>
+    </div>
+
+    <div class="inspector-section">
+      <div class="inspector-section-label">Architecture Role</div>
+      <p id="inspDesc" style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5;"></p>
+    </div>
+
+    <div class="inspector-section">
+      <div class="inspector-section-label">Source File & Modules</div>
+      <div class="inspector-code-box" id="inspPath">c:\JARVIS\...</div>
+    </div>
+
+    <div class="inspector-section">
+      <div class="inspector-section-label">Inbound Connections</div>
+      <div class="inspector-list" id="inspInbound"></div>
+    </div>
+
+    <div class="inspector-section">
+      <div class="inspector-section-label">Outbound Connections</div>
+      <div class="inspector-list" id="inspOutbound"></div>
+    </div>
+  </aside>
+
+  <script>
+    // Component Catalog
+    const NODES = {
+      hud: {
+        name: "Dynamic Island HUD",
+        type: "PyQt6 Desktop Notch Window",
+        status: "RUNNING (PID Active)",
+        desc: "Supercharged top-of-screen notch overlay featuring Notch Buddy mascots, smooth QPropertyAnimation transforms, audio waveform, quota alerts, and IPC command reception.",
+        path: "c:\\JARVIS\\modules\\dynamic_island.py",
+        inbound: ["Local Named Pipe (Marquee & Status sync)"],
+        outbound: ["Local Named Pipe (Exit/Hide commands)"]
+      },
+      mobile: {
+        name: "Mobile Companion App",
+        type: "Cross-Platform React Native",
+        status: "CONNECTED (Expo Go)",
+        desc: "Remote smartphone controller allowing real-time chat, LLM model selection, mascot skin switching, voice messages, and server resource monitoring.",
+        path: "c:\\JARVIS\\jarvis-mobile\\App.js",
+        inbound: ["User Touch / Voice Input", "WebSocket Status Push"],
+        outbound: ["FastAPI WebSocket Hub (:8000/ws)"]
+      },
+      voice: {
+        name: "Voice & Audio Engine",
+        type: "Real-time Neural Speech Pipeline",
+        status: "LISTENING",
+        desc: "Captures microphone input, handles energy-based VAD, transcribes with Whisper, and synthesizes speech responses via Edge-TTS neural models.",
+        path: "c:\\JARVIS\\modules\\voice_engine.py",
+        inbound: ["Microphone Stream"],
+        outbound: ["Intent & Tool Router"]
+      },
+      ipc: {
+        name: "Local Named Pipe Bus",
+        type: "Windows Named Pipe Server",
+        status: "CONNECTED (\\\\.\\pipe\\jarvis_island)",
+        desc: "High throughput, sub-2ms inter-process communication bus connecting Mainframe core with the PyQt6 Island overlay without network overhead.",
+        path: "c:\\JARVIS\\modules\\dynamic_island.py (_pipe_server)",
+        inbound: ["Dynamic Island HUD", "FastAPI WebSocket Hub"],
+        outbound: ["Intent & Tool Router", "Dynamic Island HUD"]
+      },
+      apigateway: {
+        name: "FastAPI WebSocket Hub",
+        type: "Async Mobile Server (:8000)",
+        status: "LISTENING ON 0.0.0.0:8000",
+        desc: "Serves mobile REST APIs, bidirectional WebSocket live channels for chat and notifications, and token authentication.",
+        path: "c:\\JARVIS\\modules\\jarvis_mobile_api.py",
+        inbound: ["Mobile Companion App"],
+        outbound: ["Intent & Tool Router", "Local Named Pipe Bus"]
+      },
+      ingest: {
+        name: "Multimodal Ingestor",
+        type: "File & OCR Analysis Subsystem",
+        status: "STANDBY",
+        desc: "Enables dragging image files, documents, or screenshots directly onto the HUD notch for immediate multimodal AI analysis.",
+        path: "c:\\JARVIS\\modules\\dynamic_island.py (dragEnterEvent)",
+        inbound: ["User File Drag & Drop", "Webcam Capture"],
+        outbound: ["Neural AI Router (Multimodal Vision API)"]
+      },
+      intent: {
+        name: "Intent & Tool Router",
+        type: "Autonomous Function Router",
+        status: "PROCESSING",
+        desc: "Parses structured natural language to distinguish between OS commands, media control, code generation tasks, or conversation queries.",
+        path: "c:\\JARVIS\\jarvis.py",
+        inbound: ["Local Named Pipe Bus", "FastAPI Hub", "Voice Engine"],
+        outbound: ["Neural AI Router", "Windows OS Controller", "Media Subsystem", "Browser Subagent"]
+      },
+      router: {
+        name: "Neural AI Router",
+        type: "Intelligent Multi-LLM Gateway",
+        status: "HEALTHY (Auto-Failover Active)",
+        desc: "Evaluates query complexity, checks live quota limits via ai_quota_tracker, and dynamically routes prompt requests to the optimal AI provider.",
+        path: "c:\\JARVIS\\jarvis_core\\ai_router.py",
+        inbound: ["Intent & Tool Router", "Multimodal Ingestor"],
+        outbound: ["LLM Provider Pool", "AI Quota Tracker"]
+      },
+      llm: {
+        name: "LLM Provider Pool",
+        type: "Cloud Inference Cluster",
+        status: "ACTIVE (Groq + Gemini + Claude)",
+        desc: "Provider endpoints: Groq (Llama-3.3-70b-versatile, ultra low latency), Google Gemini 2.5 Flash, DeepSeek R1, and Anthropic Claude 3.5 Sonnet.",
+        path: "Cloud REST APIs (Encrypted TLS)",
+        inbound: ["Neural AI Router"],
+        outbound: ["AI Quota Tracker", "Context Memory Buffer"]
+      },
+      memory: {
+        name: "Context Memory Buffer",
+        type: "Conversation State Manager",
+        status: "SYNCED (10-Turn Window)",
+        desc: "Maintains 10-turn conversation history, optimizes token payloads, and saves session facts.",
+        path: "c:\\JARVIS\\jarvis.py (_load_chat_history)",
+        inbound: ["LLM Provider Pool"],
+        outbound: ["Neural AI Router", "ThreadSafe SQLite DB"]
+      },
+      winauto: {
+        name: "Windows OS Controller",
+        type: "Native Desktop Automation",
+        status: "READY",
+        desc: "Controls Windows system state via win32 APIs: volume sliders, app launch, process kill, window positioning, and clipboard management.",
+        path: "c:\\JARVIS\\jarvis.py (execute_command)",
+        inbound: ["Intent & Tool Router"],
+        outbound: ["Windows Shell / Win32 APIs"]
+      },
+      media: {
+        name: "Media & Audio Subsystem",
+        type: "Windows Media Sync",
+        status: "SYNCED",
+        desc: "Monitors currently playing track on Windows (Spotify, YouTube, Media Player) and syncs title to Dynamic Island Marquee label.",
+        path: "c:\\JARVIS\\modules\\dynamic_island.py (Media Controls)",
+        inbound: ["Intent & Tool Router", "Windows Media Session"],
+        outbound: ["Dynamic Island HUD (Via Pipe)"]
+      },
+      browser: {
+        name: "Browser Subagent",
+        type: "Autonomous Web Agent",
+        status: "STANDBY",
+        desc: "Spawns headless or visible browser sessions to perform multi-step web navigation, content extraction, and complex online tasks.",
+        path: "Antigravity Browser Subagent Framework",
+        inbound: ["Intent & Tool Router"],
+        outbound: ["Web DOM / Network Requests"]
+      },
+      terminal: {
+        name: "Code Runner & Sandbox",
+        type: "Subprocess Execution Engine",
+        status: "READY",
+        desc: "Executes shell commands, builds modules, runs python scripts, and manages virtual environments.",
+        path: "PowerShell Shell Host",
+        inbound: ["Intent & Tool Router"],
+        outbound: ["System Processes"]
+      },
+      quota: {
+        name: "AI Quota Tracker",
+        type: "Live Telemetry Engine",
+        status: "TRACKING (Groq & Gemini Limits)",
+        desc: "Keeps track of daily free-tier request counts, warns before quota exhaustion, and triggers automatic provider fallback in ai_router.",
+        path: "c:\\JARVIS\\modules\\ai_quota_tracker.py",
+        inbound: ["LLM Provider Pool", "Neural AI Router"],
+        outbound: ["ThreadSafe SQLite DB"]
+      },
+      db: {
+        name: "ThreadSafe SQLite DB",
+        type: "Local Embedded Relational Storage",
+        status: "CONNECTED (WAL Mode Enabled)",
+        desc: "Provides synchronized SQLite storage with connection timeouts and thread-locking for user profiles, quota metrics, and audit logs.",
+        path: "c:\\JARVIS\\data\\jarvis.db",
+        inbound: ["AI Quota Tracker", "Context Memory Buffer"],
+        outbound: ["Persistent NVMe Disk"]
+      }
+    };
+
+    // ─────────────────────────────────────────────────────────────
+    // ZERO-CROSSING PIPELINE CONNECTIONS
+    // 4-Column Flow + Foundation Persistence, 100% Clean Routing!
+    // ─────────────────────────────────────────────────────────────
+    const CONNECTIONS = [
+      // Stage 1 -> Stage 2 (Direct horizontal hops!)
+      { from: "hud", to: "ipc", color: "cyan", label: "IPC Pipe", tPos: 0.5 },
+      { from: "mobile", to: "apigateway", color: "cyan", label: "WebSocket :8000", tPos: 0.5 },
+      { from: "voice", to: "ingest", color: "cyan", label: "Audio Stream", tPos: 0.5 },
+
+      // Stage 2 -> Stage 3 (Gateways into AI Brain)
+      { from: "ipc", to: "intent", color: "blue", label: "HUD Actions", tPos: 0.4 },
+      { from: "apigateway", to: "intent", color: "blue", label: "Mobile Prompts", tPos: 0.6 },
+      { from: "ingest", to: "router", color: "blue", label: "Vision / Files", tPos: 0.5 },
+
+      // Stage 3 Internal (Vertical Cascade in Brain)
+      { from: "intent", to: "router", color: "purple", label: "User Prompt", tPos: 0.5 },
+      { from: "router", to: "llm", color: "purple", label: "Model Query", tPos: 0.5 },
+      { from: "llm", to: "memory", color: "purple", label: "Save Context", tPos: 0.5 },
+
+      // Stage 3 -> Stage 4 (Brain to Execution Engine - Dedicated Parallel Ports!)
+      { from: "intent", to: "winauto", color: "green", label: "Win32 API", tPos: 0.35, portOffset: 0.2 },
+      { from: "intent", to: "media", color: "green", label: "Media Sync", tPos: 0.48, portOffset: 0.4 },
+      { from: "intent", to: "browser", color: "green", label: "Web Tasks", tPos: 0.62, portOffset: 0.6 },
+      { from: "intent", to: "terminal", color: "green", label: "Shell Scripts", tPos: 0.75, portOffset: 0.8 },
+
+      // Stage 3 -> Stage 5 (Brain to Foundation Persistence)
+      { from: "memory", to: "db", color: "amber", label: "Commit Memory", tPos: 0.5, route: "memory_to_db" },
+      { from: "router", to: "quota", color: "amber", label: "Quota Tracking", tPos: 0.5, route: "brain_to_quota" },
+      { from: "quota", to: "db", color: "amber", label: "Save Stats", tPos: 0.5 }
+    ];
+
+    // State & Viewport setup
+    let zoom = 1.0;
+    let panX = 40;
+    let panY = 20;
+    let isPanning = false;
+    let startX = 0, startY = 0;
+    let isAnimated = true;
+    let selectedNodeId = null;
+
+    const viewport = document.getElementById("viewport");
+    const canvas = document.getElementById("canvas");
+    const svgLayer = document.getElementById("connections-layer");
+    const zoomText = document.getElementById("zoomLevelText");
+    const inspector = document.getElementById("inspector");
+
+    function updateTransform() {
+      canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+      zoomText.textContent = `${Math.round(zoom * 100)}%`;
+    }
+
+    // Auto-Fit canvas smoothly
+    function fitToScreen() {
+      const vWidth = viewport.clientWidth;
+      const vHeight = viewport.clientHeight;
+      const targetW = 1380;
+      const targetH = 860;
+      zoom = Math.max(0.65, Math.min((vWidth - 60) / targetW, (vHeight - 40) / targetH));
+      panX = Math.max(20, (vWidth - targetW * zoom) / 2);
+      panY = Math.max(15, (vHeight - targetH * zoom) / 2);
+      updateTransform();
+    }
+
+    // Pan & Zoom listeners
+    viewport.addEventListener("mousedown", (e) => {
+      if (e.target.closest(".node-card") || e.target.closest("#inspector")) return;
+      isPanning = true;
+      viewport.classList.add("panning");
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isPanning) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener("mouseup", () => {
+      isPanning = false;
+      viewport.classList.remove("panning");
+    });
+
+    viewport.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const zoomFactor = 1.08;
+      const mouseX = e.clientX - viewport.getBoundingClientRect().left;
+      const mouseY = e.clientY - viewport.getBoundingClientRect().top;
+
+      const prevZoom = zoom;
+      if (e.deltaY < 0) {
+        zoom = Math.min(zoom * zoomFactor, 2.2);
+      } else {
+        zoom = Math.max(zoom / zoomFactor, 0.35);
+      }
+
+      panX = mouseX - (mouseX - panX) * (zoom / prevZoom);
+      panY = mouseY - (mouseY - panY) * (zoom / prevZoom);
+      updateTransform();
+    }, { passive: false });
+
+    // Zoom Buttons
+    document.getElementById("btnZoomIn").addEventListener("click", () => {
+      zoom = Math.min(zoom * 1.15, 2.2);
+      updateTransform();
+    });
+
+    document.getElementById("btnZoomOut").addEventListener("click", () => {
+      zoom = Math.max(zoom / 1.15, 0.35);
+      updateTransform();
+    });
+
+    document.getElementById("btnZoomReset").addEventListener("click", () => {
+      fitToScreen();
+    });
+
+    document.getElementById("btnZoomFit").addEventListener("click", fitToScreen);
+
+    // Draw Smooth Connections with Staggered Labels
+    function drawConnections() {
+      while (svgLayer.childNodes.length > 2) {
+        svgLayer.removeChild(svgLayer.lastChild);
+      }
+      document.querySelectorAll(".wire-label").forEach(el => el.remove());
+
+      CONNECTIONS.forEach((conn, idx) => {
+        const fromEl = document.getElementById(`node-${conn.from}`);
+        const toEl = document.getElementById(`node-${conn.to}`);
+        if (!fromEl || !toEl) return;
+
+        const fromLeft = parseFloat(fromEl.style.left);
+        const fromTop = parseFloat(fromEl.style.top);
+        const fromW = fromEl.offsetWidth;
+        const fromH = fromEl.offsetHeight;
+
+        const toLeft = parseFloat(toEl.style.left);
+        const toTop = parseFloat(toEl.style.top);
+        const toW = toEl.offsetWidth;
+        const toH = toEl.offsetHeight;
+
+        let x1, y1, x2, y2, pathData;
+
+        // Clean Port Anchors & Corridor Routing (100% Outside Cards!)
+        if (conn.route === "memory_to_db") {
+          // Direct vertical drop from Memory Buffer straight down into SQLite DB
+          x1 = fromLeft + fromW * 0.5;
+          y1 = fromTop + fromH;
+          x2 = toLeft + toW * 0.5;
+          y2 = toTop;
+          const dy = Math.abs(y2 - y1) * 0.5;
+          pathData = `M ${x1} ${y1} C ${x1} ${y1 + dy}, ${x2} ${y2 - dy}, ${x2} ${y2}`;
+        } else if (conn.route === "brain_to_quota") {
+          // Exits right port of router, glides through open central corridor, enters Quota Tracker
+          x1 = fromLeft + fromW;
+          y1 = fromTop + fromH * 0.5;
+          x2 = toLeft + toW * 0.5;
+          y2 = toTop;
+          const midX = 1005; // Dead center of open avenue between Stage 3 & Stage 4
+          pathData = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2 - 50}, ${x2} ${y2}`;
+        } else if (conn.from === "quota" && conn.to === "db") {
+          // Direct horizontal link inside Stage 5 from Quota (right) to DB (left)
+          x1 = fromLeft;
+          y1 = fromTop + fromH * 0.5;
+          x2 = toLeft + toW;
+          y2 = toTop + toH * 0.5;
+          const dx = Math.abs(x1 - x2) * 0.5;
+          pathData = `M ${x1} ${y1} C ${x1 - dx} ${y1}, ${x2 + dx} ${y2}, ${x2} ${y2}`;
+        } else if (toLeft >= fromLeft + fromW - 20) {
+          // Horizontal flow (with staggered port offset for Intent fanout!)
+          x1 = fromLeft + fromW;
+          y1 = fromTop + fromH * (conn.portOffset !== undefined ? conn.portOffset : 0.5);
+          x2 = toLeft;
+          y2 = toTop + toH * 0.5;
+
+          const dx = Math.abs(x2 - x1) * 0.5;
+          pathData = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+        } else {
+          // Vertical flow within same group
+          x1 = fromLeft + fromW * 0.5;
+          y1 = fromTop + fromH;
+          x2 = toLeft + toW * 0.5;
+          y2 = toTop;
+
+          const dy = Math.abs(y2 - y1) * 0.5;
+          pathData = `M ${x1} ${y1} C ${x1} ${y1 + dy}, ${x2} ${y2 - dy}, ${x2} ${y2}`;
+        }
+
+        // Glow line
+        const glowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        glowPath.setAttribute("d", pathData);
+        glowPath.setAttribute("class", `wire-glow wire-${conn.color}`);
+        glowPath.dataset.from = conn.from;
+        glowPath.dataset.to = conn.to;
+        svgLayer.appendChild(glowPath);
+
+        // Core wire
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("class", `wire wire-${conn.color}`);
+        path.setAttribute("id", `wire-${idx}`);
+        path.dataset.from = conn.from;
+        path.dataset.to = conn.to;
+        svgLayer.appendChild(path);
+
+        // Animated Packet Dot
+        if (isAnimated) {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("r", "3.5");
+          circle.setAttribute("class", "packet-dot");
+          circle.style.fill = conn.color === "cyan" ? "#00e5ff" : (conn.color === "blue" ? "#38bdf8" : (conn.color === "purple" ? "#c084fc" : (conn.color === "green" ? "#34d399" : "#fbbf24")));
+
+          const anim = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+          anim.setAttribute("dur", `${2.2 + (idx % 4) * 0.3}s`);
+          anim.setAttribute("repeatCount", "indefinite");
+          anim.setAttribute("path", pathData);
+
+          circle.appendChild(anim);
+          svgLayer.appendChild(circle);
+        }
+
+        // Staggered Wire Label (Hidden by default, reveals on hover or selection)
+        let labelEl = null;
+        if (conn.label) {
+          const t = conn.tPos || 0.5;
+          let lx, ly;
+
+          if (path.getTotalLength) {
+            const pt = path.getPointAtLength(path.getTotalLength() * t);
+            lx = pt.x;
+            ly = pt.y;
+          } else {
+            lx = x1 + (x2 - x1) * t;
+            ly = y1 + (y2 - y1) * t;
+          }
+
+          labelEl = document.createElement("div");
+          labelEl.className = "wire-label";
+          labelEl.id = `label-${idx}`;
+          labelEl.style.left = `${lx}px`;
+          labelEl.style.top = `${ly}px`;
+          labelEl.textContent = conn.label;
+          labelEl.dataset.from = conn.from;
+          labelEl.dataset.to = conn.to;
+          labelEl.dataset.idx = idx;
+          canvas.appendChild(labelEl);
+        }
+
+        // Invisible wider hit-area path for easy wire hovering
+        const hitPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        hitPath.setAttribute("d", pathData);
+        hitPath.setAttribute("class", "wire-hit");
+        hitPath.style.fill = "none";
+        hitPath.style.stroke = "transparent";
+        hitPath.style.strokeWidth = "22px";
+        hitPath.style.cursor = "pointer";
+        hitPath.dataset.from = conn.from;
+        hitPath.dataset.to = conn.to;
+        hitPath.dataset.idx = idx;
+        svgLayer.appendChild(hitPath);
+
+        hitPath.addEventListener("mouseenter", () => {
+          path.classList.add("highlighted");
+          glowPath.classList.add("highlighted");
+          if (labelEl) labelEl.classList.add("visible");
+          document.getElementById(`node-${conn.from}`)?.classList.add("peer-hover");
+          document.getElementById(`node-${conn.to}`)?.classList.add("peer-hover");
+        });
+
+        hitPath.addEventListener("mouseleave", () => {
+          if (!selectedNodeId || (selectedNodeId !== conn.from && selectedNodeId !== conn.to)) {
+            path.classList.remove("highlighted");
+            glowPath.classList.remove("highlighted");
+            if (labelEl && !alwaysShowLabels) labelEl.classList.remove("visible");
+          }
+          document.getElementById(`node-${conn.from}`)?.classList.remove("peer-hover");
+          document.getElementById(`node-${conn.to}`)?.classList.remove("peer-hover");
+        });
+      });
+    }
+
+    // Node Interactive Selection & Connected Wire Highlight
+    function selectNode(id) {
+      document.querySelectorAll(".node-card").forEach(c => c.classList.remove("selected", "peer-hover"));
+      const card = document.getElementById(`node-${id}`);
+      if (!card) return;
+
+      card.classList.add("selected");
+      selectedNodeId = id;
+      const data = NODES[id];
+      if (!data) return;
+
+      document.getElementById("inspName").textContent = data.name;
+      document.getElementById("inspType").textContent = data.type;
+      document.getElementById("inspStatus").textContent = data.status;
+      document.getElementById("inspDesc").textContent = data.desc;
+      document.getElementById("inspPath").textContent = data.path;
+
+      const inContainer = document.getElementById("inspInbound");
+      inContainer.innerHTML = "";
+      data.inbound.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "inspector-list-item";
+        div.innerHTML = `<span>← ${item}</span>`;
+        inContainer.appendChild(div);
+      });
+
+      const outContainer = document.getElementById("inspOutbound");
+      outContainer.innerHTML = "";
+      data.outbound.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "inspector-list-item";
+        div.innerHTML = `<span>→ ${item}</span>`;
+        outContainer.appendChild(div);
+      });
+
+      inspector.classList.add("open");
+
+      // Highlight related connections & reveal their labels
+      document.querySelectorAll(".wire, .wire-glow").forEach(w => {
+        if (w.dataset.from === id || w.dataset.to === id) {
+          w.classList.add("highlighted");
+          w.classList.remove("dimmed");
+        } else {
+          w.classList.remove("highlighted");
+          w.classList.add("dimmed");
+        }
+      });
+
+      document.querySelectorAll(".wire-label").forEach(lbl => {
+        if (lbl.dataset.from === id || lbl.dataset.to === id) {
+          lbl.classList.add("visible");
+        } else if (!alwaysShowLabels) {
+          lbl.classList.remove("visible");
+        }
+      });
+    }
+
+    // Hover wire & card focus
+    document.querySelectorAll(".node-card").forEach(card => {
+      card.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectNode(card.dataset.id);
+      });
+
+      card.addEventListener("mouseenter", () => {
+        const id = card.dataset.id;
+        document.querySelectorAll(".wire, .wire-glow").forEach(w => {
+          if (w.dataset.from === id || w.dataset.to === id) {
+            w.classList.add("highlighted");
+            w.classList.remove("dimmed");
+          } else {
+            w.classList.remove("highlighted");
+            w.classList.add("dimmed");
+          }
+        });
+        document.querySelectorAll(".wire-label").forEach(lbl => {
+          if (lbl.dataset.from === id || lbl.dataset.to === id) {
+            lbl.classList.add("visible");
+          } else if (!alwaysShowLabels) {
+            lbl.classList.remove("visible");
+          }
+        });
+      });
+
+      card.addEventListener("mouseleave", () => {
+        if (selectedNodeId) {
+          selectNode(selectedNodeId);
+        } else {
+          document.querySelectorAll(".wire, .wire-glow").forEach(w => {
+            w.classList.remove("highlighted", "dimmed");
+          });
+          if (!alwaysShowLabels) {
+            document.querySelectorAll(".wire-label").forEach(lbl => {
+              lbl.classList.remove("visible");
+            });
+          }
+        }
+      });
+    });
+
+    document.getElementById("btnCloseInspector").addEventListener("click", () => {
+      inspector.classList.remove("open");
+      selectedNodeId = null;
+      document.querySelectorAll(".node-card").forEach(c => c.classList.remove("selected", "peer-hover"));
+      document.querySelectorAll(".wire, .wire-glow").forEach(w => w.classList.remove("highlighted", "dimmed"));
+      if (!alwaysShowLabels) {
+        document.querySelectorAll(".wire-label").forEach(lbl => lbl.classList.remove("visible"));
+      }
+    });
+
+    // Viewport background click to deselect
+    viewport.addEventListener("click", (e) => {
+      if (e.target.closest(".node-card") || e.target.closest("#inspector") || e.target.closest(".zoom-toolbar") || e.target.closest(".wire-hit") || e.target.closest(".btn")) return;
+      selectedNodeId = null;
+      document.querySelectorAll(".node-card").forEach(c => c.classList.remove("selected", "peer-hover"));
+      document.querySelectorAll(".wire, .wire-glow").forEach(w => w.classList.remove("highlighted", "dimmed"));
+      if (!alwaysShowLabels) {
+        document.querySelectorAll(".wire-label").forEach(lbl => lbl.classList.remove("visible"));
+      }
+      inspector.classList.remove("open");
+    });
+
+    // Toggle Labels (Hover only vs Always visible)
+    let alwaysShowLabels = false;
+    const btnToggleLabels = document.getElementById("btnToggleLabels");
+    if (btnToggleLabels) {
+      btnToggleLabels.addEventListener("click", () => {
+        alwaysShowLabels = !alwaysShowLabels;
+        canvas.classList.toggle("always-show-labels", alwaysShowLabels);
+        btnToggleLabels.innerHTML = alwaysShowLabels 
+          ? '<span>🏷️</span> Labels: Visible' 
+          : '<span>🏷️</span> Labels: Hover';
+      });
+    }
+
+    // Theme Switcher
+    const btnTheme = document.getElementById("btnTheme");
+    btnTheme.addEventListener("click", () => {
+      const current = document.body.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.body.setAttribute("data-theme", next);
+      btnTheme.innerHTML = next === "dark" ? "<span>☀️</span> Light Mode" : "<span>🌙</span> Dark Mode";
+      drawConnections();
+    });
+
+    // Toggle Animation
+    const btnAnim = document.getElementById("btnToggleAnimation");
+    btnAnim.addEventListener("click", () => {
+      isAnimated = !isAnimated;
+      btnAnim.innerHTML = isAnimated ? "<span>⚡</span> Flow: Active" : "<span>⏸️</span> Flow: Paused";
+      drawConnections();
+    });
+
+    // Search Filtering
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll(".node-card").forEach(card => {
+        const id = card.dataset.id;
+        const data = NODES[id];
+        const match = !q || data.name.toLowerCase().includes(q) || data.desc.toLowerCase().includes(q) || data.type.toLowerCase().includes(q);
+        card.style.opacity = match ? "1" : "0.2";
+        card.style.filter = match ? "none" : "grayscale(80%)";
+      });
+    });
+
+    // Export to Print/PDF
+    document.getElementById("btnExport").addEventListener("click", () => {
+      window.print();
+    });
+
+    // Initial setup with auto-fit and clean overview
+    window.addEventListener("load", () => {
+      fitToScreen();
+      drawConnections();
+    });
+
+    window.addEventListener("resize", () => {
+      drawConnections();
+    });
+  </script>
+</body>
+</html>

@@ -8,8 +8,7 @@ TOOL_SCHEMA = {
         "description": "สั่งรีบูตระบบ J.A.R.V.I.S. Mainframe ทันที (Autonomous Reboot) เมื่อระบบเริ่มทำงานผิดปกติ หรือต้องการเคลียร์แคชระบบ",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

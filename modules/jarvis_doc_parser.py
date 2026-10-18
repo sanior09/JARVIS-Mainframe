@@ -8,18 +8,18 @@ try:
     import PyPDF2
     import docx
     import openpyxl
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
     import chromadb
 except ImportError:
     pass
 
 logger = logging.getLogger(__name__)
 
-LIBRARY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jarvis_library")
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jarvis_vector_db")
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LIBRARY_DIR = os.path.join(_BASE_DIR, "jarvis_library")
+DB_PATH = os.path.join(_BASE_DIR, "jarvis_vector_db")
 
 # Add backwards compatibility for old dropzone
-OLD_DROPZONE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "document_dropzone")
+OLD_DROPZONE = os.path.join(_BASE_DIR, "document_dropzone")
 
 def init_dirs():
     if not os.path.exists(LIBRARY_DIR):
@@ -85,11 +85,18 @@ def scan_and_parse_library():
         return f"เกิดข้อผิดพลาดในการเชื่อมต่อสมองเทียม: {e}"
         
     # Text Splitter settings
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len,
-    )
+    try:
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len,
+        )
+    except Exception:
+        class _SimpleSplitter:
+            def split_text(self, text):
+                return [text[i:i+1000] for i in range(0, len(text), 800)]
+        text_splitter = _SimpleSplitter()
     
     for file_path in files:
         filename = os.path.basename(file_path)

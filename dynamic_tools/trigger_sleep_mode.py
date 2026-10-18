@@ -7,8 +7,7 @@ TOOL_SCHEMA = {
         "description": "เปิดโหมดจำศีล (Sleep Mode) เพื่อตกผลึกความจำ (Memory Consolidation) สร้าง Core Beliefs ให้ JARVIS เรียนรู้นิสัยเจ้านาย",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

@@ -34,7 +34,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "add": "แอด", "address": "แอดเดรส", "admin": "แอดมิน", 
     "administrator": "แอดมินิสเตรเตอร์", "aether": "อีเทอร์", "afk": "เอเอฟเค", 
     "agent": "เอเจนต์", "agents": "เอเจนต์", "agile": "เอไจล์", 
-    "agoda": "อโกด้า", "agree": "อะกรี", "ai": "เอ-ไอ", 
+    "agoda": "อโกด้า", "agree": "อะกรี", "ai": "เอไอ", 
     "aim": "เอม", "airbnb": "แอร์บีเอ็นบี", "airpods": "แอร์พอดส์", 
     "airtag": "แอร์แท็ก", "alarm": "อะลาร์ม", "alert": "อะเลิร์ต", 
     "algorithm": "อัลกอริทึม", "allow": "อะลาว", "alpha": "อัลฟ่า", 
@@ -42,7 +42,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "amazon": "แอมะซอน", "amd": "เอเอ็มดี", "analysis": "อะนาลิซิส", 
     "analyzing": "อะนาไลซิง", "android": "แอนดรอยด์", "angular": "แองกูลาร์", 
     "animation": "แอนิเมชัน", "ansible": "แอนซิเบิล", "apex": "เอเปกส์", 
-    "apex legends": "เอเปกส์เลเจนดส์", "api": "เอ-พี-ไอ", "app": "แอป", 
+    "apex legends": "เอเปกส์เลเจนดส์", "api": "เอพีไอ", "app": "แอป", 
     "apple": "แอปเปิล", "apple music": "แอปเปิลมิวสิก", "apple vision pro": "แอปเปิลวิชันโปร", 
     "apple watch": "แอปเปิลวอตช์", "application": "แอปพลิเคชัน", "approve": "แอพพรูฟ", 
     "ar": "เออาร์", "arc": "อาร์ค", "arc reactor": "อาร์ครีแอ็กเตอร์", 
@@ -56,7 +56,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "authenticate": "ออเทนทิเคต", "authentication": "ออเทนติเคชั่น", "authorization": "ออธอไรเซชัน", 
     "authorize": "ออทอไรซ์", "auto": "ออโต้", "automatic": "ออโตเมติค", 
     "automation": "ออโตเมชั่น", "autonomous agent": "ออโตโนมัสเอเจนต์", "avengers": "อเวนเจอร์ส", 
-    "avg": "แอฟเวอเรจ", "await": "อะเวต", "aws": "เอ-ดับเบิลยู-เอส", 
+    "avg": "แอฟเวอเรจ", "await": "อะเวต", "aws": "เอดับเบิลยูเอส", 
     "azure": "อาชัวร์", "backend": "แบ็กเอนด์", "background": "แบ็คกราวด์", 
     "barge in": "บาร์จอิน", "barge-in": "บาร์จอิน", 
     "backlog": "แบ็กล็อก", "backup": "แบ็คอัพ", "backward": "แบ็คเวิร์ด", 
@@ -110,9 +110,9 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "controller": "คอนโทรลเลอร์", "cookie": "คุกกี้", "cookies": "คุกกี้", 
     "cooldown": "คูลดาวน์", "cooler": "คูลเลอร์", "cooling": "คูลลิง", 
     "coordinate": "โคออร์ดิเนต", "copy": "ก็อปปี้", "cors": "คอร์ส", 
-    "count": "เคานต์", "cpu": "ซี-พี-ยู", "crash": "แครช", 
+    "count": "เคานต์", "cpu": "ซีพียู", "crash": "แครช", 
     "create": "ครีเอต", "created": "ครีเอตเต็ด", "credential": "ครีเดนเชียล", 
-    "critical": "คริติคอล", "cross join": "ครอสจอยน์", "css": "ซี-เอส-เอส", 
+    "critical": "คริติคอล", "cross join": "ครอสจอยน์", "css": "ซีเอสเอส", 
     "csv": "ซีเอสวี", "current": "เคอร์เรนต์", "cut": "คัต", 
     "cyberpunk": "ไซเบอร์พังก์", "cyberpunk 2077": "ไซเบอร์พังก์สองศูนย์เจ็ดเจ็ด", "dall-e": "ดอลลี่", 
     "dall-e 3": "ดอลลี่ทรี", "danger": "แดนเจอร์", "dart": "ดาร์ต", 
@@ -139,7 +139,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "download": "ดาวน์โหลด", "downtime": "ดาวน์ไทม์", "dps": "ดีพีเอส", 
     "drag": "แดรก", "driver": "ไดรเวอร์", "drivers": "ไดรเวอร์", 
     "drone": "โดรน", "drop": "ดรอป", "dropdown": "ดรอปดาวน์", 
-    "dynamic": "ไดนามิก", "dynamic island": "ไดนามิก ไอแลนด์", "dynamic island hud": "ไดนามิก ไอแลนด์ ฮัด", 
+    "dynamic": "ไดนามิก", "dynamic island": "ไดนามิกไอแลนด์", "dynamic island hud": "ไดนามิกไอแลนด์ฮัด", 
     "e-sports": "อี-สปอร์ต", "earphone": "เอียร์โฟน", 
     "ec2": "อีซีทู", "edge": "เอดจ์", "edit": "อีดิต", 
     "editor": "เอดิเตอร์", "effect": "เอฟเฟกต์", "elden ring": "เอลเดนริง", 
@@ -185,7 +185,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "github": "กิตฮับ", "gitlab": "กิตแล็บ", "global": "โกลบอล", 
     "go": "โก", "goal": "โกล", "good": "กู๊ด", 
     "google": "กูเกิล", "gpt": "จีพีที", "gpt-4": "จีพีทีโฟร์", 
-    "gpt-4o": "จีพีทีโฟร์โอ", "gpt-4o mini": "จีพีทีโฟร์โอมินิ", "gpu": "จี-พี-ยู", 
+    "gpt-4o": "จีพีทีโฟร์โอ", "gpt-4o mini": "จีพีทีโฟร์โอมินิ", "gpu": "จีพียู", 
     "grab": "แกร็บ", "grade": "เกรด", "gradient": "เกรเดียนต์", 
     "gradient descent": "เกรเดียนต์ดีเซนต์", "grammar": "แกรมมาร์", "grant": "แกรนต์", 
     "graph": "กราฟ", "graphic": "กราฟิก", "graphql": "กราฟคิวแอล", 
@@ -222,7 +222,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
     "ios": "ไอ-โอ-เอส", "iot": "ไอโอที", "ip": "ไอพี", 
     "ipad": "ไอแพด", "iphone": "ไอโฟน", "ips": "ไอพีเอส", 
     "iron man": "ไอรอนแมน", "iron spider": "ไอรอนสไปเดอร์", 
-    "island": "ไอแลนด์", "island hud": "ไอแลนด์ ฮัด", "island overlay": "ไอแลนด์ โอเวอร์เลย์", 
+    "island": "ไอแลนด์", "island hud": "ไอแลนด์ฮัด", "island overlay": "ไอแลนด์โอเวอร์เลย์", 
     "issue": "อิชชิว", 
     "iteration": "อิเทอเรชัน", "iterator": "อิตเทอเรเตอร์", "j.a.r.v.i.s.": "จาร์วิส", 
     "jarvis": "จาร์วิส", "java": "จาวา", "javascript": "จาวาสคริปต์", 
@@ -489,7 +489,7 @@ _VOICE_PROTOCOL_ACCENT_DICT = {
 # Precompiled Single-Pass Regex for ultra-fast <0.5ms replacement
 _VOICE_PROTOCOL_KEYS = sorted(_VOICE_PROTOCOL_ACCENT_DICT.keys(), key=len, reverse=True)
 _VOICE_PROTOCOL_PATTERN = re.compile(
-    r'\b(' + '|'.join(re.escape(k) for k in _VOICE_PROTOCOL_KEYS) + r')\b',
+    r'(?<![a-zA-Z0-9])(' + '|'.join(re.escape(k) for k in _VOICE_PROTOCOL_KEYS) + r')(?![a-zA-Z0-9])',
     re.IGNORECASE
 )
 _VOICE_PROTOCOL_LOOKUP = {k.lower(): v for k, v in _VOICE_PROTOCOL_ACCENT_DICT.items()}
@@ -625,32 +625,37 @@ def segment_text(text: str, max_length: Optional[int] = None) -> list:
 def determine_vocal_emotion_state(text: str, env_matrix: Optional[Dict[str, Any]] = None) -> tuple[str, str]:
     """
     [DYNAMIC SYNAPTIC EMOTIONAL VOICE CORE]
-    ประเมินอารมณ์จากบริบท, ความเสี่ยง และเวลา เพื่อกำหนด Voice Prosody (Rate, Pitch)
+    ประเมินอารมณ์จากบริบท, ความเสี่ยง และจิตวิทยาอารมณ์ (jarvis_mood) เพื่อกำหนด Voice Prosody (Rate, Pitch)
     """
-    if env_matrix is None:
-        env_matrix = {}
-        
+    # 1. First check if telemetry indicates system emergency
+    if env_matrix and isinstance(env_matrix, dict):
+        risk_level = env_matrix.get("risk_level", "normal")
+        telemetry = env_matrix.get("hardware_telemetry", {})
+        if isinstance(telemetry, dict):
+            heat = telemetry.get("gpu_temp", 0)
+            risk_score = telemetry.get("risk_score", 0)
+            if risk_level == "critical" or risk_score > 75 or heat > 80:
+                return "+10%", "+4Hz"
+
+    # 2. Modulate based on text emotion from jarvis_mood
+    try:
+        from jarvis_mood import detect_text_vocal_tone
+        rate, pitch, _ = detect_text_vocal_tone(text)
+        return rate, pitch
+    except Exception:
+        try:
+            from modules.jarvis_mood import detect_text_vocal_tone
+            rate, pitch, _ = detect_text_vocal_tone(text)
+            return rate, pitch
+        except Exception:
+            pass
+
     now = datetime.now()
     is_late_night = 0 <= now.hour < 5
-    is_short_command = len(text.split()) <= 12
-    
-    risk_level = env_matrix.get("risk_level", "normal") if isinstance(env_matrix, dict) else "normal"
-    telemetry = env_matrix.get("hardware_telemetry", {}) if isinstance(env_matrix, dict) else {}
-    if isinstance(telemetry, str):
-        telemetry = {"status": telemetry}
-        
-    heat = telemetry.get("gpu_temp", 0) if isinstance(telemetry, dict) else 0
-    risk_score = telemetry.get("risk_score", 0) if isinstance(telemetry, dict) else 0
-    
-    urgent_keywords = ["ระวัง", "อันตราย", "ฉุกเฉิน", "วิกฤต", "ละลาย", "overload", "alert", "เกินพิกัด"]
-    
-    if risk_level == "critical" or risk_score > 75 or heat > 80 or any(k in text.lower() for k in urgent_keywords):
-        return "+12%", "-1Hz"
-        
-    if is_late_night and is_short_command:
-        return "-3%", "-4Hz"
-        
-    return "+3%", "-3Hz"
+    if is_late_night:
+        return "-4%", "-3Hz"
+
+    return "+1%", "-1Hz"
 
 
 def stream_phonetic_chunks(token_iterable):

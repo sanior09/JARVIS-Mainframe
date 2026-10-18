@@ -9,8 +9,7 @@ TOOL_SCHEMA = {
         "description": "คำสั่งสำหรับบังคับให้ J.A.R.V.I.S. สแกนและอ่านเอกสารใหม่ (PDF, Word, Excel) ที่ถูกวางไว้ในโฟลเดอร์ jarvis_library ทันที",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

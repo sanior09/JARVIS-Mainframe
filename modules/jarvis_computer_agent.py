@@ -13,7 +13,7 @@ class AgenticComputerController:
     def __init__(self):
         import pyautogui
         
-        pyautogui.FAILSAFE = True
+        pyautogui.FAILSAFE = False
         
         api_key = os.getenv("GEMINI_API_KEY")
         self.model = None
@@ -21,7 +21,8 @@ class AgenticComputerController:
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=api_key)
-                self.model = genai.GenerativeModel('gemini-1.5-pro-latest')
+                gem_model = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+                self.model = genai.GenerativeModel(gem_model)
             except Exception as e:
                 logging.warning(f"Failed to initialize Gemini Vision for computer agent: {e}")
             
@@ -92,6 +93,7 @@ class AgenticComputerController:
         import urllib.parse
         import pyperclip
         import pyautogui
+        pyautogui.FAILSAFE = False
 
         clean_goal = goal.lower().strip()
         logging.info(f"Starting Agentic Computer Control for Goal: {goal}")
@@ -103,7 +105,14 @@ class AgenticComputerController:
             if is_screen_takeover_stopped():
                 return "ยกเลิกการควบคุมคอมพิวเตอร์ตามคำสั่งเจ้านายแล้วครับ"
 
-            browser_keywords = ["เปิดเบราว์เซอร์", "เปิดเบราเซอร์", "เปิด browser", "เปิด chrome", "เปิดเว็บ", "ค้นหา", "เสิร์ช", "search", "google", "กูเกิล", "ราคาทอง"]
+            import re
+
+            browser_keywords = [
+                "เปิดเบราว์เซอร์", "เปิดเบราเซอร์", "เปิด browser", "เปิด chrome", "เปิดเว็บ",
+                "ค้นหา", "เสิร์ช", "search", "google", "กูเกิล", "ราคาทอง", "url", "พิมurl",
+                "พิมพ์url", "พิม url", "พิมพ์ url", "เว็บ", "เว็ป", "link", "ลิงก์", "ลิงค์",
+                "เปิดgoogle", "เปิด google", "เข้าเว็บ"
+            ]
             app_commands = {
                 "notepad": ("notepad.exe", "Notepad"),
                 "สมุดจด": ("notepad.exe", "Notepad"),
@@ -116,7 +125,7 @@ class AgenticComputerController:
             }
 
             control_mode = os.getenv("COMPUTER_CONTROL_MODE", "background").lower().strip()
-            force_visual = any(kw in clean_goal for kw in ["คุมเมาส์", "ขยับเมาส์", "ลากเมาส์", "คลิกเมาส์", "visual control"])
+            force_visual = any(kw in clean_goal for kw in ["คุมเมาส์", "ขยับเมาส์", "ลากเมาส์", "คลิกเมาส์", "visual control", "เลื่อนเมาส์", "เลื่อนเมา์", "เลื่อนเมาส", "คุมจอ", "ควบคุมจอ", "ขยับเมา"])
 
             # =================================================================
             # MODE 1: Background Automation (100% Mouse-Free & Non-Intrusive)
@@ -125,14 +134,22 @@ class AgenticComputerController:
                 logging.info(f"[BACKGROUND AGENT] Running Mode 1 (Mouse-Free Background Automation) for: '{goal}'")
                 
                 # 1. Search & Browser in Background
-                if any(kw in clean_goal for kw in browser_keywords):
+                if any(kw in clean_goal for kw in browser_keywords) or "http://" in goal or "https://" in goal:
                     search_query = ""
-                    for trigger in ["ค้นหาข้อมูลเกี่ยวกับ", "ค้นหาข้อมูล", "ค้นหาเรื่อง", "ค้นหา", "search for", "search", "เสิร์ช", "หาข้อมูล"]:
-                        if trigger in goal:
-                            parts = goal.split(trigger, 1)
-                            if len(parts) > 1 and parts[1].strip():
-                                search_query = parts[1].strip().strip(":").strip()
-                                break
+                    url_match = re.search(r'https?://[^\s<>"]+', goal)
+                    if url_match:
+                        search_query = url_match.group(0).strip()
+
+                    if not search_query:
+                        for trigger in ["ค้นหาข้อมูลเกี่ยวกับ", "ค้นหาข้อมูล", "ค้นหาเรื่อง", "ค้นหา", "search for", "search", "เสิร์ช", "หาข้อมูล", "พิมurl", "พิมพ์url", "พิมว่า", "พิมพ์ว่า"]:
+                            if trigger in goal:
+                                parts = goal.split(trigger, 1)
+                                if len(parts) > 1 and parts[1].strip():
+                                    candidate = parts[1].strip().strip(":").strip()
+                                    if candidate.startswith("อันนี้"):
+                                        candidate = candidate[len("อันนี้"):].strip()
+                                    search_query = candidate
+                                    break
                     if not search_query:
                         if "ราคาทอง" in clean_goal:
                             search_query = "ราคาทองคำวันนี้"
@@ -140,7 +157,7 @@ class AgenticComputerController:
                             search_query = "https://www.youtube.com"
 
                     if search_query:
-                        update_screen_takeover(f"J.A.R.V.I.S. (พื้นหลัง): กำลังเปิดค้นหา '{search_query}'...")
+                        update_screen_takeover(f"J.A.R.V.I.S. (พื้นหลัง): กำลังเปิด '{search_query}'...")
                         encoded_query = urllib.parse.quote_plus(search_query)
                         if search_query.startswith("http://") or search_query.startswith("https://"):
                             target_url = search_query
@@ -149,6 +166,11 @@ class AgenticComputerController:
 
                         # Open tab cleanly without hijacking mouse
                         webbrowser.open(target_url)
+
+                        if search_query.startswith("http://") or search_query.startswith("https://"):
+                            update_screen_takeover(f"สำเร็จ: เปิดเว็บไซต์ {target_url} เรียบร้อย")
+                            time.sleep(0.8)
+                            return f"เปิดเว็บไซต์ '{target_url}' บนเบราว์เซอร์ให้เรียบร้อยแล้วครับเจ้านาย โดยไม่รบกวนเมาส์ของเจ้านายครับ"
 
                         # Deep analyze the live results in background
                         update_screen_takeover("J.A.R.V.I.S. (พื้นหลัง): กำลังวิเคราะห์ข้อมูล...")
@@ -167,6 +189,30 @@ class AgenticComputerController:
                         return "เปิดหน้าต่างเบราว์เซอร์ให้เรียบร้อยแล้วครับเจ้านาย โดยไม่รบกวนเมาส์ของเจ้านายครับ"
 
                 # 2. Launch Windows Apps in Background
+                if any(kw in clean_goal for kw in ["steam", "สตีม", "สตรีม"]):
+                    is_lib = any(kw in clean_goal for kw in ["คลัง", "library", "คลังเกม", "เกมในคลัง"])
+                    if is_lib:
+                        update_screen_takeover("กำลังเปิด Steam คลังเกม (Library)...")
+                        try:
+                            os.startfile("steam://open/games")
+                        except Exception:
+                            subprocess.Popen("start steam://open/games", shell=True)
+                        time.sleep(1.0)
+                        update_screen_takeover("สำเร็จ: เปิด Steam คลังเกมเรียบร้อย")
+                        return ""
+                    else:
+                        update_screen_takeover("กำลังเปิดโปรแกรม Steam...")
+                        try:
+                            os.startfile("steam://open/main")
+                        except Exception:
+                            try:
+                                os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
+                            except Exception:
+                                subprocess.Popen("start steam://open/main", shell=True)
+                        time.sleep(1.0)
+                        update_screen_takeover("สำเร็จ: เปิดโปรแกรม Steam เรียบร้อย")
+                        return "เปิดโปรแกรม Steam ให้เรียบร้อยแล้วครับเจ้านาย"
+
                 for app_kw, (exe_name, app_display) in app_commands.items():
                     if f"เปิด {app_kw}" in clean_goal or f"เปิด{app_kw}" in clean_goal:
                         update_screen_takeover(f"J.A.R.V.I.S. (พื้นหลัง): กำลังเปิด {app_display}...")
@@ -180,18 +226,36 @@ class AgenticComputerController:
             # MODE 2: Visual Takeover (เมื่อตั้งใจสั่งให้ลากเมาส์ หรือ force_visual)
             # =================================================================
             # -----------------------------------------------------------------
-            # Step-by-Step Scenario 1: Open Browser and Search (Visual Mouse & Keyboard)
+            # Step-by-Step Scenario 1: Open Browser and Search / URL (Visual Mouse & Keyboard)
             # -----------------------------------------------------------------
-            if any(kw in clean_goal for kw in browser_keywords):
+            if any(kw in clean_goal for kw in browser_keywords) or "http://" in goal or "https://" in goal:
                 search_query = ""
-                for trigger in ["ค้นหาข้อมูลเกี่ยวกับ", "ค้นหาข้อมูล", "ค้นหาเรื่อง", "ค้นหา", "search for", "search", "เสิร์ช", "หาข้อมูล"]:
-                    if trigger in goal:
-                        parts = goal.split(trigger, 1)
-                        if len(parts) > 1 and parts[1].strip():
-                            search_query = parts[1].strip().strip(":").strip()
-                            break
+                # ลำดับที่ 1: ดึง URL โดยตรงจากคำสั่ง (เช่น https://marvel-splendor-2.onrender.com/)
+                url_match = re.search(r'https?://[^\s<>"]+', goal)
+                if url_match:
+                    search_query = url_match.group(0).strip()
 
-                # If the goal mentions gold or specific topic without trigger:
+                # ลำดับที่ 2: ตรวจจับคำค้นหาหรือการพิมพ์ข้อความ
+                if not search_query:
+                    try:
+                        from jarvis_core.automation_agent import extract_search_query
+                        search_query = extract_search_query(goal)
+                    except Exception:
+                        for trigger in [
+                            "ค้นหาข้อมูลเกี่ยวกับ", "ค้นหาข้อมูล", "ค้นหาเรื่อง", "ค้นหา", "search for", "search",
+                            "เสิร์ช", "หาข้อมูล", "พิมurl", "พิมพ์url", "พิม url", "พิมพ์ url", "พิมว่า", "พิมพ์ว่า",
+                            "เปิดเว็บ", "เข้าเว็บ", "พิม", "พิมพ์"
+                        ]:
+                            if trigger in goal:
+                                parts = goal.split(trigger, 1)
+                                if len(parts) > 1 and parts[1].strip():
+                                    candidate = parts[1].strip().strip(":").strip()
+                                    if candidate.startswith("อันนี้"):
+                                        candidate = candidate[len("อันนี้"):].strip()
+                                    search_query = candidate
+                                    break
+
+                # ลำดับที่ 3: คำสั่งที่ไม่มี Keyword นำหน้า
                 if not search_query:
                     if "ราคาทอง" in clean_goal:
                         search_query = "ราคาทองคำวันนี้"
@@ -205,66 +269,66 @@ class AgenticComputerController:
                 chrome_taskbar_x = int(1228 * scale_x)
                 chrome_taskbar_y = int(1057 * scale_y)
 
-                # 2. Chrome Profile Selector card ("Nachapol Siriporntum" avatar at 781, 582)
-                profile_card_x = int(781 * scale_x)
-                profile_card_y = int(582 * scale_y)
-
-                # 3. Address / Search Bar (960, 82)
+                # 2. Address / Search Bar (960, 82 on 1920x1080)
                 address_bar_x = int(960 * scale_x)
                 address_bar_y = int(82 * scale_y)
 
                 # ขั้นตอนที่ 1: เลื่อนเมาส์ไปยังไอคอน Google Chrome บน Taskbar แล้วคลิกเปิด
                 update_screen_takeover("ขั้นตอนที่ 1: กำลังเลื่อนเมาส์ไปคลิกเปิด Google Chrome...")
                 notify_agent_click()
-                pyautogui.moveTo(chrome_taskbar_x, chrome_taskbar_y, duration=0.7)
+                pyautogui.moveTo(chrome_taskbar_x, chrome_taskbar_y, duration=0.8)
                 notify_agent_click()
                 pyautogui.click(chrome_taskbar_x, chrome_taskbar_y)
+                # เพื่อให้มั่นใจ 100% ว่าหน้าต่าง Chrome เปิดขึ้นมาบนหน้าจอ
+                try:
+                    subprocess.Popen("start chrome", shell=True)
+                except Exception:
+                    pass
                 time.sleep(1.2)
 
                 if is_screen_takeover_stopped():
                     return "ยกเลิกการควบคุมคอมพิวเตอร์ตามคำสั่งเจ้านายแล้วครับ"
 
-                # ขั้นตอนที่ 2: เลื่อนเมาส์ไปคลิกเลือกโปรไฟล์ 'Nachapol Siriporntum'
-                update_screen_takeover("ขั้นตอนที่ 2: เลื่อนเมาส์ไปเลือกโปรไฟล์ 'Nachapol Siriporntum'...")
+                # ขั้นตอนที่ 2: เลื่อนเมาส์ไปที่ช่องที่อยู่เว็บ / ช่องค้นหา (Address Bar)
+                update_screen_takeover("ขั้นตอนที่ 2: เลื่อนเมาส์ไปที่แถบที่อยู่เว็บ (Address Bar)...")
                 notify_agent_click()
-                pyautogui.moveTo(profile_card_x, profile_card_y, duration=0.6)
-                notify_agent_click()
-                pyautogui.click(profile_card_x, profile_card_y)
-                time.sleep(1.2)
-
-                if is_screen_takeover_stopped():
-                    return "ยกเลิกการควบคุมคอมพิวเตอร์ตามคำสั่งเจ้านายแล้วครับ"
-
-                # ขั้นตอนที่ 3: เลื่อนเมาส์ไปที่ช่องค้นหา (Address Bar)
-                update_screen_takeover("ขั้นตอนที่ 3: เลื่อนเมาส์ไปที่แถบค้นหา (Address Bar)...")
-                notify_agent_click()
-                pyautogui.moveTo(address_bar_x, address_bar_y, duration=0.5)
+                pyautogui.moveTo(address_bar_x, address_bar_y, duration=0.8)
                 notify_agent_click()
                 pyautogui.click(address_bar_x, address_bar_y)
                 pyautogui.hotkey('ctrl', 'l')
-                time.sleep(0.3)
+                time.sleep(0.4)
 
                 if is_screen_takeover_stopped():
                     return "ยกเลิกการควบคุมคอมพิวเตอร์ตามคำสั่งเจ้านายแล้วครับ"
 
-                # ขั้นตอนที่ 4: พิมพ์คำค้นหาและกดสืบค้น
+                # ขั้นตอนที่ 3: พิมพ์ URL หรือคำค้นหาและกด Enter
                 if search_query:
-                    update_screen_takeover(f"ขั้นตอนที่ 4: กำลังพิมพ์คำค้นหา '{search_query}'...")
+                    is_direct_url = search_query.startswith(("http://", "https://"))
+                    if is_direct_url:
+                        update_screen_takeover(f"ขั้นตอนที่ 3: กำลังพิมพ์ URL '{search_query}'...")
+                    else:
+                        update_screen_takeover(f"ขั้นตอนที่ 3: กำลังพิมพ์คำค้นหา '{search_query}'...")
+
                     pyperclip.copy(search_query)
-                    time.sleep(0.2)
+                    time.sleep(0.3)
                     pyautogui.hotkey('ctrl', 'v')
-                    time.sleep(0.7)
+                    time.sleep(0.6)
 
                     if is_screen_takeover_stopped():
                         return "ยกเลิกการควบคุมคอมพิวเตอร์ตามคำสั่งเจ้านายแล้วครับ"
 
-                    # ขั้นตอนที่ 5: กด Enter เพื่อดำเนินการค้นหา
-                    update_screen_takeover("ขั้นตอนที่ 5: กด Enter เพื่อสืบค้นข้อมูล...")
+                    # ขั้นตอนที่ 4: กด Enter เพื่อดำเนินการ
+                    update_screen_takeover("ขั้นตอนที่ 4: กด Enter เพื่อนำทางไปยังเป้าหมาย...")
                     pyautogui.press('enter')
                     time.sleep(1.8)
 
-                    # ขั้นตอนที่ 6: สแกนและวิเคราะห์ข้อมูลผลลัพธ์บนหน้าจอ
-                    update_screen_takeover("ขั้นตอนที่ 6: J.A.R.V.I.S. กำลังวิเคราะห์ผลลัพธ์บนหน้าจอ...")
+                    if is_direct_url:
+                        update_screen_takeover(f"สำเร็จ: นำทางไปยัง {search_query} เรียบร้อย")
+                        time.sleep(1.0)
+                        return f"ควบคุมเมาส์เปิด Google Chrome และพิมพ์ URL นำทางไปยัง '{search_query}' บนหน้าจอให้เรียบร้อยแล้วครับเจ้านาย"
+
+                    # ขั้นตอนที่ 5: สแกนและวิเคราะห์ข้อมูลผลลัพธ์บนหน้าจอ (กรณีคำค้นหา)
+                    update_screen_takeover("ขั้นตอนที่ 5: J.A.R.V.I.S. กำลังวิเคราะห์ผลลัพธ์บนหน้าจอ...")
                     summary = self._analyze_search_results(search_query)
 
                     update_screen_takeover(f"สำเร็จ: ค้นหาและวิเคราะห์ '{search_query}' เรียบร้อย")
@@ -272,7 +336,7 @@ class AgenticComputerController:
                     if summary:
                         return f"ผมเปิดเบราว์เซอร์และวิเคราะห์ข้อมูลบนหน้าจอให้เรียบร้อยแล้วครับเจ้านาย: {summary}"
                     else:
-                        return f"ควบคุมเมาส์คลิกเปิด Chrome, เลือกโปรไฟล์ของคุณ Nachapol และพิมพ์ค้นหา '{search_query}' บนหน้าจอให้เรียบร้อยแล้วครับเจ้านาย"
+                        return f"ควบคุมเมาส์คลิกเปิด Chrome และพิมพ์ค้นหา '{search_query}' บนหน้าจอให้เรียบร้อยแล้วครับเจ้านาย"
                 else:
                     update_screen_takeover("สำเร็จ: เปิดหน้าต่างเบราว์เซอร์เรียบร้อยแล้ว")
                     time.sleep(1.0)

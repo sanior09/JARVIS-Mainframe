@@ -35,7 +35,8 @@ def read_screen_context(args):
         
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-pro-latest')
+        gem_model = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+        model = genai.GenerativeModel(gem_model)
         
         # ถ่ายภาพหน้าจอ
         screenshot = ImageGrab.grab()

@@ -88,9 +88,13 @@ def test_notifier_notify_methods(mock_post):
 
     notifier = JarvisNotifier(access_token="token_xyz", owner_id="user_abc")
 
-    # 1. notify_success
+    # 1. notify_success (suppressed by default when LINE_NOTIFY_ON_TASK is false)
     notifier.notify_success(task="Computer Agent Task", detail="เปิดโปรแกรมเรียบร้อย")
-    # Wait for background thread executor to complete task
+    time.sleep(0.05)
+    assert not mock_post.called
+
+    # 1.1 notify_success with force=True
+    notifier.notify_success(task="Computer Agent Task", detail="เปิดโปรแกรมเรียบร้อย", force=True)
     time.sleep(0.1)
     assert mock_post.called
 

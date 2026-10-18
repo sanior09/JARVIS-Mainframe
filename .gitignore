@@ -74,6 +74,14 @@ learned_data/
 reports/*.log
 scratch/
 temp_*.*
+*.unlock
+test_*.txt
+ddgs_lottery.txt
+qwen_lottery.txt
+r23.txt
+verify_drink.txt
+user_profile_dump.txt
+
 
 # IDE & OS Files
 .vscode/

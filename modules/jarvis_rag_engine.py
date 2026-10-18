@@ -10,7 +10,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jarvis_vector_db")
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(_BASE_DIR, "jarvis_vector_db")
 COLLECTION_NAME = "jarvis_document_brain"
 
 class JarvisRAGEngine:
@@ -95,7 +96,7 @@ class JarvisRAGEngine:
                 return completion.choices[0].message.content
             elif self.gemini_api_key:
                 genai.configure(api_key=self.gemini_api_key)
-                model = genai.GenerativeModel('gemini-2.5-flash')
+                model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-3.6-flash"))
                 response = model.generate_content(f"{system_prompt}\n\n{prompt}")
                 return response.text
             else:

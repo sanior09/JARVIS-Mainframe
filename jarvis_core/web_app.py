@@ -32,6 +32,35 @@ def create_app() -> Flask:
     CORS(app)
 
     # ----------------------------------------------------
+    # JARVIS Cyber-Defense Layer: Network & API Security
+    # ----------------------------------------------------
+    @app.before_request
+    def enforce_security_protocols():
+        # 1. Localhost Lockdown
+        allowed_ips = ["127.0.0.1", "::1"]
+        if request.remote_addr not in allowed_ips:
+            logger.warning(f"[SECURITY ALERT] Blocked external access from IP: {request.remote_addr}")
+            return jsonify({
+                "status": "error", 
+                "message": "ACCESS DENIED: External connections are blocked by JARVIS Security Protocol."
+            }), 403
+
+        # 2. API Token Authentication (if JARVIS_SECURE_MODE is enabled)
+        if os.environ.get("JARVIS_SECURE_MODE", "False").lower() == "true":
+            # Skip check for basic frontend routes
+            if request.path in ["/", "/favicon.ico"] or request.path.startswith("/temp_images/"):
+                return
+            
+            token = request.headers.get("X-Jarvis-Security-Token")
+            expected_token = os.environ.get("JARVIS_SECURITY_TOKEN", "strict-jarvis-auth-token")
+            if token != expected_token:
+                logger.warning(f"[SECURITY ALERT] Unauthorized API attempt on {request.path}")
+                return jsonify({
+                    "status": "error", 
+                    "message": "ACCESS DENIED: Invalid or missing Security Token."
+                }), 401
+
+    # ----------------------------------------------------
     # Index & Static File Routes
     # ----------------------------------------------------
     @app.route("/")
@@ -193,9 +222,16 @@ def create_app() -> Flask:
 
         # Route through cognitive engine
         try:
-            from jarvis_core.ai_router import call_groq_model
-            response = call_groq_model([{"role": "user", "content": user_message}])
-            reply_text = response.get("content", "รับทราบครับ กำลังประมวลผลคำสั่ง")
+            req_model = (data.get("model") or "").lower()
+            from jarvis_core.ai_router import call_groq_model, call_gemini_fallback, call_ollama_fallback
+            if "gemini" in req_model:
+                response = call_gemini_fallback([{"role": "user", "content": user_message}])
+            elif "ollama" in req_model or "local" in req_model:
+                response = call_ollama_fallback([{"role": "user", "content": user_message}])
+            else:
+                response = call_groq_model([{"role": "user", "content": user_message}])
+
+            reply_text = response.get("content") or response.get("error_message") or "รับทราบครับ กำลังประมวลผลคำสั่ง"
             return jsonify({"response": reply_text})
         except Exception as e:
             logger.error(f"Chat error: {e}")
@@ -206,5 +242,13 @@ def create_app() -> Flask:
         data = request.get_json(silent=True) or {}
         logger.info(f"Received user feedback: {data}")
         return jsonify({"status": "success", "message": "Feedback recorded."})
+
+    @app.route("/api/ai_quota", methods=["GET"])
+    def api_ai_quota():
+        try:
+            from modules.ai_quota_tracker import get_quota_stats
+            return jsonify(get_quota_stats())
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     return app

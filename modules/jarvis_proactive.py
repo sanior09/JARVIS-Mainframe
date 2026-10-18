@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timedelta
 
 import psutil
+import win32gui
+import json
 import requests
 from dotenv import load_dotenv
 
@@ -85,6 +87,76 @@ def _check_morning_briefing():
 _last_ram_warning = 0.0
 _last_cpu_warning = 0.0
 
+def get_active_window_title() -> str:
+    try:
+        hwnd = win32gui.GetForegroundWindow()
+        return win32gui.GetWindowText(hwnd).lower()
+    except:
+        return ""
+
+def is_smart_silence_active() -> bool:
+    title = get_active_window_title()
+    silence_keywords = ["youtube", "netflix", "prime video", "disney", "hbo", "spotify", "vlc", "potplayer", "movie", "หนัง", "ภาพยนตร์"]
+    for kw in silence_keywords:
+        if kw in title:
+            return True
+    return False
+
+_last_screen_scan = 0.0
+def _check_screen_anomaly():
+    global _last_screen_scan
+    now = time.time()
+    if now - _last_screen_scan < 180:  # Scan at most every 3 minutes
+        return
+        
+    title = get_active_window_title()
+    
+    is_coding = any(kw in title for kw in ["visual studio", "cursor", "pycharm", "intellij", "code", "terminal", "cmd", "powershell"])
+    is_gaming = any(kw in title for kw in ["valorant", "elden ring", "genshin", "dota", "game", "steam"])
+    
+    if not (is_coding or is_gaming):
+        return
+        
+    try:
+        from jarvis_awareness import _cached_screenshot_b64
+        if not _cached_screenshot_b64:
+            return
+            
+        _last_screen_scan = now
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if not groq_api_key:
+            return
+            
+        context = "Programming IDE / Terminal" if is_coding else "Video Game"
+        prompt = f"Analyze this screen of a {context}. If there are NO errors, NO exceptions, and NO 'Defeat/You Died/Game Over' screens, reply EXACTLY with the word 'CLEAR'. If you see a clear red error, exception, or game over, reply in THAI with a short 1-sentence witty and helpful comment (e.g. 'โค้ดตรงนั้นน่าจะมีปัญหาเรื่อง syntax นะครับเจ้านาย ให้ผมช่วยไหม'). DO NOT output anything else."
+        
+        headers = {
+            "Authorization": f"Bearer {groq_api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "llama-3.2-11b-vision-preview",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{_cached_screenshot_b64}"}}
+                    ]
+                }
+            ],
+            "temperature": 0.2,
+            "max_tokens": 100
+        }
+        
+        r = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=12)
+        if r.status_code == 200:
+            msg = r.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            if msg and "CLEAR" not in msg and len(msg) > 10:
+                _notify(msg)
+    except Exception as e:
+        logger.error(f"Screen anomaly scan error: {e}")
+
 def _check_system_health():
     """แจ้งเตือนเมื่อ CPU/RAM สูงผิดปกติ พร้อม Cooldown 15 นาที ป้องกันการพูดเตือนรัวทุกนาที"""
     global _last_ram_warning, _last_cpu_warning
@@ -107,9 +179,13 @@ def _proactive_loop():
     logger.info("[PHASE 10A] Proactive Intelligence started.")
     while _proactive_running:
         try:
-            _check_work_timer()
-            _check_morning_briefing()
-            _check_system_health()
+            if is_smart_silence_active():
+                logger.info("[PROACTIVE] Smart Silence is ACTIVE (User is watching media). Suppressing alerts.")
+            else:
+                _check_work_timer()
+                _check_morning_briefing()
+                _check_system_health()
+                _check_screen_anomaly()
         except Exception as e:
             logger.error(f"Proactive loop error: {e}")
         time.sleep(60)

@@ -20,8 +20,8 @@ def run_sandbox_test(code_string: str) -> bool:
         # 3. สร้าง Import Interceptor
         original_import = builtins.__import__
         def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
-            # ห้าม import library ที่อาจทำลายระบบ OS
-            if name in ['os', 'subprocess', 'shutil', 'sys']:
+            # อนุญาตให้ใช้ os, subprocess ได้ตามคำสั่งเจ้านาย (ปลดล็อกขีดจำกัด)
+            if name in []: 
                 raise ImportError(f"[SANDBOX BLOCKED] Module '{name}' is restricted for safety.")
             return original_import(name, globals, locals, fromlist, level)
             

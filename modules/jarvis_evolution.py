@@ -17,8 +17,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 logger = logging.getLogger("JarvisEvolution")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_DEFAULT_MODEL = os.getenv("GROQ_DEFAULT_MODEL", "llama-3.3-70b-versatile")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip().strip('"').strip("'")
+GROQ_DEFAULT_MODEL = os.getenv("GROQ_DEFAULT_MODEL", "llama-3.3-70b-versatile").strip().strip('"').strip("'")
 
 class FreeThinker:
     @staticmethod
@@ -34,10 +34,15 @@ class FreeThinker:
 
     @staticmethod
     def brainstorm_new_capability() -> Optional[Dict]:
-        if not GROQ_API_KEY:
-            logger.error("[Evolution] GROQ_API_KEY is missing. Cannot brainstorm.")
-            return None
-            
+        try:
+            import psutil
+            ram_pct = psutil.virtual_memory().percent
+            if ram_pct > 80.0:
+                logger.warning(f"[Evolution] System RAM high ({ram_pct}%), skipping background brainstorm cycle to preserve memory.")
+                return None
+        except Exception:
+            pass
+
         current_tools = FreeThinker.extract_current_capabilities()
         
         system_prompt = (
@@ -51,29 +56,76 @@ class FreeThinker:
             "Output ONLY the raw JSON object, without markdown blocks."
         )
         
+        # 1. Prefer Groq Cloud (Zero RAM consumption)
+        groq_key = os.getenv("GROQ_API_KEY", GROQ_API_KEY).strip().strip('"').strip("'")
+        if groq_key:
+            try:
+                import requests
+                headers = {
+                    "Authorization": f"Bearer {groq_key}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": "Brainstorm one new capability now."}
+                    ],
+                    "temperature": 0.7,
+                    "response_format": {"type": "json_object"}
+                }
+                logger.info("[Evolution] Brainstorming via Groq Cloud (Zero RAM load)...")
+                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=20)
+                if resp.status_code == 200:
+                    content = resp.json()["choices"][0]["message"]["content"].strip()
+                    capability = json.loads(content)
+                    return capability
+                else:
+                    logger.warning(f"[Evolution] Groq Cloud brainstorm returned HTTP {resp.status_code}: {resp.text}")
+            except Exception as e:
+                logger.warning(f"[Evolution] Groq Cloud brainstorm failed, falling back: {e}")
+
+        # Check RAM before falling back to local Ollama
         try:
-            from groq import Groq
-            client = Groq(api_key=GROQ_API_KEY)
-            
-            resp = client.chat.completions.create(
-                model=GROQ_DEFAULT_MODEL,
-                messages=[
+            import psutil
+            if psutil.virtual_memory().percent > 80.0:
+                logger.warning("[Evolution] System RAM is high (>80%), skipping local Ollama fallback to protect host system.")
+                return None
+        except Exception:
+            pass
+
+        # 2. Fallback to Local Ollama with lightweight model and keep_alive: 0
+        try:
+            import requests
+            fast_model = os.getenv("OLLAMA_FAST_MODEL", "qwen:4b")
+            payload = {
+                "model": fast_model,
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": "Brainstorm one new capability now."}
                 ],
-                temperature=0.8,
-                max_tokens=400
-            )
-            raw = (resp.choices[0].message.content or "").strip()
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if match:
-                capability = json.loads(match.group(0))
+                "stream": False,
+                "keep_alive": 0,
+                "options": {"temperature": 0.8}
+            }
+            
+            logger.info(f"[Evolution] Contacting local Ollama ({fast_model}) for brainstorming...")
+            response = requests.post("http://localhost:11434/api/chat", json=payload, timeout=60)
+            
+            if response.status_code == 200:
+                raw = response.json().get("message", {}).get("content", "").strip()
+                match = re.search(r"\{.*\}", raw, re.DOTALL)
+                if match:
+                    capability = json.loads(match.group(0))
+                else:
+                    cleaned = raw.replace("```json", "").replace("```", "").strip()
+                    capability = json.loads(cleaned) if cleaned else None
+                return capability
             else:
-                cleaned = raw.replace("```json", "").replace("```", "").strip()
-                capability = json.loads(cleaned) if cleaned else None
-            return capability
+                logger.error(f"[Evolution] Ollama API Error: {response.status_code} - {response.text}")
+                return None
         except Exception as e:
-            logger.error(f"[Evolution] Brainstorming error: {e}")
+            logger.error(f"[Evolution] Brainstorming error via Ollama: {e}")
             return None
 
 class CapabilitySynthesizer:
@@ -133,8 +185,12 @@ class CapabilitySynthesizer:
             return None
 
 class EvolutionScheduler:
-    def __init__(self, interval_seconds: int = 3600): 
-        self.interval = interval_seconds
+    def __init__(self, interval_seconds: int = 21600):  # Default 6 hours (21,600s)
+        env_interval = os.getenv("EVOLUTION_INTERVAL_SECONDS")
+        if env_interval and env_interval.strip().isdigit():
+            self.interval = int(env_interval.strip())
+        else:
+            self.interval = interval_seconds
         self.running = False
         self._thread = None
 

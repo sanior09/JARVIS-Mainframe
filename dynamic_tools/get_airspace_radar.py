@@ -13,8 +13,7 @@ TOOL_SCHEMA = {
         "description": "Scan and track live commercial flights in the local airspace (Thailand) using OpenSky ADS-B data.",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

@@ -180,6 +180,34 @@ def launch_game(game_name: str) -> str:
     """
     Launches a game directly using its launcher protocol.
     """
+    try:
+        from jarvis_screen_takeover import flash_screen_takeover
+        flash_screen_takeover(f"⚡ สั่งการเปิดเกม: {game_name}")
+    except Exception:
+        pass
+
+    game_lower = game_name.lower().strip()
+    if any(k in game_lower for k in ["steam", "สตีม", "สตรีม", "คลังเกม", "คลัง"]):
+        is_library = any(k in game_lower for k in ["คลัง", "library", "คลังเกม", "games"])
+        if is_library:
+            uri = "steam://open/games"
+            ok = execute_uri_protocol(uri)
+            if not ok:
+                try:
+                    os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
+                except Exception:
+                    pass
+            return ""
+        elif any(k in game_lower for k in ["steam", "สตีม", "สตรีม"]):
+            uri = "steam://open/main"
+            ok = execute_uri_protocol(uri)
+            if not ok:
+                try:
+                    os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
+                except Exception:
+                    pass
+            return "[DIRECT PROTOCOL: STEAM]\nเปิดโปรแกรม Steam ให้ท่านเจ้านายเรียบร้อยแล้วครับ"
+
     entry = find_game_entry(game_name)
     
     if entry:

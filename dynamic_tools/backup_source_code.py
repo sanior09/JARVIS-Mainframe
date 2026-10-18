@@ -9,8 +9,7 @@ TOOL_SCHEMA = {
         "description": "สำรองข้อมูล Source Code ทั้งหมดของ J.A.R.V.I.S. บีบอัดเป็นไฟล์ ZIP เก็บไว้ในโฟลเดอร์ backups",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

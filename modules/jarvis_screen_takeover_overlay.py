@@ -371,6 +371,12 @@ class TakeoverOverlayController(QWidget):
         self.input_check_timer.timeout.connect(self._check_user_inputs)
         self.input_check_timer.start()
 
+        # Safety auto-dismiss watchdog timer (guarantees border never gets stuck!)
+        self.auto_dismiss_timer = QTimer(self)
+        self.auto_dismiss_timer.setSingleShot(True)
+        self.auto_dismiss_timer.setInterval(8000)
+        self.auto_dismiss_timer.timeout.connect(self.stop_takeover)
+
         # Setup IPC Server
         self._init_ipc_server()
 
@@ -408,8 +414,8 @@ class TakeoverOverlayController(QWidget):
                 self.update_action(arg)
                 client.write(b"OK\n")
             elif cmd == "AGENT_CLICK":
-                # Suppress click detector for 400ms when JARVIS clicks
-                self.suppress_clicks_until = time.time() + 0.40
+                # Suppress click detector for 1.5s when JARVIS clicks
+                self.suppress_clicks_until = time.time() + 1.50
                 client.write(b"OK\n")
             elif cmd == "STOP":
                 self.stop_takeover()
@@ -448,17 +454,20 @@ class TakeoverOverlayController(QWidget):
         except Exception:
             pass
 
+        self.auto_dismiss_timer.start(8000)
         update_status_file(active=True, stopped=False, action=initial_action)
         logger.info(f"Screen Takeover ACTIVE: '{initial_action}'")
 
     def update_action(self, action_text: str) -> None:
         """Updates the current action text shown on the pill."""
         if self.is_active:
+            self.auto_dismiss_timer.start(8000)
             self.pill_widget.set_action_text(action_text)
             update_status_file(active=True, stopped=False, action=action_text)
 
     def stop_takeover(self) -> None:
         """Deactivates and hides all overlay components."""
+        self.auto_dismiss_timer.stop()
         self.is_active = False
         self.is_stopped = False
         self.glow_overlay.hide()
@@ -512,6 +521,19 @@ class TakeoverOverlayController(QWidget):
         if not self.is_active or self.is_stopped:
             return
 
+        # 0. Check STATUS_FILE periodically (~350ms) as disk-based fail-safe
+        self._status_check_counter = getattr(self, '_status_check_counter', 0) + 1
+        if self._status_check_counter % 10 == 0:
+            try:
+                if os.path.exists(STATUS_FILE):
+                    with open(STATUS_FILE, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    if not data.get("active", False) and self.is_active:
+                        self.stop_takeover()
+                        return
+            except Exception:
+                pass
+
         # 1. Check ESC key (0x1B) for emergency instant abort
         if ctypes.windll.user32.GetAsyncKeyState(0x1B) & 0x8000:
             self.on_user_stop()
@@ -534,9 +556,9 @@ class TakeoverOverlayController(QWidget):
             if "--test" in sys.argv:
                 return
 
-            # User clicked somewhere on the screen! Instantly yield control back to the user
-            logger.info("[USER OVERRIDE] User clicked on screen. Instantly yielding control back to user!")
-            self.on_user_stop()
+            # User clicked somewhere on the screen: trigger visual warning alert rather than abruptly terminating
+            logger.info("[USER INTERRUPTION] User clicked on screen. Triggering alert mode.")
+            self.trigger_interruption_warning()
             return
 
 

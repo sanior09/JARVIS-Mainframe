@@ -1,5 +1,24 @@
 import json
 
+TOOL_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "simulate_electronic_circuit",
+        "description": "จำลองการทำงานของวงจรไฟฟ้าตามกฎของ Ohm และคำนวณความร้อนสะสม/ความเสี่ยงต่อโครงสร้างวัสดุ",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "voltage": {"type": "number", "description": "แรงดันไฟฟ้า (V)"},
+                "resistance": {"type": "number", "description": "ค่าความต้านทานรวม (Ohms)"},
+                "resistors": {"type": "array", "items": {"type": "number"}, "description": "รายการตัวต้านทานต่ออนุกรม"},
+                "current_load": {"type": "number", "description": "กระแสโหลด (A) ถ้ามี"},
+                "material": {"type": "string", "description": "วัสดุโครงสร้าง เช่น PMMA หรือ Aluminum"}
+            },
+            "required": ["voltage"]
+        }
+    }
+}
+
 def simulate_electronic_circuit(args):
     """
     [VIRTUAL LAB SIMULATION ENGINE]

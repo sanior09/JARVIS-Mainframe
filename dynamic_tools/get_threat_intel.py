@@ -13,8 +13,7 @@ TOOL_SCHEMA = {
         "description": "Fetch the latest Cyber Threat Intelligence (OSINT) from security feeds like The Hacker News and CISA.",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

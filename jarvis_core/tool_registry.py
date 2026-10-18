@@ -160,6 +160,40 @@ TOOLS_DEFINITION = [
     {
         "type": "function",
         "function": {
+            "name": "set_ambiance",
+            "description": "จัดแสงบรรยากาศห้องแบบ Dual-Bulb Mood Lighting ตามธีมที่กำหนด เช่น ริมทะเล (ฟ้าทะเล+ทรายอบอุ่น), แสงเหนือ (เขียวมรกต+ม่วงออโรร่า), ไซเบอร์พังค์ (นีออนชมพู+ฟ้าไซเบอร์), โคซี่/แคมป์ไฟ, ซันเซ็ต, หรือกำหนดสีคู่เองได้",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "theme": {
+                        "type": "string",
+                        "description": "ชื่อธีมบรรยากาศ เช่น 'ริมทะเล', 'แสงเหนือ', 'cyberpunk', 'cinema', 'cozy', 'stark_lab', 'sunset', 'lofi'"
+                    },
+                    "light_1_color": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "สี RGB กำหนดเองสำหรับหลอดหลัก 1 [R, G, B]"
+                    },
+                    "light_2_color": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "สี RGB กำหนดเองสำหรับหลอดรอง 2 [R, G, B]"
+                    },
+                    "brightness": {
+                        "type": "integer",
+                        "description": "ความสว่าง 0-255 (ค่าเริ่มต้น 180)"
+                    },
+                    "transition": {
+                        "type": "integer",
+                        "description": "ระยะเวลาการค่อยๆ เปลี่ยนสีแสง (วินาที) ค่าเริ่มต้น 3"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "browse_website",
             "description": "เข้าไปอ่านเนื้อหาจากเว็บไซต์ที่ระบุ (Web Scraping) เพื่อดึงรายละเอียดเชิงลึก บทความ หรือวิจัย",
             "parameters": {
@@ -432,7 +466,7 @@ TOOLS_DEFINITION = [
         "type": "function",
         "function": {
             "name": "gui_control",
-            "description": "ควบคุมเมาส์และคีย์บอร์ดเพื่อสั่งการแอปพลิเคชัน (เช่น YouTube) เช่น คลิก, พิมพ์ หรือกดปุ่มฮอตคีย์",
+            "description": "ควบคุมเมาส์และคีย์บอร์ดแบบ low-level (เช่น เลื่อนเมาส์, คลิก, พิมพ์ข้อความลงในหน้าต่างที่เปิดอยู่แล้ว) **ห้ามใช้เครื่องมือนี้ในการเปิดโปรแกรมเด็ดขาด** (หากต้องการเปิดโปรแกรมให้ใช้ control_computer_agent แทน)",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -972,6 +1006,241 @@ TOOLS_DEFINITION = [
                 "required": ["goal"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "auto_video_subtitle",
+            "description": "ตัดต่อและใส่ซับไตเติล (Auto-Captions) วิดีโออัตโนมัติด้วย AI (Whisper-Large-v3 + FFmpeg) รองรับทั้งคลิปเดี่ยวและทั้งโฟลเดอร์ หรือเปิด CapCut (หากไม่ได้ระบุ path หรือสั่งว่า 'วิดีโอนี้/คลิปนี้' ระบบจะตรวจจับตำแหน่งไฟล์จากหน้าจอ/โฟลเดอร์ที่เปิดอยู่ให้อัตโนมัติ)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "(Optional) ที่อยู่ไฟล์วิดีโอ (.mp4, .mov) หรือโฟลเดอร์ เช่น 'C:\\Users\\sanio\\Videos\\JARVIS' (หากผู้ใช้สั่ง 'คลิปนี้' หรือไม่ได้ระบุตำแหน่งไฟล์ ให้เว้นว่างไว้ หรือใส่ '' / 'auto' แล้วระบบ JARVIS จะตรวจจับไฟล์วิดีโอบนหน้าจอหรือโฟลเดอร์ที่เปิดอยู่ให้อัตโนมัติ)"
+                    },
+                    "burn_sub": {
+                        "type": "boolean",
+                        "description": "ฝังซับไตเติลลงในเนื้อวิดีโอทันที (Hardsub สไตล์ Vlog) ค่าเริ่มต้นคือ true",
+                        "default": True
+                    },
+                    "style": {
+                        "type": "string",
+                        "enum": ["vlog", "white_clean"],
+                        "description": "สไตล์ซับไตเติล เช่น vlog (สีเหลืองขอบดำ) หรือ white_clean (สีขาวขอบดำ)",
+                        "default": "vlog"
+                    },
+                    "open_capcut": {
+                        "type": "boolean",
+                        "description": "เปิดโปรแกรม CapCut ควบคู่ไปด้วยหรือไม่",
+                        "default": False
+                    }
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "control_capcut",
+            "description": "เปิดและสั่งการโปรแกรม CapCut (Desktop หรือ Web) สำหรับตัดต่อคลิปและสร้าง Auto-Captions (หากไม่ได้ระบุโฟลเดอร์ ระบบจะตรวจจับโฟลเดอร์คลิปบนหน้าจอและเปิดคู่กันให้อัตโนมัติ)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_folder": {
+                        "type": "string",
+                        "description": "(Optional) โฟลเดอร์วิดีโอที่ต้องการเปิดใช้งานคู่กับ CapCut (เว้นว่างได้ ระบบจะหาจากหน้าจอให้อัตโนมัติ)"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "manage_gmail",
+            "description": "จัดการอีเมล Gmail สำหรับเจ้านาย — สามารถตรวจสอบอีเมลใหม่ที่ยังไม่ได้อ่าน, ค้นหาอีเมลสำคัญตามผู้ส่งหรือหัวข้อ, และส่งอีเมลหาผู้อื่นหรือส่งหาเจ้านายเอง",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["check_unread", "search", "send"],
+                        "description": "การทำงานที่ต้องการ: 'check_unread' (เช็คเมลใหม่), 'search' (ค้นหาเมล), 'send' (ส่งอีเมล)"
+                    },
+                    "query": {
+                        "type": "string",
+                        "description": "(สำหรับ action='search') คีย์เวิร์ด หรือชื่อคน หรือหัวข้อที่ต้องการค้นหา"
+                    },
+                    "to_email": {
+                        "type": "string",
+                        "description": "(สำหรับ action='send') ที่อยู่อีเมลผู้รับ เช่น 'client@example.com' (ถ้าเว้นว่างจะส่งเข้าอีเมลของเจ้านาย)"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "description": "(สำหรับ action='send') หัวข้อของอีเมล"
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "(สำหรับ action='send') ข้อความเนื้อหาในอีเมล"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "จำนวนอีเมลสูงสุดที่ต้องการดู (ค่าเริ่มต้น 5)"
+                    }
+                },
+                "required": ["action"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "manage_afk_keeper",
+            "description": "เฝ้าหน้าจออัตโนมัติเมื่อเจ้านาย AFK หรือไม่อยู่หน้าจอ ช่วยขยับเมาส์/กดคีย์บอร์ดเป็นระยะ เพื่อป้องกันเกม (เช่น Roblox, Steam, MMOs) เด้งหลุดหรือตัดการเชื่อมต่อจาก Inactivity/Idle",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["start", "stop", "status"],
+                        "description": "'start' เพื่อเริ่มเฝ้าจอ AFK, 'stop' เพื่อหยุด, 'status' เพื่อตรวจดูสถานะ"
+                    },
+                    "interval_minutes": {
+                        "type": "integer",
+                        "description": "รอบเวลาที่จะช่วยขยับหน้าจอ/เมาส์ (นาที) เช่น 15, 20 หรือ 30 นาที (ค่าเริ่มต้น 20)"
+                    },
+                    "game_name": {
+                        "type": "string",
+                        "description": "ชื่อเกมหรือโปรแกรม เช่น 'Roblox'"
+                    }
+                },
+                "required": ["action"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "command_minecraft_companion",
+            "description": "สั่งการชุดเกราะ Ironman / J.A.R.V.I.S. ในเกม Minecraft Java Edition (เช่น ตามฉันมา, หยุดรอตรงนี้, ตัดไม้ให้หน่อย, คุ้มกันฉัน, ป้องกันมอนสเตอร์, ส่งไม้ให้ฉัน, กระโดด)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["launch", "connect", "follow", "stop", "chop_wood", "mine", "craft", "deposit", "sleep", "guard", "drop_items", "jump"],
+                        "description": "คำสั่งที่ต้องการให้บอททำในเกม: 'launch' (เปิดบอทและเชื่อมต่อเข้าเกมอัตโนมัติ), 'follow' (เดินตาม), 'stop' (หยุดรอ), 'chop_wood' (ไปตัดไม้), 'mine' (ขุดแร่/หิน), 'craft' (คราฟต์ไอเทม), 'deposit' (เอาของใส่กล่อง), 'sleep' (ไปนอนเตียง), 'guard' (เปิดโหมดคุ้มกันฟันมอนสเตอร์), 'drop_items' (โยนของให้เจ้านาย), 'jump' (กระโดด)"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "(Optional) ข้อความเพิ่มเติมหรือคำสั่งดิบภาษาไทยที่เจ้านายพูด"
+                    }
+                },
+                "required": ["action"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "synthesize_minecraft_skill",
+            "description": "[VOYAGER ENGINE] เขียนและรันโค้ด JavaScript/Mineflayer สดๆ เพื่อให้ JARVIS ในเกม Minecraft ทำภารกิจใหม่ๆ ได้ทุกอย่างนอกเหนือจากคำสั่งปกติ (เช่น ขุดหลุมลึก, วางบล็อกสร้างกำแพง, คราฟต์โต๊ะคราฟต์, ล่าสัตว์หาอาหาร, ตกปลา, หมุนตัวทำท่าทางพิเศษ) โดยระบบจะรันโค้ดและบันทึกฟังก์ชันลง Skill Library อัตโนมัติ",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "skill_name": {
+                        "type": "string",
+                        "description": "ชื่อสกิลภาษาอังกฤษตัวพิมพ์เล็ก snake_case เช่น 'dig_down_3_blocks', 'craft_crafting_table', 'hunt_nearby_animals', 'build_dirt_pillar'"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "คำอธิบายภาษาไทยสั้นๆ ว่าสกิลนี้ทำอะไร"
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "โค้ด async JavaScript ที่จะส่งไปรันบน Mineflayer โดยมีตัวแปร bot, mcData, pathfinder, getBoss, deliverItems พร้อมใช้งาน"
+                    }
+                },
+                "required": ["skill_name", "description", "code"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "manage_recon_protocol",
+            "description": "[STARK PROTOCOL] สั่งการโหมดสอดแนมและดักฟังระยะไกล (Enhanced Reconnaissance Mode / Optical Interferometer & Laser Mic) ตามแบบชุดสไปเดอร์แมน (Karen AI) และหมวกไอรอนแมน สามารถเปิด/ปิด ดักฟังวิเคราะห์คลื่นเสียง ปรับ Gain และสลับระหว่าง Simulation หรือฮาร์ดแวร์เซ็นเซอร์จริงได้",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["activate", "deactivate", "telemetry", "list_devices", "set_gain"],
+                        "description": "คำสั่งที่ต้องการ: 'activate' (เปิดโหมดสอดแนม), 'deactivate' (ปิดโหมดสอดแนม), 'telemetry' (เช็คสถานะ คลื่นเสียง dBFS และข้อความที่ดักฟังได้), 'list_devices' (ดูรายชื่อไมโครโฟน/Sound Card เซ็นเซอร์ที่เชื่อมต่อ), 'set_gain' (ปรับค่าขยายเสียง)"
+                    },
+                    "mode": {
+                        "type": "string",
+                        "enum": ["simulation", "hardware"],
+                        "description": "(สำหรับ activate) 'simulation' จำลองสัญญาณคลื่นเลเซอร์หรือใช้ไมค์ในห้อง, 'hardware' เชื่อมต่ออุปกรณ์การ์ดเสียงจากวงจรเลเซอร์/แว่น/หมวกจริง"
+                    },
+                    "device_index": {
+                        "type": "integer",
+                        "description": "(สำหรับ hardware) รหัส index ของอุปกรณ์ไมโครโฟน/Sound Card ที่เลเซอร์ต่ออยู่"
+                    },
+                    "gain": {
+                        "type": "number",
+                        "description": "(สำหรับ activate หรือ set_gain) ตัวคูณขยายเสียง เช่น 1.0 ถึง 5.0 (ค่าเริ่มต้น 2.5)"
+                    }
+                },
+                "required": ["action"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "thermal_ir_scan",
+            "description": "[STARK PROTOCOL] สั่งการสแกนความร้อนและโครงสร้างห้องด้วยอินฟราเรด (Infrared & Structural Thermographic Scanner) ตามแบบฉากใน Avengers: Age of Ultron ตรวจหาโครงสร้างเหล็กกล้าที่ซ่อนอยู่หลังกำแพง, ค้นหาร่องรอยลมพัดผ่าน (Draft) เพื่อหาห้องลับ/ประตูที่ซ่อนอยู่ พร้อมแสดงภาพความร้อน Stark HUD บน Dynamic Island",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "string",
+                        "enum": ["auto", "simulation", "camera", "image"],
+                        "description": "แหล่งข้อมูลภาพ: 'auto' (ลองกล้องจริง ถ้าไม่มีจะจำลองภาพห้องลับ), 'camera' (ใช้กล้องเว็บแคมหรือกล้องอินฟราเรด USB), 'simulation' (จำลองภาพความร้อนสมบูรณ์แบบ), 'image' (สแกนจากไฟล์ภาพ)"
+                    },
+                    "image_path": {
+                        "type": "string",
+                        "description": "(สำหรับ mode 'image') เส้นทางไฟล์รูปภาพที่ต้องการให้ JARVIS สแกนความร้อน"
+                    },
+                    "camera_index": {
+                        "type": "integer",
+                        "description": "รหัสกล้องเว็บแคมหรือกล้อง IR USB (ค่าเริ่มต้น 0)"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "check_scam_phone_number",
+            "description": "ตรวจสอบหมายเลขโทรศัพท์ว่าเป็นเบอร์มิจฉาชีพ สแปม แก๊งคอลเซ็นเตอร์ หรือมีประวัติการฉ้อโกงหรือไม่ โดยค้นหาและตรวจเช็คกับฐานข้อมูลรายงานมิจฉาชีพ บันทึก Whoscall/Junkcall และรายงานแจ้งเตือนภัยออนไลน์",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "phone_number": {
+                        "type": "string",
+                        "description": "หมายเลขโทรศัพท์ที่ต้องการตรวจสอบ (เช่น '06-3021-9386', '0812345678', '02xxxxxxx')"
+                    }
+                },
+                "required": ["phone_number"]
+            }
+        }
     }
 ]
+
+
 

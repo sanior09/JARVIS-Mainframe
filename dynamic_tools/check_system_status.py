@@ -11,8 +11,7 @@ TOOL_SCHEMA = {
         "description": "Perform a comprehensive system diagnostic (CPU, RAM, Disk, Battery, Network) and send the complete report to the user's LINE application.",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

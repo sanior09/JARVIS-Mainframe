@@ -7,8 +7,7 @@ TOOL_SCHEMA = {
         "description": "เปิดหน้าจอ Heimdall Radar (Tactical Flight Tracking) บนเบราว์เซอร์ เพื่อดูเรดาร์เที่ยวบิน Use this when the user asks to open the radar, show the radar, or track flights on the screen.",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

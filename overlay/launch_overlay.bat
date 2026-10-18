@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 title J.A.R.V.I.S. Overlay HUD — Launcher
 color 0B
 echo.
@@ -11,12 +11,9 @@ echo.
 REM -- Locate Python from JARVIS venv if available --
 SET JARVIS_ROOT=%~dp0..
 SET VENV_PYTHON=%JARVIS_ROOT%\venv\Scripts\python.exe
-SET JARVIS_PYTHON=%JARVIS_ROOT%\jarvis_env\Scripts\python.exe
 
 IF EXIST "%VENV_PYTHON%" (
     SET PYTHON_EXE=%VENV_PYTHON%
-) ELSE IF EXIST "%JARVIS_PYTHON%" (
-    SET PYTHON_EXE=%JARVIS_PYTHON%
 ) ELSE (
     SET PYTHON_EXE=python
 )

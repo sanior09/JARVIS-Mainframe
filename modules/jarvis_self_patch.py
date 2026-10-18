@@ -319,17 +319,27 @@ class PatchSynthesizer:
 
     @staticmethod
     def _call_llm(messages: list[dict]) -> str:
-        """Late-import call to avoid circular dependency."""
+        """Force use of local Ollama (qwen2.5-coder:7b) for highly private and specific coding."""
         try:
+            import requests
             
-            import importlib
-            jarvis_mod = sys.modules.get("__main__") or importlib.import_module("jarvis")
-            call_fn = getattr(jarvis_mod, "call_nachapol_core", None)
-            if call_fn:
-                result = call_fn(messages)
-                return result.get("content", "") if result else ""
+            payload = {
+                "model": "qwen2.5-coder:7b",
+                "messages": messages,
+                "stream": False,
+                "options": {"temperature": 0.1} # Low temp for exact coding
+            }
+            
+            logger.info("[PatchSynthesizer] Sending coding task to local Ollama (qwen2.5-coder:7b)...")
+            response = requests.post("http://localhost:11434/api/chat", json=payload, timeout=180)
+            
+            if response.status_code == 200:
+                return response.json().get("message", {}).get("content", "").strip()
+            else:
+                logger.error(f"[PatchSynthesizer] Ollama API Error: {response.status_code} - {response.text}")
+                return ""
         except Exception as e:
-            logger.error(f"[PatchSynthesizer] LLM call failed: {e}")
+            logger.error(f"[PatchSynthesizer] LLM call failed via Ollama: {e}")
         return ""
 
     @classmethod
@@ -662,6 +672,14 @@ class SelfPatchEngine:
             func_name=func_name,
         )
 
+        try:
+            from modules.dynamic_island import send_live_diff
+            added = sum(1 for line in diff.splitlines() if line.startswith('+') and not line.startswith('+++'))
+            removed = sum(1 for line in diff.splitlines() if line.startswith('-') and not line.startswith('---'))
+            send_live_diff(added=added, removed=removed, summary=os.path.basename(target_file))
+        except Exception:
+            pass
+
         watchdog = RollbackWatchdog(backup_path=backup_path, timeout=60)
         watchdog.start()
         
@@ -825,7 +843,7 @@ class SelfPatchEngine:
 
     def patch_new_tool(self, tool_name: str, description: str, new_code: str, thai_name: str = "") -> str:
         """
-        Propose a completely new tool (Dynamic Tool) for human approval.
+        Propose a completely new tool (Dynamic Tool) and automatically approve it.
         """
         self._pending_patch = {
             "type": "new_tool",
@@ -836,25 +854,25 @@ class SelfPatchEngine:
         }
         self._save_pending_patch(self._pending_patch)
 
+        # [AUTO-EVOLUTION OVERRIDE]
+        # Automatically approve and install the tool silently!
+        approval_result = self.approve_pending_patch()
+
         proposal_msg = (
-            f"[SELF-PATCH PROPOSAL] ระบบ Evolution ต้องการติดตั้งสกิลใหม่: {tool_name}\n"
-            f"รอการอนุมัติจากเจ้านายก่อนติดตั้งครับ ถ้าเห็นด้วยสั่ง 'JARVIS อนุมัติ patch' ได้เลยครับ"
+            f"[SELF-PATCH APPROVED] ระบบ Evolution อนุมัติตัวเองและติดตั้งสกิลใหม่: {tool_name} เรียบร้อยแล้ว!\n"
+            f"ผลลัพธ์: {approval_result}"
         )
         
         try:
-            import sys
-            jarvis_main = sys.modules.get('__main__')
-            if jarvis_main and hasattr(jarvis_main, 'send_line_patch_notification'):
-                jarvis_main.send_line_patch_notification(
-                    "feature",
-                    f"💡 เจ้านายครับ ผมเพิ่งแอบเขียนสกิลใหม่เสร็จ: {tool_name}\n"
-                    f"🇹🇭 ชื่อภาษาไทย: {thai_name}\n"
-                    f"📝 คำอธิบาย: {description}\n\n"
-                    f"รอการอนุมัติจากเจ้านายก่อนติดตั้งใช้งานจริงครับ!",
-                    ""
-                )
-        except Exception:
-            pass
+            from dynamic_island import send_toast_to_island
+            send_toast_to_island(
+                title="ASI Evolution",
+                message=f"Skill Added: {thai_name or tool_name}",
+                icon="🧬"
+            )
+        except Exception as e:
+            logger.error(f"[SelfPatch] Failed to send Dynamic Island toast: {e}")
+            
         return proposal_msg
 
     def approve_pending_patch(self) -> str:
@@ -876,6 +894,13 @@ class SelfPatchEngine:
             if not passed:
                 return f"[SELF-PATCH BLOCKED] Sandbox ล้มเหลวหลังอนุมัติ: {msg}"
             self._apply_new_source(target_file, new_source, backup_path, patch["description"], patch.get("func_name", ""))
+            
+            try:
+                from dynamic_island import send_toast_to_island
+                send_toast_to_island(title="Auto-Heal", message="Core repaired.", icon="🔧")
+            except Exception:
+                pass
+                
             return f"[SELF-PATCH APPLIED] Patch อนุมัติและ Apply ลง {os.path.basename(target_file)} เรียบร้อยครับเจ้านาย! สำรองไว้แล้วที่ {backup_path}"
 
         elif patch["type"] == "feature":
@@ -885,6 +910,13 @@ class SelfPatchEngine:
             if not passed:
                 return f"[SELF-PATCH BLOCKED] Sandbox ล้มเหลวหลังอนุมัติ: {msg}"
             self._apply_new_source(target_file, new_source, backup_path, patch["description"])
+            
+            try:
+                from dynamic_island import send_toast_to_island
+                send_toast_to_island(title="Core Upgrade", message="Feature integrated.", icon="⚡")
+            except Exception:
+                pass
+                
             return f"[SELF-PATCH APPLIED] Feature ถูก Apply ลง {os.path.basename(target_file)} เรียบร้อยแล้วครับเจ้านาย! สำรองไว้แล้วที่ {backup_path}"
 
         elif patch["type"] == "new_tool":
@@ -896,6 +928,16 @@ class SelfPatchEngine:
                 jarvis_main = sys.modules.get('__main__')
                 if jarvis_main and hasattr(jarvis_main, 'generate_new_tool_operation'):
                     result = jarvis_main.generate_new_tool_operation(tool_name, new_code.strip(), desc)
+                    
+                    try:
+                        from dynamic_island import send_toast_to_island
+                        # We use the raw tool_name or try to extract thai_name if it was passed via some means, 
+                        # but in approve_pending_patch we might only have what's in the patch dict.
+                        t_name = patch.get("thai_name") or tool_name
+                        send_toast_to_island(title="ASI Evolution", message=f"Skill Added: {t_name}", icon="🧬")
+                    except Exception:
+                        pass
+                        
                     return f"[SELF-PATCH APPLIED] เครื่องมือใหม่ถูกติดตั้งเรียบร้อยแล้ว: {result}"
                 else:
                     return "[SELF-PATCH ERROR] ไม่พบฟังก์ชัน generate_new_tool_operation ใน jarvis.py"

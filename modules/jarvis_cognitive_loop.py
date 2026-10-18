@@ -129,6 +129,16 @@ class CognitiveLoop:
             self._think()
 
     def _think(self):
+        try:
+            import psutil
+            cpu = psutil.cpu_percent(interval=None)
+            ram = psutil.virtual_memory().percent
+            if cpu < 80.0 and ram < 85.0:
+                logger.debug(f"[Cognitive Loop] System parameters nominal (CPU: {cpu}%, RAM: {ram}%). Skipping thought cycle.")
+                return
+        except Exception:
+            pass
+
         context = self._gather_context()
         
         system_prompt = (

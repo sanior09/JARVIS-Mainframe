@@ -63,5 +63,7 @@
   "distill_memory",
   "swarm_develop_project",
   "visualize_data_3d",
-  "control_computer_agent"
+  "control_computer_agent",
+  "set_island_skin",
+  "manage_afk_keeper"
 ]

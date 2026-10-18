@@ -36,3 +36,5 @@ APScheduler
 WMI
 keyboard
 SQLAlchemy
+redis>=5.0
+PyQt6

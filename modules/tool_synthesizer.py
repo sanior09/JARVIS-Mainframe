@@ -109,40 +109,107 @@ class DynamicCodeGenerator:
 
     async def generate_and_register_tool(self, tool_name: str, objective: str) -> Callable:
         """
-        Generates code for the requested tool and loads it into the runtime.
+        Generates code and tests using Groq, runs Pytest in a loop, and registers upon success.
         """
-        logger.info(f"Generating code for tool: {tool_name} (Objective: {objective})")
+        import re
+        import subprocess
+        from jarvis_core.ai_router import call_groq_model
+
+        logger.info(f"🚀 [CI/CD] Initiating Autonomous Tool Synthesis for: {tool_name} (Objective: {objective})")
         
-        # Simulated LLM code generation
-        await asyncio.sleep(0.2)
-        generated_code = f"""
-def {tool_name}(*args, **kwargs):
-    \"\"\"Autonomously generated tool for: {objective}\"\"\"
-    return f"Executed {tool_name} successfully!"
-"""
+        system_prompt = (
+            "You are JARVIS's internal Meta-Programmer. Your job is to write a Python tool and its Pytest. "
+            "Output MUST contain exactly two code blocks:\n"
+            "1. The tool code (must contain a function named exactly the requested tool_name)\n"
+            "2. The pytest code (must test the function without needing external servers if possible, use mocks)\n"
+            "Do NOT use markdown outside of the code blocks. Just provide the blocks."
+        )
         
-        if not self._verify_code_safety(generated_code):
-            raise CodeGenerationError("Generated code failed safety verification.")
-            
-        file_path = os.path.join(self.tools_directory, f"{tool_name}.py")
+        history = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Write tool_name: '{tool_name}' for objective: '{objective}'. Also write a comprehensive pytest script for it."}
+        ]
         
-        # Write code to file
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(generated_code)
+        max_retries = 3
+        for attempt in range(max_retries):
+            logger.info(f"🔄 [CI/CD] Synthesis Attempt {attempt + 1}/{max_retries}")
             
-        # Dynamically load the module
-        logger.info(f"Registering module from {file_path}")
-        spec = importlib.util.spec_from_file_location(tool_name, file_path)
-        if spec and spec.loader:
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[tool_name] = module
-            spec.loader.exec_module(module)
+            # Use Groq to generate code
+            response = call_groq_model(history, model="llama-3.3-70b-versatile")
+            if "error_message" in response:
+                raise CodeGenerationError(f"LLM API Error: {response['error_message']}")
+                
+            content = response.get("content", "")
             
-            tool_function = getattr(module, tool_name)
-            logger.info("การเพิ่ม Tool เสร็จสิ้น ระบบพร้อมใช้งานแล้วครับท่าน")
-            return tool_function
-        else:
-            raise CodeGenerationError(f"Failed to load dynamically generated module: {tool_name}")
+            # Extract code blocks
+            blocks = re.findall(r"```python\s*(.*?)\s*```", content, re.DOTALL)
+            if len(blocks) < 2:
+                # Fallback matching if they didn't specify 'python'
+                blocks = re.findall(r"```(.*?)```", content, re.DOTALL)
+                
+            if len(blocks) < 2:
+                history.append({"role": "assistant", "content": content})
+                history.append({"role": "user", "content": "You must provide EXACTLY TWO Python code blocks (1: Tool, 2: Pytest). Try again."})
+                continue
+                
+            tool_code = blocks[0].strip()
+            if tool_code.startswith("python"): tool_code = tool_code[6:].strip()
+            
+            test_code = blocks[1].strip()
+            if test_code.startswith("python"): test_code = test_code[6:].strip()
+            
+            if not self._verify_code_safety(tool_code):
+                history.append({"role": "assistant", "content": content})
+                history.append({"role": "user", "content": "The tool code failed AST safety checks (avoid os.system, exec, etc.). Try again safely."})
+                continue
+
+            # Write to Sandbox
+            sandbox_dir = os.path.abspath(os.path.join(self.tools_directory, "sandbox"))
+            os.makedirs(sandbox_dir, exist_ok=True)
+            
+            tool_path = os.path.join(sandbox_dir, f"{tool_name}.py")
+            test_path = os.path.join(sandbox_dir, f"test_{tool_name}.py")
+            
+            with open(tool_path, 'w', encoding='utf-8') as f:
+                f.write(tool_code)
+            with open(test_path, 'w', encoding='utf-8') as f:
+                # Inject sys.path so the test can import the tool
+                f.write(f"import sys\nimport os\nsys.path.insert(0, r'{sandbox_dir}')\n\n" + test_code)
+                
+            # Run Pytest
+            logger.info(f"🧪 [CI/CD] Running Pytest for {tool_name}...")
+            result = subprocess.run([sys.executable, "-m", "pytest", test_path, "-v", "--tb=short"], capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                logger.info(f"✅ [CI/CD] Pytest PASSED for {tool_name}! Deploying tool...")
+                # Move to main dynamic tools
+                final_tool_path = os.path.join(self.tools_directory, f"{tool_name}.py")
+                # Handle Windows file replace by removing old one if exists
+                if os.path.exists(final_tool_path): os.remove(final_tool_path)
+                os.rename(tool_path, final_tool_path)
+                
+                # Cleanup Sandbox
+                if os.path.exists(test_path): os.remove(test_path)
+                
+                # Load module
+                spec = importlib.util.spec_from_file_location(tool_name, final_tool_path)
+                if spec and spec.loader:
+                    module = importlib.util.module_from_spec(spec)
+                    sys.modules[tool_name] = module
+                    spec.loader.exec_module(module)
+                    tool_function = getattr(module, tool_name)
+                    logger.info("🎉 การเพิ่ม Tool เสร็จสิ้น ระบบพร้อมใช้งานแล้วครับท่าน")
+                    return tool_function
+                else:
+                    raise CodeGenerationError("Module load failed after tests passed.")
+                    
+            else:
+                logger.warning(f"❌ [CI/CD] Pytest FAILED for {tool_name}. Feeding error back to AI for self-healing.")
+                history.append({"role": "assistant", "content": content})
+                error_feedback = f"The pytest failed with this output:\n{result.stdout}\n{result.stderr}\nAnalyze the error, fix the code, and try again."
+                history.append({"role": "user", "content": error_feedback})
+                
+        raise CodeGenerationError("Tool generation failed after maximum CI/CD retries.")
 
 
 if __name__ == "__main__":

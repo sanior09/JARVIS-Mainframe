@@ -117,7 +117,7 @@ class OutputAligner:
         
         if prefs.tone == "jarvis_cinematic":
             # Append standard JARVIS cinematic suffixes if not present
-            if not aligned_message.endswith("ครับเจ้านาย") and not aligned_message.endswith("ครับท่าน"):
+            if not aligned_message.endswith("ครับเจ้านาย") and not aligned_message.endswith("ครับท่าน") and not aligned_message.endswith("ครับ"):
                 aligned_message += " ครับเจ้านาย"
                 
         if prefs.verbosity == "concise":

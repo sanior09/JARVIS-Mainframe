@@ -141,11 +141,14 @@ class JarvisNotifier:
         """ส่งข้อความ Push แบบ Non-blocking ผ่าน Background Worker"""
         return self._executor.submit(self.send_push_sync, message, user_id)
 
-    def notify_success(self, task: str, detail: str = "") -> None:
+    def notify_success(self, task: str, detail: str = "", force: bool = False) -> None:
         """
         ✅ แจ้งเตือนเมื่องานเสร็จสมบูรณ์ (Task Completed)
         เช่น Computer Agent ทำงานอัตโนมัติสำเร็จ
+        (ค่าเริ่มต้นปิดไว้ เพื่อไม่ให้ส่ง LINE มารบกวนเวลาเรียกใช้เครื่อง)
         """
+        if not force and os.getenv("LINE_NOTIFY_ON_TASK", "false").lower() != "true":
+            return
         msg = f"✅ [JARVIS TASK COMPLETE]\nงาน: {task}"
         if detail:
             msg += f"\nรายละเอียด: {detail}"

@@ -135,6 +135,22 @@ def stop_screen_takeover() -> bool:
     return _send_ipc_message("STOP")
 
 
+def flash_screen_takeover(action_text: str = "J.A.R.V.I.S. Command", duration_sec: float = 2.5) -> None:
+    """
+    Activates the glowing cyan screen border for duration_sec, then stops it.
+    Runs asynchronously in a background thread so commands execute with zero latency.
+    """
+    import threading
+    def _worker():
+        try:
+            start_screen_takeover(action_text)
+            time.sleep(duration_sec)
+            stop_screen_takeover()
+        except Exception as e:
+            logger.debug(f"[TAKEOVER FLASH] Error: {e}")
+    threading.Thread(target=_worker, daemon=True).start()
+
+
 def is_screen_takeover_stopped() -> bool:
     """
     Returns True if the user clicked the red Stop (⏹️) button or pressed ESC.

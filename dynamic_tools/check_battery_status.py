@@ -10,8 +10,7 @@ TOOL_SCHEMA = {
         "description": "Check the system battery percentage and plugged-in status, and send the report directly to the user's LINE application.",
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": []
+            "properties": {}
         }
     }
 }

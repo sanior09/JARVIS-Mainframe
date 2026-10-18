@@ -7,10 +7,13 @@ Handles Voice (STT), Vision, Chat, and Autonomous Hands-Free Telephony (Incoming
 
 import os
 import re
+import sys
 import time
 import uuid
 import logging
 import asyncio
+import threading
+import subprocess
 from typing import Optional, Dict, Any, List
 from flask import Blueprint, request, jsonify, send_from_directory
 
@@ -26,6 +29,127 @@ mobile_bp = Blueprint("mobile_api", __name__)
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 MOBILE_CACHE_DIR = os.path.join(BASE_DIR, "mobile_cache")
 os.makedirs(MOBILE_CACHE_DIR, exist_ok=True)
+
+# ---------------------------------------------------------------------------
+# PC Screen Lockdown State & Process Management
+# ---------------------------------------------------------------------------
+LOCKDOWN_PROCESS: Optional[subprocess.Popen] = None
+LOCKDOWN_LOCK = threading.RLock()
+LOCKDOWN_LOCK_FILE = os.path.join(BASE_DIR, "system_cache", "lockdown.lock")
+
+def is_lockdown_active() -> bool:
+    global LOCKDOWN_PROCESS
+    with LOCKDOWN_LOCK:
+        if LOCKDOWN_PROCESS is not None:
+            if LOCKDOWN_PROCESS.poll() is None:
+                return True
+            else:
+                LOCKDOWN_PROCESS = None
+
+        if os.path.exists(LOCKDOWN_LOCK_FILE):
+            try:
+                with open(LOCKDOWN_LOCK_FILE, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                if content.startswith("LOCKED:"):
+                    pid_str = content.split(":", 1)[1]
+                    if pid_str.isdigit():
+                        import psutil
+                        if psutil.pid_exists(int(pid_str)):
+                            return True
+                        else:
+                            try:
+                                os.remove(LOCKDOWN_LOCK_FILE)
+                            except Exception:
+                                pass
+                            return False
+                    return True
+            except Exception:
+                pass
+
+    return False
+
+def trigger_pc_lockdown():
+    global LOCKDOWN_PROCESS
+    with LOCKDOWN_LOCK:
+        if is_lockdown_active():
+            return True, "🔒 หน้าจอคอมพิวเตอร์อยู่ในสถานะล็อกอยู่แล้วครับ"
+        try:
+            overlay_script = os.path.join(BASE_DIR, "modules", "lockdown_overlay.py")
+            os.makedirs(os.path.dirname(LOCKDOWN_LOCK_FILE), exist_ok=True)
+            python_exe = sys.executable
+            LOCKDOWN_PROCESS = subprocess.Popen(
+                [python_exe, overlay_script],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                text=True
+            )
+            with open(LOCKDOWN_LOCK_FILE, "w", encoding="utf-8") as f:
+                f.write(f"LOCKED:{LOCKDOWN_PROCESS.pid}")
+            logger.info(f"🚨 [LOCKDOWN] Engaged overlay process with PID: {LOCKDOWN_PROCESS.pid}")
+            return True, "🔒 เปิดระบบล็อกหน้าจอ PC เรียบร้อยแล้วครับ"
+        except Exception as e:
+            logger.error(f"[LOCKDOWN] Trigger failed: {e}")
+            return False, f"ล็อกหน้าจอไม่สำเร็จ: {e}"
+
+def release_pc_lockdown(pin: str = None):
+    global LOCKDOWN_PROCESS
+    configured_pin = os.getenv("LOCKDOWN_PIN", "140952").strip()
+    if pin is not None and str(pin).strip() != str(configured_pin):
+        logger.warning(f"[LOCKDOWN] Unlock attempt with invalid PIN: {pin}")
+        return False, "❌ รหัสความปลอดภัย (PIN) ไม่ถูกต้อง ไม่สามารถปลดล็อกได้"
+
+    with LOCKDOWN_LOCK:
+        target_pid = None
+        if os.path.exists(LOCKDOWN_LOCK_FILE):
+            try:
+                with open(LOCKDOWN_LOCK_FILE, "r", encoding="utf-8") as f:
+                    c = f.read().strip()
+                if c.startswith("LOCKED:"):
+                    p_str = c.split(":", 1)[1]
+                    if p_str.isdigit():
+                        target_pid = int(p_str)
+            except Exception:
+                pass
+            try:
+                with open(LOCKDOWN_LOCK_FILE, "w", encoding="utf-8") as f:
+                    f.write("UNLOCK")
+            except Exception:
+                pass
+
+        if LOCKDOWN_PROCESS is not None and LOCKDOWN_PROCESS.poll() is None:
+            try:
+                if LOCKDOWN_PROCESS.stdin and not LOCKDOWN_PROCESS.stdin.closed:
+                    LOCKDOWN_PROCESS.stdin.write("UNLOCK\n")
+                    LOCKDOWN_PROCESS.stdin.flush()
+            except Exception:
+                pass
+            time.sleep(0.2)
+            if LOCKDOWN_PROCESS.poll() is None:
+                try:
+                    LOCKDOWN_PROCESS.kill()
+                except Exception:
+                    pass
+
+        if target_pid:
+            try:
+                import psutil
+                if psutil.pid_exists(target_pid):
+                    p = psutil.Process(target_pid)
+                    p.kill()
+            except Exception:
+                pass
+
+        try:
+            if os.path.exists(LOCKDOWN_LOCK_FILE):
+                os.remove(LOCKDOWN_LOCK_FILE)
+        except Exception:
+            pass
+
+        LOCKDOWN_PROCESS = None
+        logger.info("🔓 [LOCKDOWN] Screen unlocked successfully.")
+        return True, "🔓 ปลดล็อกหน้าจอคอมพิวเตอร์เรียบร้อยแล้วครับ"
+
 
 # ---------------------------------------------------------------------------
 # Call State Management (Telephony & Hands-Free Loop)
@@ -63,16 +187,31 @@ def _is_self_echo(user_text: str) -> bool:
     """
     Acoustic Self-Echo Suppression:
     ตรวจสอบว่าเสียงที่ STT จับได้ คือเสียงของ JARVIS เองที่เพิ่งดังออกจากลำโพงมือถือ
-    แล้วไมค์มือถือดูดกลับเข้ามาวนลูปหรือไม่
+    หรือภาพหลอนจากความเงียบของ Whisper แล้วไมค์มือถือดูดกลับเข้ามาวนลูปหรือไม่
     """
     if not user_text:
         return False
 
     norm_user = re.sub(r'[\s\W_]+', '', user_text.lower())
-    if len(norm_user) < 3:
+    if len(norm_user) < 2:
         return False
 
-    # 1. ข้อความทักทายหรือตอบรับมาตรฐานของระบบ
+    # 1. กรองภาพหลอนจาก Whisper เมื่อไมค์จับได้ความเงียบ (Silence Hallucinations)
+    hallucinations = [
+        "ขอบคุณสำหรับการรับชม",
+        "ขอบคุณที่รับชม",
+        "ขอบคุณที่ติดตาม",
+        "อย่าลืมกดติดตาม",
+        "thankyouforwatching",
+        "thanksforwatching",
+        "subtitlesby",
+        "subscribe",
+    ]
+    for h in hallucinations:
+        if h in norm_user:
+            return True
+
+    # 2. ข้อความทักทายหรือตอบรับมาตรฐานของระบบ
     canned_echoes = [
         "ขออภัยครับท่านผมฟังไม่ค่อยถนัด",
         "มีอะไรให้ผมรับใช้ไหมครับ",
@@ -90,17 +229,23 @@ def _is_self_echo(user_text: str) -> bool:
         if norm_user in norm_canned or (len(norm_canned) >= 6 and norm_canned in norm_user):
             return True
 
-    # 2. เปรียบเทียบกับคำตอบที่ JARVIS เพิ่งพูดไปในสาย
+    # 3. เปรียบเทียบกับคำตอบที่ JARVIS เพิ่งพูดไปในสาย (Fuzzy & Substring Overlap)
+    import difflib
     recent_replies = CALL_STATE.get("recent_bot_replies", [])
     for past in recent_replies:
         norm_past = re.sub(r'[\s\W_]+', '', past.lower())
         if not norm_past:
             continue
-        if norm_user in norm_past:
+
+        if norm_user in norm_past or norm_past in norm_user:
             return True
-        if len(norm_past) >= 8 and norm_past in norm_user:
+
+        # ตรวจสอบความคล้ายคลึงทางข้อความ (Fuzzy Similarity >= 55%)
+        similarity = difflib.SequenceMatcher(None, norm_user, norm_past).ratio()
+        if similarity >= 0.55:
             return True
-        # ตรวจสอบ Substring Overlap >= 65%
+
+        # ตรวจสอบ Substring Overlap >= 60%
         if len(norm_user) >= 6 and len(norm_past) >= 6:
             for i in range(len(norm_user) - 5):
                 gram = norm_user[i:i+6]
@@ -108,7 +253,7 @@ def _is_self_echo(user_text: str) -> bool:
                     match_len = 6
                     while i + match_len < len(norm_user) and norm_user[i:i+match_len+1] in norm_past:
                         match_len += 1
-                    if (match_len / len(norm_user)) >= 0.65:
+                    if (match_len / len(norm_user)) >= 0.60:
                         return True
 
     return False
@@ -210,6 +355,7 @@ def get_call_status():
         "reason": CALL_STATE["reason"],
         "initial_message": CALL_STATE["initial_message"],
         "initial_audio_url": CALL_STATE["initial_audio_url"],
+        "is_locked": is_lockdown_active(),
     })
 
 @mobile_bp.route("/api/mobile/call_trigger", methods=["POST"])
@@ -434,10 +580,24 @@ def mobile_converse():
             f.write(image_bytes)
         logger.info(f"Saved vision image: {image_filename}")
         
-        prompt = text_input or "ช่วยวิเคราะห์ภาพนี้อย่างละเอียด และตอบเป็นภาษาไทยครับ"
+        prompt = text_input or "เจ้านายส่งรูปภาพนี้มาจากสมาร์ตโฟน ช่วยตรวจสอบและวิเคราะห์รายละเอียดของภาพนี้ให้เจ้านายอย่างละเอียดครับ"
         try:
-            from jarvis import analyze_spatial_environment
-            ai_response = analyze_spatial_environment(image_b64, prompt)
+            from jarvis import handle_chat_logic
+            payload = {
+                "message": prompt,
+                "image": image_b64,
+                "channel": "mobile"
+            }
+            raw_res = handle_chat_logic(payload)
+            if hasattr(raw_res, "get_json"):
+                res_data = raw_res.get_json() or {}
+            elif isinstance(raw_res, tuple) and hasattr(raw_res[0], "get_json"):
+                res_data = raw_res[0].get_json() or {}
+            elif isinstance(raw_res, dict):
+                res_data = raw_res
+            else:
+                res_data = {}
+            ai_response = res_data.get("response") or res_data.get("reply") or res_data.get("message") or "วิเคราะห์เสร็จสิ้นครับ"
             audio_url = _generate_tts_audio(ai_response) if should_speak else None
             return jsonify({
                 "status": "success",
@@ -483,7 +643,7 @@ def mobile_converse():
     try:
         from jarvis import handle_chat_logic
         
-        raw_res = handle_chat_logic({"message": text_input})
+        raw_res = handle_chat_logic({"message": text_input, "channel": "mobile"})
         if hasattr(raw_res, "get_json"):
             res_data = raw_res.get_json() or {}
         elif isinstance(raw_res, tuple) and hasattr(raw_res[0], "get_json"):
@@ -508,7 +668,296 @@ def mobile_converse():
         logger.error(f"Mobile API Core Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+# ---------------------------------------------------------------------------
+# Mobile Telemetry & Quick Action Endpoints
+# ---------------------------------------------------------------------------
+@mobile_bp.route("/api/mobile/telemetry", methods=["GET"])
+def mobile_telemetry():
+    """ส่งสถานะระบบเมนเฟรม (CPU, RAM, Battery, Active Model, Uptime) ให้มือถือ"""
+    try:
+        import psutil
+        cpu = psutil.cpu_percent(interval=None)
+        mem = psutil.virtual_memory()
+        battery = psutil.sensors_battery()
+
+        # Model active
+        active_model = "groq"
+        try:
+            from jarvis_core.ai_router import get_active_model
+            active_model = get_active_model()
+        except Exception:
+            pass
+
+        # Quota stats
+        quota_data = None
+        try:
+            from modules.ai_quota_tracker import get_quota_stats
+            quota_data = get_quota_stats()
+        except Exception as q_err:
+            logger.warning(f"[MOBILE API] Could not fetch quota stats: {q_err}")
+
+        # Endocrine stats from JarvisCore
+        endocrine_data = None
+        try:
+            from modules.jarvis_slm_bridge import get_jarviscore_bridge
+            endocrine_data = get_jarviscore_bridge().get_endocrine_state()
+        except Exception:
+            pass
+
+        display_names = {
+            "groq": "Groq 120B (Llama 3.3)",
+            "gemini": "Google Gemini 2.5",
+            "ollama": "Local Ollama",
+            "jarviscore": "JarvisCore Neural SLM (Local)"
+        }
+
+        telemetry_info = {
+            "cpu_percent": cpu,
+            "ram_percent": mem.percent,
+            "ram_used_gb": round(mem.used / (1024**3), 1),
+            "ram_total_gb": round(mem.total / (1024**3), 1),
+            "battery_percent": round(battery.percent) if battery else None,
+            "power_plugged": battery.power_plugged if battery else None,
+            "active_model": active_model,
+            "active_model_display": display_names.get(active_model, active_model.upper()),
+            "quota": quota_data,
+            "endocrine": endocrine_data,
+            "is_locked": is_lockdown_active(),
+            "server_time": time.strftime("%H:%M:%S")
+        }
+
+        return jsonify({
+            "status": "success",
+            "data": telemetry_info,
+            **telemetry_info
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@mobile_bp.route("/api/mobile/set_model", methods=["POST"])
+def mobile_set_model():
+    """สลับโมเดล AI หลักจากหน้าจอแอพมือถือ (groq, gemini, ollama)"""
+    data = request.get_json(silent=True) or request.form or {}
+    target = data.get("model", "").lower().strip()
+    if not target:
+        return jsonify({"status": "error", "message": "กรุณาระบุโมเดล (groq, gemini, ollama)"}), 400
+
+    try:
+        from jarvis_core.ai_router import set_active_model
+        new_engine = set_active_model(target)
+        
+        display_names = {
+            "groq": "Groq 120B (Llama 3.3)",
+            "gemini": "Google Gemini 2.5",
+            "ollama": "Local Ollama"
+        }
+        dname = display_names.get(new_engine, new_engine.upper())
+        logger.info(f"🔄 [MOBILE API] Active model switched to: {dname}")
+
+        quota_data = None
+        try:
+            from modules.ai_quota_tracker import get_quota_stats
+            quota_data = get_quota_stats()
+        except Exception:
+            pass
+
+        return jsonify({
+            "status": "success",
+            "active_model": new_engine,
+            "display_name": dname,
+            "message": f"สลับโมเดลเป็น {dname} เรียบร้อยแล้วครับ",
+            "quota": quota_data
+        })
+    except Exception as e:
+        logger.error(f"[MOBILE API] Failed to switch model: {e}")
+        return jsonify({"status": "error", "message": f"สลับโมเดลไม่สำเร็จ: {e}"}), 500
+
+
+@mobile_bp.route("/api/mobile/quota", methods=["GET"])
+def mobile_quota():
+    """ดึงข้อมูลโควต้าการใช้งาน AI ประจำวันโดยละเอียด"""
+    try:
+        from modules.ai_quota_tracker import get_quota_stats, get_summary_text
+        stats = get_quota_stats()
+        summary = get_summary_text()
+        return jsonify({
+            "status": "success",
+            "stats": stats,
+            "summary": summary
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@mobile_bp.route("/api/mobile/skin", methods=["GET"])
+def mobile_get_skin():
+    """ดึงข้อมูลสกินปัจจุบันและรายการสกินทั้งหมดของ Dynamic Island"""
+    try:
+        from modules.dynamic_island import load_hud_config, BuddyWidget
+        cfg = load_hud_config()
+        current_skin = cfg.get("buddy_skin", "jarvis")
+        skins = []
+        for k, v in BuddyWidget.SKINS.items():
+            skins.append({
+                "id": k,
+                "name": v.get("name", k.capitalize()),
+                "body_top": v.get("body_top").name(),
+                "border": v.get("border").name(),
+                "is_active": (k == current_skin)
+            })
+        return jsonify({
+            "status": "success",
+            "current_skin": current_skin,
+            "skins": skins
+        })
+    except Exception as e:
+        logger.error(f"[MOBILE API] Failed to get skins: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@mobile_bp.route("/api/mobile/set_skin", methods=["POST"])
+def mobile_set_skin():
+    """สลับสกินของ Notch Buddy / Dynamic Island จากหน้าจอแอพมือถือ"""
+    data = request.get_json(silent=True) or request.form or {}
+    skin_target = data.get("skin", "").lower().strip()
+    if not skin_target:
+        return jsonify({"status": "error", "message": "กรุณาระบุสกินที่ต้องการ"}), 400
+
+    try:
+        from modules.dynamic_island import send_buddy_skin, save_hud_config, BuddyWidget
+        if skin_target not in BuddyWidget.SKINS:
+            return jsonify({"status": "error", "message": f"ไม่พบสกิน '{skin_target}'"}), 400
+
+        send_buddy_skin(skin_target)
+        save_hud_config({"buddy_skin": skin_target})
+        skin_name = BuddyWidget.SKINS[skin_target].get("name", skin_target.capitalize())
+        logger.info(f"🎨 [MOBILE API] Mascot skin switched to: {skin_name}")
+        return jsonify({
+            "status": "success",
+            "active_skin": skin_target,
+            "display_name": skin_name,
+            "message": f"เปลี่ยนสกินเป็น {skin_name} เรียบร้อยแล้วครับ"
+        })
+    except Exception as e:
+        logger.error(f"[MOBILE API] Failed to set skin: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+
+@mobile_bp.route("/api/mobile/quick_action", methods=["POST"])
+def mobile_quick_action():
+    """ปุ่มลัดสั่งการระบบทันทีจากหน้าจอแอพมือถือ"""
+    data = request.get_json(silent=True) or request.form or {}
+    action = data.get("action", "").lower().strip()
+    
+    logger.info(f"[MOBILE QUICK ACTION] Triggered: {action}")
+    
+    if action == "check_gmail":
+        try:
+            from modules.jarvis_gmail import check_unread_emails
+            res = check_unread_emails(limit=3)
+            return jsonify({"status": "success", "message": res, "reply": res})
+        except Exception as e:
+            msg = f"เช็คอีเมลไม่สำเร็จ: {e}"
+            return jsonify({"status": "error", "message": msg, "reply": msg})
+
+    elif action == "lock_pc":
+        ok, msg = trigger_pc_lockdown()
+        return jsonify({
+            "status": "success" if ok else "error",
+            "message": msg,
+            "reply": msg,
+            "is_locked": is_lockdown_active()
+        }), (200 if ok else 500)
+
+    elif action == "unlock_pc":
+        pin = data.get("pin", "")
+        ok, msg = release_pc_lockdown(pin=pin)
+        return jsonify({
+            "status": "success" if ok else "error",
+            "message": msg,
+            "reply": msg,
+            "is_locked": is_lockdown_active()
+        }), (200 if ok else 400)
+
+    elif action == "lock_status":
+        return jsonify({
+            "status": "success",
+            "is_locked": is_lockdown_active()
+        })
+
+    return jsonify({"status": "error", "message": f"ไม่รู้จักคำสั่ง: {action}", "reply": f"ไม่รู้จักคำสั่ง: {action}"}), 400
+
+
+# ---------------------------------------------------------------------------
+# JarvisCore Neural SLM & Endocrine Endpoints (In-House 0 to 100)
+# ---------------------------------------------------------------------------
+
+@mobile_bp.route("/api/mobile/jarviscore/status", methods=["GET"])
+def mobile_jarviscore_status():
+    """ดึงข้อมูลสถานะเชิงลึกของสมอง JarvisCore SLM และระดับฮอร์โมนสังเคราะห์"""
+    try:
+        from modules.jarvis_slm_bridge import get_jarviscore_bridge
+        bridge = get_jarviscore_bridge()
+        telemetry = bridge.get_telemetry()
+        return jsonify({
+            "status": "success",
+            "data": telemetry
+        })
+    except Exception as e:
+        logger.error(f"[JARVISCORE API] Status fetch failed: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@mobile_bp.route("/api/mobile/jarviscore/reflex", methods=["POST"])
+def mobile_jarviscore_reflex():
+    """ทดสอบส่งคำถามเข้าสมอง JarvisCore SLM โดยตรงเพื่อดูการตอบสนองระดับ Millisecond"""
+    data = request.get_json(silent=True) or {}
+    prompt = data.get("prompt", "สวัสดีจาร์วิส")
+    max_tokens = int(data.get("max_tokens", 40))
+
+    try:
+        from modules.jarvis_slm_bridge import get_jarviscore_bridge
+        bridge = get_jarviscore_bridge()
+        t0 = time.perf_counter()
+        reply = bridge.generate_reflex(prompt, max_new_tokens=max_tokens)
+        elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
+
+        return jsonify({
+            "status": "success",
+            "prompt": prompt,
+            "response": reply or "ไม่มีการตอบสนองจาก SLM",
+            "latency_ms": elapsed_ms,
+            "device": bridge.device,
+            "endocrine": bridge.get_endocrine_state()
+        })
+    except Exception as e:
+        logger.error(f"[JARVISCORE API] Reflex test failed: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@mobile_bp.route("/api/mobile/jarviscore/consolidate", methods=["POST"])
+def mobile_jarviscore_consolidate():
+    """สั่งให้ JarvisCore เข้าสู่สถานะ Sleep Consolidation (เรียนรู้จากความจำบทสนทนาล่าสุด)"""
+    data = request.get_json(silent=True) or {}
+    steps = int(data.get("steps", 30))
+
+    try:
+        from modules.jarvis_slm_bridge import get_jarviscore_bridge
+        bridge = get_jarviscore_bridge()
+        result = bridge.consolidate_memory_microtrain(steps=steps)
+        return jsonify({
+            "status": "success" if result.get("success") else "error",
+            "result": result
+        })
+    except Exception as e:
+        logger.error(f"[JARVISCORE API] Consolidation trigger failed: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 def register_mobile_routes(app):
     """ลงทะเบียน Blueprint เข้าสู่ Flask Server หลัก"""
     app.register_blueprint(mobile_bp)
-    logger.info("[MOBILE API] Routes registered successfully with Telephony Engine.")
+    logger.info("[MOBILE API] Routes registered successfully with Telephony Engine & JarvisCore SLM.")

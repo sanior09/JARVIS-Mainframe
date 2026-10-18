@@ -3,7 +3,8 @@ import json
 import logging
 import subprocess
 import logging
-from typing import TypedDict, Annotated, Sequence
+from typing import Annotated, Sequence
+from typing_extensions import TypedDict
 import operator
 try:
     from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
@@ -24,7 +25,8 @@ class AgentState(TypedDict):
 def run_architect(state: AgentState):
     logger.info("[SWARM] Architect Agent is designing tech spec...")
     user_req = state['messages'][0].content
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model_name = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+    model = genai.GenerativeModel(model_name)
     prompt = f"คุณคือ Architect Agent ออกแบบโครงสร้าง (Tech Spec) สั้นๆ สำหรับโปรเจกต์นี้:\n{user_req}"
     resp = model.generate_content(prompt)
     return {"tech_spec": resp.text, "iterations": state.get('iterations', 0)}
@@ -33,7 +35,8 @@ def run_coder(state: AgentState):
     logger.info("[SWARM] Coder Agent is writing code...")
     tech_spec = state.get('tech_spec', '')
     qa_feedback = state.get('qa_feedback', '')
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model_name = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+    model = genai.GenerativeModel(model_name)
     prompt = f"คุณคือ Coder Agent เขียนโค้ด Python จาก Tech Spec นี้:\n{tech_spec}\n"
     if qa_feedback:
         prompt += f"\nแก้ไขข้อผิดพลาดตาม QA Feedback นี้:\n{qa_feedback}"
@@ -86,7 +89,7 @@ def qa_router(state: AgentState):
     return "coder"
 
 def create_swarm():
-    workflow = StateGraph(AgentState)
+    workflow = StateGraph(AgentState) # type: ignore
     
     workflow.add_node("architect", run_architect)
     workflow.add_node("coder", run_coder)
@@ -136,19 +139,7 @@ AGENT_CONFIGURATIONS = {
             "Focus strictly on Windows process management, task scheduling, file system operations, and safe PowerShell execution. "
             "Respond concisely with factual system status."
         ),
-        "tools": [
-            "manage_windows_processes",
-            "manage_system_maintenance",
-            "execute_powershell_safe",
-            "os_control",
-            "gui_control",
-            "take_screenshot",
-            "compile_and_dispatch_os_payload",
-            "schedule_task",
-            "manage_mission_log",
-            "list_directory_contents",
-            "move_file_or_folder"
-        ]
+        "tools": ["manage_windows_processes", "manage_system_maintenance", "execute_powershell_safe", "ALL"]
     },
     "server_monitor": {
         "name": "Server & Infrastructure Monitoring Agent",
@@ -159,15 +150,7 @@ AGENT_CONFIGURATIONS = {
             "SQLite database integrity, cache consumption, and Watchdog daemon health. "
             "Report exact metrics and warn if saturation exceeds thresholds."
         ),
-        "tools": [
-            "get_server_telemetry",
-            "check_database_and_cache",
-            "supervise_watchdog_services",
-            "get_system_diagnostics",
-            "get_neural_risk_analysis",
-            "scan_local_network",
-            "get_thermal_telemetry"
-        ]
+        "tools": ["get_server_telemetry", "check_database_and_cache", "supervise_watchdog_services", "ALL"]
     },
     "research": {
         "name": "Autonomous Deep Research & OSINT Agent",
@@ -177,15 +160,7 @@ AGENT_CONFIGURATIONS = {
             "Focus on multi-source web investigations, deep scraping, factual extraction, and synthesizing structured technical reports. "
             "Always cite domains and URLs."
         ),
-        "tools": [
-            "autonomous_deep_research",
-            "synthesize_technical_report",
-            "search_web",
-            "browse_website",
-            "search_wikipedia",
-            "ingest_local_directory",
-            "extract_knowledge_matrix"
-        ]
+        "tools": ["autonomous_deep_research", "synthesize_technical_report", "search_web", "browse_website", "ALL"]
     },
     "engineering": {
         "name": "Engineering & Circuit Synthesizer Agent",
@@ -194,15 +169,7 @@ AGENT_CONFIGURATIONS = {
             "You are the Engineering & Circuit Sub-Agent. "
             "Focus on technical architectures, electronic schematics, AST code refactoring, and 3D hologram models."
         ),
-        "tools": [
-            "generate_bom_from_circuit",
-            "analyze_molecular_structure",
-            "reverse_engineer_schematic",
-            "flash_esp32_firmware",
-            "self_patch_system",
-            "run_codebase_maintenance",
-            "generate_and_render_hologram"
-        ]
+        "tools": ["ALL"]
     },
     "creative": {
         "name": "Creative & Vision Synthesis Agent",
@@ -211,11 +178,7 @@ AGENT_CONFIGURATIONS = {
             "You are the Creative Synthesis Sub-Agent. "
             "When asked to create, paint, or render an image, execute generate_image with vivid descriptive English prompts."
         ),
-        "tools": [
-            "generate_image",
-            "search_image",
-            "generate_and_render_hologram"
-        ]
+        "tools": ["ALL"]
     },
     "home": {
         "name": "Home Assistant & Physical Environment Agent",
@@ -224,14 +187,7 @@ AGENT_CONFIGURATIONS = {
             "You are the Home Assistant Sub-Agent. "
             "Focus strictly on smart home devices, lighting, room scenes, and sensors. Keep replies succinct."
         ),
-        "tools": [
-            "control_light",
-            "get_light_status",
-            "get_ha_entities",
-            "activate_scene",
-            "call_home_assistant_service",
-            "capture_webcam"
-        ]
+        "tools": ["ALL"]
     },
     "general": {
         "name": "General Intelligence & Personal Assistant Agent",
