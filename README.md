@@ -123,12 +123,12 @@ python jarvis.py
 ```bash
 python modules/dynamic_island.py
 ```
-- **7 Mascot Skins:** สลับได้ทันทีผ่านคลิกขวา (รวม **Marvel Stark HUD Arc Reactor ring**, Iron Man Mark VI, Cat, Robot, Dog, Fox, Demon)
+- **7 Mascot Skins:** สลับได้ทันทีผ่านคลิกขวา (Mochi, Antigravity, Codex, Cursor, JARVIS Arc, Gemini, Iron Man Mark VI)
 - **Visual Skin Palette:** เมนูการ์ดคลิกขวาสำหรับเลือกสกินแบบพรีเมียม
-- **Live Hardware Telemetry:** ตรวจวัด CPU, RAM, Network I/O, แบตเตอรี่ และสถานะระบบแบบ Real-time
-- **AI Quota Gauge:** แสดงแถบสถานะโควตา API แบบเรียลไทม์
-- **Zero-Latency Named Pipe:** เชื่อมต่อกับคอร์ J.A.R.V.I.S. ผ่าน `\\.\pipe\jarvis_island`
-- **Quick Action Launcher:** ปิด/ล็อคจอ, ควบคุมเพลง, แคปหน้าจอ, และเรียกหน้าต่างเทอร์มินัล
+- **Smart Alert & Toast Banner:** แสดงแถบแจ้งเตือน Toast ยืด-หดอัตโนมัติเมื่อ AI มีการตอบสนองหรือแจ้งเตือน
+- **Drag & Drop AI Ingestion:** ลากไฟล์/เอกสารจากหน้าจอมาหย่อนใส่ HUD เพื่อส่งให้ AI วิเคราะห์ได้ทันที
+- **AI Quota Gauge:** แสดงแถบสถานะโควตา API (Groq, Gemini, Ollama) แบบเรียลไทม์
+- **Zero-Latency Named Pipe:** เชื่อมต่อกับคอร์ J.A.R.V.I.S. ผ่าน `\\.\pipe\jarvis_island_pipe`
 
 ### 📱 2. JARVIS Mobile Companion App (React Native / Expo Go)
 ควบคุมและสั่งการ J.A.R.V.I.S. จากระยะไกลผ่านสมาร์ตโฟน:
