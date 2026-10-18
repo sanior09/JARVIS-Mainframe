@@ -34,13 +34,23 @@ echo.
 echo %CYAN%  [ SYSTEM BOOT SEQUENCE INITIATED ]%RESET%
 echo.
 
-:: Simulate loading
-echo %WHITE%  [!] Initializing Cognitive Matrix...%RESET%
-ping 127.0.0.1 -n 2 >nul
-echo %WHITE%  [!] Establishing Neural Pathways...%RESET%
-ping 127.0.0.1 -n 2 >nul
-echo %WHITE%  [!] Loading Autonomous Evolution Protocol...%RESET%
-ping 127.0.0.1 -n 2 >nul
+:: Simulate loading (Typewriter Effect)
+python --version >nul 2>&1
+if %errorlevel% equ 0 (
+    python scripts\boot_fx.py --type "  [!] Initializing Cognitive Matrix..." white 0.015
+    ping 127.0.0.1 -n 2 >nul
+    python scripts\boot_fx.py --type "  [!] Establishing Neural Pathways..." white 0.015
+    ping 127.0.0.1 -n 2 >nul
+    python scripts\boot_fx.py --type "  [!] Loading Autonomous Evolution Protocol..." white 0.015
+    ping 127.0.0.1 -n 2 >nul
+) else (
+    echo %WHITE%  [!] Initializing Cognitive Matrix...%RESET%
+    ping 127.0.0.1 -n 2 >nul
+    echo %WHITE%  [!] Establishing Neural Pathways...%RESET%
+    ping 127.0.0.1 -n 2 >nul
+    echo %WHITE%  [!] Loading Autonomous Evolution Protocol...%RESET%
+    ping 127.0.0.1 -n 2 >nul
+)
 echo.
 
 echo %CYAN%  [ VERIFYING SYSTEM INTEGRITY ]%RESET%
