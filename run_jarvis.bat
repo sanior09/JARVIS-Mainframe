@@ -29,6 +29,7 @@ echo %BLUE%     ^| ^|__^| / ____ \^| ^| \ \  \  /   _^| ^|_ ____) ^|%RESET%
 echo %BLUE%      \____/_/    \_\_^|  \_\  \/   ^|_____^|_____/ %RESET%
 echo %CYAN%  ========================================================================%RESET%
 echo %WHITE%                JUST A RATHER VERY INTELLIGENT SYSTEM%RESET%
+echo %CYAN%                    Powered by Nachapol Industries%RESET%
 echo.
 echo %CYAN%  [ SYSTEM BOOT SEQUENCE INITIATED ]%RESET%
 echo.

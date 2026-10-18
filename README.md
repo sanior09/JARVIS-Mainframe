@@ -219,7 +219,16 @@ npx expo start
 
 ---
 
+## 🤝 Attribution & Credits (ข้อตกลงการให้เครดิต)
+
+หากท่านนำโปรเจกต์ **J.A.R.V.I.S. Mainframe** หรือส่วนหนึ่งส่วนใดของโค้ดไปใช้งาน, พัฒนาต่อยอด (Fork), ทำคลิปรีวิว/สื่อวิดีโอ, หรือนำไปจัดแสดง:
+- 🌟 **กรุณาให้เครดิตผู้สร้าง:** **Nachapol Industries**
+- 🔗 **แนบลิงก์กลับมายัง Repository ต้นฉบับ:** [https://github.com/sanio09/JARVIS-Mainframe](https://github.com/sanio09/JARVIS-Mainframe)
+- ⚖️ **ข้อกำหนดทางกฎหมาย:** ภายใต้สัญญาอนุญาต **[MIT License](LICENSE)** ผู้ใช้งานจำเป็นต้องเก็บข้อความลิขสิทธิ์ `Copyright (c) 2026 Nachapol Industries` ไว้ในทุกสำเนาของซอฟต์แวร์
+
+---
+
 ## 📜 License
 This project is open-source under the [MIT License](LICENSE).
 
-*Developed & Maintained by Nachapol Industries*
+*Developed & Architected by Nachapol Industries*
