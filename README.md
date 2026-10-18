@@ -9,10 +9,23 @@
 
 ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
 
+<p align="center">
+  <a href="#-system-architecture-blueprint-5-stage-pipeline">⚡ Architecture</a> •
+  <a href="#-quick-start-nachapol-protocol">🚀 Quick Start</a> •
+  <a href="#️-1-dynamic-island-desktop-hud-v3">🏝️ Dynamic Island</a> •
+  <a href="#-2-jarvis-mobile-companion-app-react-native--expo-go">📱 Mobile App</a> •
+  <a href="#-8-subconscious-engine--cyber-security-guard">🕶️ Dark Mode</a> •
+  <a href="#-บันทึกจากผู้พัฒนา-developers-note">📝 Dev Note</a>
+</p>
+
 ---
 
 ## ⚡ System Architecture Blueprint (5-Stage Pipeline)
 สามารถดับเบิลคลิกเปิดไฟล์ **[`jarvis_architecture.html`](web/jarvis_architecture.html)** ในเว็บเบราว์เซอร์ เพื่อสำรวจแผนผังการทำงานของระบบแบบอินเทอร์แอคทีฟ (Zero-Overlap Pipeline Model):
+
+<p align="center">
+  <img src="docs/images/architecture_map.png" alt="J.A.R.V.I.S. System Architecture Blueprint" width="100%">
+</p>
 
 ```mermaid
 graph LR
@@ -123,6 +136,11 @@ python jarvis.py
 
 ### 🏝️ 1. Dynamic Island Desktop HUD v3
 แผงหน้าปัดลอยตัวสไตล์ Cyberpunk บนหน้าจอ Windows พร้อมแอนิเมชัน Glassmorphism:
+
+<p align="center">
+  <img src="docs/images/dynamic_island.png" alt="J.A.R.V.I.S. Dynamic Island HUD & Mascot Skins" width="100%">
+</p>
+
 ```bash
 python modules/dynamic_island.py
 ```
@@ -146,6 +164,10 @@ npx expo start
 
 ### 🌐 3. Web Portal & Speech Interface
 เปิดเบราว์เซอร์ไปที่ `http://localhost:5050` เพื่อใช้งานเว็บพอร์ทัล, ระบบรับฟังเสียงผ่านเบราว์เซอร์ และ REST API
+
+<p align="center">
+  <img src="docs/images/web_portal.png" alt="J.A.R.V.I.S. Hologram Web Portal Interface" width="100%">
+</p>
 
 ---
 
