@@ -11,6 +11,8 @@ audit_payload.log
 
 # Personal & User-Specific Data
 science_project/
+hardware/
+FUTURE_HARDWARE_ROADMAP.md
 all_memories.txt
 user_profile_dump.txt
 test_*.txt
