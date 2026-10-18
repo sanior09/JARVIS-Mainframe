@@ -41,6 +41,7 @@ python scripts\boot_fx.py --type "  [!] Establishing Neural Pathways..." white 0
 ping 127.0.0.1 -n 2 >nul
 python scripts\boot_fx.py --type "  [!] Loading Autonomous Evolution Protocol..." white 0.014
 ping 127.0.0.1 -n 2 >nul
+python scripts\boot_fx.py --bar "Synthesizing Cognitive Neural Pathways" 0.65
 echo.
 
 python scripts\boot_fx.py --type "  [ VERIFYING SYSTEM INTEGRITY ]" cyan 0.012
@@ -77,11 +78,13 @@ for %%P in (%REQUIRED_PACKAGES%) do (
     )
 )
 
+python scripts\boot_fx.py --bar "Auditing Core Libraries & AI Subsystems" 0.60
 python scripts\boot_fx.py --status "Neural Dependencies: 19/19 Packages" "SYNCED"
 echo.
 
 python scripts\boot_fx.py --type "  [ PURGING TEMPORARY CACHE ]" cyan 0.012
 del /s /q *.log >nul 2>&1
+python scripts\boot_fx.py --bar "Defragmenting Memory & Cache Buffers" 0.50
 python scripts\boot_fx.py --status "System Cache & Execution Logs" "OPTIMIZED"
 echo.
 
