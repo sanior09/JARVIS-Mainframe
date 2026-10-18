@@ -57,6 +57,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 echo %GREEN%  [*] Core Engine: Python Verified.%RESET%
+python scripts\boot_fx.py --status "Core Runtime: Python Environment" "ONLINE"
 
 :: ตรวจสอบและติดตั้ง Dependencies ที่จำเป็น
 set "REQUIRED_PACKAGES=langchain_core langgraph beautifulsoup4 python-dotenv chromadb psutil requests waitress duckduckgo_search langgraph-checkpoint-sqlite pyautogui opencv-python mediapipe aiohttp websockets line-bot-sdk groq apscheduler sqlalchemy"
@@ -76,15 +77,15 @@ for %%P in (%REQUIRED_PACKAGES%) do (
     )
 )
 
-echo %GREEN%  [*] Subsystems Integrity Check: PASSED.%RESET%
+python scripts\boot_fx.py --status "Neural Dependencies: 19/19 Packages" "SYNCED"
 echo.
 
 echo %CYAN%  [ PURGING TEMPORARY CACHE ]%RESET%
 del /s /q *.log >nul 2>&1
-echo %GREEN%  [*] Cache Purged.%RESET%
+python scripts\boot_fx.py --status "System Cache & Execution Logs" "OPTIMIZED"
 echo.
 
-:: ตรวจสอบว่าไฟล์ jarvis.py มีอยู่จริงหรือไม่ในไดเรกทอรีปัจจุบัน (ไดร์ฟ C)
+:: ตรวจสอบว่าไฟล์ jarvis.py มีอยู่จริงหรือไม่ในไดเรกทอรีปัจจุบัน
 if not exist "jarvis.py" (
     echo %RED%  [FATAL ERROR] Core Logic File 'jarvis.py' is missing.%RESET%
     pause
@@ -93,18 +94,27 @@ if not exist "jarvis.py" (
 
 :: เริ่มรัน Windows Autonomous Agent ใน Background
 if exist "modules\agent_windows_core.py" (
-    echo %CYAN%  [!] Launching Windows Interface Subroutine...%RESET%
     start /b "" pythonw modules\agent_windows_core.py
+    python scripts\boot_fx.py --status "Windows Autonomous Desktop Agent" "ENGAGED"
 ) else if exist "agent_windows_core.py" (
-    echo %CYAN%  [!] Launching Windows Interface Subroutine...%RESET%
     start /b "" pythonw agent_windows_core.py
+    python scripts\boot_fx.py --status "Windows Autonomous Desktop Agent" "ENGAGED"
 )
 
 echo.
+echo %CYAN%  [ SYNAPSE CALIBRATION SEQUENCE ]%RESET%
+python scripts\boot_fx.py --bar "Loading Neural Matrix & Synaptic Buffer" 0.75
+echo.
+python scripts\boot_fx.py --status "Synaptic Knowledge Store (ChromaDB)" "CONNECTED"
+python scripts\boot_fx.py --status "Local Named Pipe Bus (\\.\pipe\island)" "LISTENING"
+python scripts\boot_fx.py --status "24/7 Watchdog Supervisor" "STANDBY"
+
+echo.
 echo %CYAN%  ========================================================================%RESET%
-echo %GREEN%           ALL SYSTEMS ONLINE. J.A.R.V.I.S. IS NOW LISTENING.%RESET%
+python scripts\boot_fx.py --type "  ALL SYSTEMS ONLINE. J.A.R.V.I.S. IS NOW LISTENING..." green 0.016
+python scripts\boot_fx.py --type "  \"Good day, Sir. All cognitive systems are fully operational.\"" cyan 0.020
 echo %CYAN%  ========================================================================%RESET%
-echo %WHITE%  [WARNING] Do not close this terminal. J.A.R.V.I.S. requires it to live.%RESET%
+echo %WHITE%  [!] Live telemetry running. Press Ctrl+C in this window to terminate.%RESET%
 echo.
 
 :: Boot the Watchdog instead of jarvis.py directly
