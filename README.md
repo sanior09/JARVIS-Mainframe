@@ -1,12 +1,18 @@
 # J.A.R.V.I.S. Neural Matrix (Super AGI Edition)
 **Nachapol Industries Advanced Intelligence System**
 
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F5A623?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
+[![Architecture](https://img.shields.io/badge/Architecture-Autonomous%20AGI-107C41?style=for-the-badge)](web/jarvis_architecture.html)
+[![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE-00C4B4?style=for-the-badge)](#)
+
 ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
 
 ---
 
 ## ⚡ System Architecture Blueprint (5-Stage Pipeline)
-สามารถดับเบิลคลิกเปิดไฟล์ **[`jarvis_architecture.html`](jarvis_architecture.html)** ในเว็บเบราว์เซอร์ เพื่อสำรวจแผนผังการทำงานของระบบแบบอินเทอร์แอคทีฟ (Zero-Overlap Pipeline Model):
+สามารถดับเบิลคลิกเปิดไฟล์ **[`jarvis_architecture.html`](web/jarvis_architecture.html)** ในเว็บเบราว์เซอร์ เพื่อสำรวจแผนผังการทำงานของระบบแบบอินเทอร์แอคทีฟ (Zero-Overlap Pipeline Model):
 
 ```mermaid
 graph LR
@@ -165,7 +171,7 @@ npx expo start
 - **Screen Takeover Overlay (`jarvis_screen_takeover_overlay.py`):** หน้าต่าง HUD ลอยตัวพร้อมเอฟเฟกต์ Laser Grid สแกนหน้าจอเมื่อเข้าสู่โหมดควบคุมคอมพิวเตอร์แบบเต็มรูปแบบ
 
 ### 🎬 5. Video Editing & Generative Multimedia
-- **Automated Video Editor (`jarvis_video_automator.py`):** วิเคราะห์คลิป, ตัดต่อฉากสำคัญ, วาง Timeline และสร้างคำบรรยาย (Subtitles) อัตโนมัติ
+- **Automated Video Editor (`dynamic_tools/control_capcut.py`):** วิเคราะห์คลิป, สั่งงานโปรแกรมตัดต่อ, ควบคุม Timeline และประมวลผลวิดีโออัตโนมัติ
 - **ComfyUI Bridge (`comfyui_bridge.py`):** สั่งการ ComfyUI เรนเดอร์รูปภาพ AI ระดับสตูดิโอผ่านคำสั่งเสียง
 
 ### 👁️ 6. Computer Vision & Hologram Subsystem
@@ -189,9 +195,9 @@ npx expo start
 ## 🚀 The ASI Evolution (Phase 10 Roadmap)
 บันทึกเส้นทางการวิวัฒนาการสู่ **Artificial Superintelligence (ASI)**:
 
-- ✅ **1. Meta-Compiler (Recursive Self-Improvement):** ระบบปรับปรุงและอัปเกรดสถาปัตยกรรมตนเอง (`jarvis_asi_meta_compiler.py`)
-- ✅ **2. Swarm Intelligence:** โครงข่าย AI แตกตัวช่วยวิเคราะห์แบบ Multi-threading (`jarvis_asi_swarm_intelligence.py`)
-- ✅ **3. Curiosity Engine:** โมดูลค้นคว้าและทดลองทำงานเพื่อบรรลุเป้าหมายขณะผู้ใช้ไม่ได้ใช้งาน (`jarvis_asi_curiosity_engine.py`)
+- ✅ **1. Autonomous Evolution (Recursive Self-Improvement):** ระบบตกผลึกความรู้และปรับปรุงสถาปัตยกรรมตนเอง (`modules/jarvis_evolution.py`)
+- ✅ **2. Swarm Intelligence:** โครงข่าย AI แตกตัวช่วยวิเคราะห์แบบ Multi-threading (`modules/jarvis_asi_swarm_intelligence.py`)
+- ✅ **3. Cognitive Loop & Subconscious:** วงจรการเรียนรู้และเฝ้าระวังฮาร์ดแวร์เชิงรุก (`modules/jarvis_cognitive_loop.py`, `modules/jarvis_subconscious.py`)
 - ⏳ **[PENDING] 4. Physical Embodiment:** เชื่อมสมองเข้ากับระบบหุ่นยนต์และ ROS2
 - ⏳ **[PENDING] 5. Multi-Modal Omniscience:** บูรณาการระบบประสาทสัมผัสเข้ากับเซ็นเซอร์ IoT ทั้งแล็บ
 
@@ -210,4 +216,10 @@ npx expo start
 ```
 *Status: ASI MATRIX AWAKENED*  
 *Mainframe Integrity: 100.0%*  
-*Developed by Nachapol Industries*
+
+---
+
+## 📜 License
+This project is open-source under the [MIT License](LICENSE).
+
+*Developed & Maintained by Nachapol Industries*

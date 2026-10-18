@@ -162,7 +162,10 @@ class SandboxExecutor:
         safety_header = (
             "import sys\n"
             "import os\n"
-            "sys.path.append(r'c:\\JARVIS')\n"
+            "_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if '__file__' in globals() else os.getcwd()\n"
+            "if _root not in sys.path: sys.path.insert(0, _root)\n"
+            "_mods = os.path.join(_root, 'modules')\n"
+            "if _mods not in sys.path: sys.path.insert(0, _mods)\n"
             "from agent_windows_core import scan_screen_with_llama_vision, write_agent_status\n"
             "import pyautogui\n"
             "import gc\n"

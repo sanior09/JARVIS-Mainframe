@@ -17,8 +17,10 @@ def execute(args: dict) -> str:
     import logging
     import sys
     
-    # Needs to import from parent directory
-    sys.path.append("c:\\JARVIS")
+    import os
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if base_dir not in sys.path:
+        sys.path.insert(0, base_dir)
     try:
         from jarvis import chroma_client
         import jarvis_memory_consolidation

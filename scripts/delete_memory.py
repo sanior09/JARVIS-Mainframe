@@ -1,8 +1,10 @@
+import os
 import chromadb
 import sys
 import json
 
-db_path = 'c:\\JARVIS\\jarvis_vector_db'
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+db_path = os.path.join(base_dir, 'jarvis_vector_db')
 client = chromadb.PersistentClient(path=db_path)
 
 try:

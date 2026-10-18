@@ -48,7 +48,8 @@ def run_coder(state: AgentState):
         code = code.split("```python")[1].split("```")[0].strip()
         
     # [AUTONOMOUS UPGRADE] Write code to disk
-    workspace_dir = "C:/JARVIS/swarm_workspace"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    workspace_dir = os.path.join(base_dir, "swarm_workspace")
     os.makedirs(workspace_dir, exist_ok=True)
     file_path = os.path.join(workspace_dir, "app_generated.py")
     with open(file_path, "w", encoding="utf-8") as f:
@@ -60,7 +61,8 @@ def run_qa(state: AgentState):
     logger.info("[SWARM] QA Agent is testing the code execution...")
     code = state.get('code', '')
     
-    file_path = "C:/JARVIS/swarm_workspace/app_generated.py"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path = os.path.join(base_dir, "swarm_workspace", "app_generated.py")
     feedback = ""
     is_pass = False
     

@@ -273,11 +273,11 @@ TOOLS_DEFINITION = [
         "type": "function",
         "function": {
             "name": "ingest_local_directory",
-            "description": "สแกนและเรียนรู้ไฟล์ทั้งหมดในโฟลเดอร์ที่ระบุเพื่อเก็บลงฐานความจำระยะยาว หากเจ้านายพูดถึง 'โครงงานวิทย์' หรือ 'science project' ให้ใช้ directory_path = 'C:\\JARVIS\\science_project' เสมอ",
+            "description": "สแกนและเรียนรู้ไฟล์ทั้งหมดในโฟลเดอร์ที่ระบุเพื่อประมวลผลและเก็บลงฐานความจำระยะยาว (Long-term Synaptic Memory)",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "directory_path": {"type": "string", "description": "เส้นทางโฟลเดอร์ที่ต้องการให้เรียนรู้ สำหรับโครงงานวิทยาศาสตร์ของเจ้านายให้ใช้ 'C:\\JARVIS\\science_project' เสมอ"},
+                    "directory_path": {"type": "string", "description": "เส้นทางโฟลเดอร์เอกสารหรือโค้ดที่ต้องการให้เรียนรู้ (เช่น 'documents', 'knowledge_base' หรือ absolute path)"},
                     "file_types": {"type": "array", "items": {"type": "string"}, "description": "นามสกุลไฟล์ที่ต้องการ เช่น ['.py', '.txt', '.md', '.pdf', '.docx', '.jpg']"}
                 },
                 "required": ["directory_path"]

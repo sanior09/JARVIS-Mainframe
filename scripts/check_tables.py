@@ -8,5 +8,7 @@ def check(db_path):
     except Exception as e:
         print("Error:", e)
         
-check('C:\\JARVIS\\data\\memory_core.db')
-check('C:\\JARVIS\\data\\jarvis_memory.db')
+import os
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+check(os.path.join(base_dir, 'data', 'memory_core.db'))
+check(os.path.join(base_dir, 'data', 'jarvis_memory.db'))

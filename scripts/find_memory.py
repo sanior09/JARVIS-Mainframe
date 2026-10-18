@@ -1,6 +1,8 @@
+import os
 import sqlite3
 
-conn = sqlite3.connect('C:\\JARVIS\\data\\memory_core.db')
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+conn = sqlite3.connect(os.path.join(base_dir, 'data', 'memory_core.db'))
 c = conn.cursor()
 
 try:
@@ -13,7 +15,7 @@ except Exception as e:
     
 try:
     print("--- knowledge_graph ---")
-    conn2 = sqlite3.connect('C:\\JARVIS\\data\\jarvis.db')
+    conn2 = sqlite3.connect(os.path.join(base_dir, 'data', 'jarvis.db'))
     rows2 = conn2.execute("SELECT * FROM knowledge_graph WHERE entity_a = 'เจ้านาย'").fetchall()
     for r in rows2:
         print(r)

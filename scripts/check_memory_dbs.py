@@ -22,6 +22,8 @@ def check_db(db_path):
     except Exception as e:
         print("DB Error:", e)
 
-check_db('C:\\JARVIS\\data\\jarvis_memory.db')
-check_db('C:\\JARVIS\\data\\memory_core.db')
-check_db('C:\\JARVIS\\data\\jarvis_knowledge_graph.db')
+import os
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+check_db(os.path.join(base_dir, 'data', 'jarvis_memory.db'))
+check_db(os.path.join(base_dir, 'data', 'memory_core.db'))
+check_db(os.path.join(base_dir, 'data', 'jarvis_knowledge_graph.db'))

@@ -46,7 +46,8 @@ def reminder_thread(minutes: int, message: str):
             import sqlite3
             
             # Fetch latest LINE user ID
-            db_path = 'C:\\JARVIS\\jarvis.db'
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            db_path = os.path.join(base_dir, 'jarvis.db')
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
             c.execute("SELECT worker_id FROM jarvis_task_queue WHERE worker_id IS NOT NULL ORDER BY timestamp DESC LIMIT 1")

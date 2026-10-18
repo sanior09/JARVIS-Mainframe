@@ -1061,7 +1061,7 @@
 
     <div class="inspector-section">
       <div class="inspector-section-label">Source File & Modules</div>
-      <div class="inspector-code-box" id="inspPath">c:\JARVIS\...</div>
+      <div class="inspector-code-box" id="inspPath">modules/...</div>
     </div>
 
     <div class="inspector-section">
@@ -1083,7 +1083,7 @@
         type: "PyQt6 Desktop Notch Window",
         status: "RUNNING (PID Active)",
         desc: "Supercharged top-of-screen notch overlay featuring Notch Buddy mascots, smooth QPropertyAnimation transforms, audio waveform, quota alerts, and IPC command reception.",
-        path: "c:\\JARVIS\\modules\\dynamic_island.py",
+        path: "modules/dynamic_island.py",
         inbound: ["Local Named Pipe (Marquee & Status sync)"],
         outbound: ["Local Named Pipe (Exit/Hide commands)"]
       },
@@ -1092,7 +1092,7 @@
         type: "Cross-Platform React Native",
         status: "CONNECTED (Expo Go)",
         desc: "Remote smartphone controller allowing real-time chat, LLM model selection, mascot skin switching, voice messages, and server resource monitoring.",
-        path: "c:\\JARVIS\\jarvis-mobile\\App.js",
+        path: "jarvis-mobile/App.js",
         inbound: ["User Touch / Voice Input", "WebSocket Status Push"],
         outbound: ["FastAPI WebSocket Hub (:8000/ws)"]
       },
@@ -1101,7 +1101,7 @@
         type: "Real-time Neural Speech Pipeline",
         status: "LISTENING",
         desc: "Captures microphone input, handles energy-based VAD, transcribes with Whisper, and synthesizes speech responses via Edge-TTS neural models.",
-        path: "c:\\JARVIS\\modules\\voice_engine.py",
+        path: "modules/voice_engine.py",
         inbound: ["Microphone Stream"],
         outbound: ["Intent & Tool Router"]
       },
@@ -1110,7 +1110,7 @@
         type: "Windows Named Pipe Server",
         status: "CONNECTED (\\\\.\\pipe\\jarvis_island)",
         desc: "High throughput, sub-2ms inter-process communication bus connecting Mainframe core with the PyQt6 Island overlay without network overhead.",
-        path: "c:\\JARVIS\\modules\\dynamic_island.py (_pipe_server)",
+        path: "modules/dynamic_island.py (_pipe_server)",
         inbound: ["Dynamic Island HUD", "FastAPI WebSocket Hub"],
         outbound: ["Intent & Tool Router", "Dynamic Island HUD"]
       },
@@ -1119,7 +1119,7 @@
         type: "Async Mobile Server (:8000)",
         status: "LISTENING ON 0.0.0.0:8000",
         desc: "Serves mobile REST APIs, bidirectional WebSocket live channels for chat and notifications, and token authentication.",
-        path: "c:\\JARVIS\\modules\\jarvis_mobile_api.py",
+        path: "modules/jarvis_mobile_api.py",
         inbound: ["Mobile Companion App"],
         outbound: ["Intent & Tool Router", "Local Named Pipe Bus"]
       },
@@ -1128,7 +1128,7 @@
         type: "File & OCR Analysis Subsystem",
         status: "STANDBY",
         desc: "Enables dragging image files, documents, or screenshots directly onto the HUD notch for immediate multimodal AI analysis.",
-        path: "c:\\JARVIS\\modules\\dynamic_island.py (dragEnterEvent)",
+        path: "modules/dynamic_island.py (dragEnterEvent)",
         inbound: ["User File Drag & Drop", "Webcam Capture"],
         outbound: ["Neural AI Router (Multimodal Vision API)"]
       },
@@ -1137,7 +1137,7 @@
         type: "Autonomous Function Router",
         status: "PROCESSING",
         desc: "Parses structured natural language to distinguish between OS commands, media control, code generation tasks, or conversation queries.",
-        path: "c:\\JARVIS\\jarvis.py",
+        path: "jarvis.py",
         inbound: ["Local Named Pipe Bus", "FastAPI Hub", "Voice Engine"],
         outbound: ["Neural AI Router", "Windows OS Controller", "Media Subsystem", "Browser Subagent"]
       },
@@ -1146,7 +1146,7 @@
         type: "Intelligent Multi-LLM Gateway",
         status: "HEALTHY (Auto-Failover Active)",
         desc: "Evaluates query complexity, checks live quota limits via ai_quota_tracker, and dynamically routes prompt requests to the optimal AI provider.",
-        path: "c:\\JARVIS\\jarvis_core\\ai_router.py",
+        path: "jarvis_core/ai_router.py",
         inbound: ["Intent & Tool Router", "Multimodal Ingestor"],
         outbound: ["LLM Provider Pool", "AI Quota Tracker"]
       },
@@ -1164,7 +1164,7 @@
         type: "Conversation State Manager",
         status: "SYNCED (10-Turn Window)",
         desc: "Maintains 10-turn conversation history, optimizes token payloads, and saves session facts.",
-        path: "c:\\JARVIS\\jarvis.py (_load_chat_history)",
+        path: "jarvis.py (_load_chat_history)",
         inbound: ["LLM Provider Pool"],
         outbound: ["Neural AI Router", "ThreadSafe SQLite DB"]
       },
@@ -1173,7 +1173,7 @@
         type: "Native Desktop Automation",
         status: "READY",
         desc: "Controls Windows system state via win32 APIs: volume sliders, app launch, process kill, window positioning, and clipboard management.",
-        path: "c:\\JARVIS\\jarvis.py (execute_command)",
+        path: "jarvis.py (execute_command)",
         inbound: ["Intent & Tool Router"],
         outbound: ["Windows Shell / Win32 APIs"]
       },
@@ -1182,7 +1182,7 @@
         type: "Windows Media Sync",
         status: "SYNCED",
         desc: "Monitors currently playing track on Windows (Spotify, YouTube, Media Player) and syncs title to Dynamic Island Marquee label.",
-        path: "c:\\JARVIS\\modules\\dynamic_island.py (Media Controls)",
+        path: "modules/dynamic_island.py (Media Controls)",
         inbound: ["Intent & Tool Router", "Windows Media Session"],
         outbound: ["Dynamic Island HUD (Via Pipe)"]
       },
@@ -1209,7 +1209,7 @@
         type: "Live Telemetry Engine",
         status: "TRACKING (Groq & Gemini Limits)",
         desc: "Keeps track of daily free-tier request counts, warns before quota exhaustion, and triggers automatic provider fallback in ai_router.",
-        path: "c:\\JARVIS\\modules\\ai_quota_tracker.py",
+        path: "modules/ai_quota_tracker.py",
         inbound: ["LLM Provider Pool", "Neural AI Router"],
         outbound: ["ThreadSafe SQLite DB"]
       },
@@ -1218,7 +1218,7 @@
         type: "Local Embedded Relational Storage",
         status: "CONNECTED (WAL Mode Enabled)",
         desc: "Provides synchronized SQLite storage with connection timeouts and thread-locking for user profiles, quota metrics, and audit logs.",
-        path: "c:\\JARVIS\\data\\jarvis.db",
+        path: "data/jarvis.db",
         inbound: ["AI Quota Tracker", "Context Memory Buffer"],
         outbound: ["Persistent NVMe Disk"]
       }

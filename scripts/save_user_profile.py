@@ -1,9 +1,11 @@
+import os
 import sqlite3
 import time
 import json
 from datetime import datetime
 
-DB_PATH = 'C:/JARVIS/data/jarvis_memory.db'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, 'data', 'jarvis_memory.db')
 
 # 1. Update user_profile table (directly injected into prompt context)
 profile_items = [
@@ -65,7 +67,7 @@ conn.close()
 # 4. Insert into ChromaDB
 try:
     import chromadb
-    client = chromadb.PersistentClient(path='C:/JARVIS/jarvis_vector_db')
+    client = chromadb.PersistentClient(path=os.path.join(BASE_DIR, 'jarvis_vector_db'))
     
     # In personal_memories
     p_col = client.get_or_create_collection('personal_memories')
