@@ -5,7 +5,34 @@
 .env.*
 *.pem
 *.key
+*.unlock
 audit_payload.log
+
+# Personal & User-Specific Data
+science_project/
+all_memories.txt
+user_profile_dump.txt
+test_*.txt
+*.txt.bak
+ddgs_*.txt
+qwen_*.txt
+r23.txt
+verify_drink.txt
+
+# Runtime Data & Personal Memories (Keep directory structure only)
+data/*
+!data/.gitkeep
+
+# OSINT & Personal Research Reports
+reports/osint/
+reports/research_*.md
+reports/*.txt
+reports/*.log
+reports/*.jpg
+reports/self_patch_log.jsonl
+reports/upgrade_report_*.md
+reports/jarvis_video_editing_analysis.txt
+!reports/.gitkeep
 
 # Python Virtual Environments
 .venv/
@@ -39,15 +66,6 @@ package-lock.json
 *.db-wal
 *.db-shm
 *.sqlite
-data/*.db*
-data/*.sqlite*
-data/*.jsonl*
-data/*_status.json
-data/chat_history.json
-data/jarvis_session.json
-data/*.mp3
-data/trending_news/
-data/known_faces/
 jarvis_checkpoints.sqlite
 
 # Vector Databases & Large Models
@@ -66,22 +84,14 @@ screenshots/
 backups/
 document_dropzone/
 learned_data/
+static/generated_images/
 *.mp3
 *.wav
 
 # Logs & Temporary Files
 *.log
-reports/*.log
 scratch/
 temp_*.*
-*.unlock
-test_*.txt
-ddgs_lottery.txt
-qwen_lottery.txt
-r23.txt
-verify_drink.txt
-user_profile_dump.txt
-
 
 # IDE & OS Files
 .vscode/

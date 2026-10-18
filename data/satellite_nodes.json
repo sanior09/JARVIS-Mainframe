@@ -1,9 +1,0 @@
-{
-  "gaming_pc": {
-    "name": "Gaming PC (ห้องนอน)",
-    "host": "192.168.1.150",
-    "port": 5055,
-    "token": "jarvis_secret_link_2026",
-    "status": "unverified"
-  }
-}
