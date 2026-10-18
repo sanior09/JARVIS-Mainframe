@@ -578,7 +578,7 @@ Formula: [C5O2H8]n Polymer Chain Model<br>
 Thickness: 5.00mm | Density: 1.18 g/cm³<br>
 Tensile Strength: 70.0 MPa | Yield: 55 MPa<br>
 Glass Transition (Tg): 105.0°C | Melting: 160.0°C<br>
-Scan Tolerance: ±0.12mm (Nachapol Level 10 Clearance)<br>
+Scan Tolerance: ±0.12mm (Level 10 Clearance)<br>
 Dynamic Node Delta:<br>
 - Node Alpha: [X: ${(150 + parseFloat(randX) * 10).toFixed(2)}, Y: ${(100 + parseFloat(randY) * 10).toFixed(2)}, Z: -60.00]<br>
 - Node Beta:  [X: -150.00, Y: -100.00, Z: ${(60 + parseFloat(randZ) * 10).toFixed(2)}]<br>
@@ -589,7 +589,7 @@ Matrix Stress Coefficient: ${(0.15 + Math.random() * 0.02).toFixed(4)} GPa
 <strong>[TARGET: 3D FACE POINT-CLOUD MASK]</strong><br>
 Point Cloud Density: 300 nodes scanned<br>
 Coherence Factor: ${(98.5 + Math.random() * 1.4).toFixed(2)}%<br>
-Biometric ID: Nachapol, Anthony (Level 10 Clearance)<br>
+Biometric ID: Primary Operator (Level 10 Clearance)<br>
 Ref Vertex Vector:<br>
 - Nose Bridge Node: [X: ${randX}, Y: 0.1500, Z: 1.2500]<br>
 - Chin Anchor Node: [X: 0.0000, Y: -1.7500, Z: ${randZ}]<br>

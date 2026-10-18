@@ -10033,7 +10033,7 @@ def verify_user_endpoint():
             logger.info("[FACE ID] Access Granted - Identity confirmed.")
             return jsonify({
                 "authenticated": True, 
-                "identity": "Nachapol, Anthony", 
+                "identity": os.getenv("OWNER_NAME", "Primary Operator"), 
                 "clearance": "Level 10 (Access Granted)"
             })
         else:
