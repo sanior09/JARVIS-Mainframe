@@ -354,19 +354,6 @@ TOOLS_DEFINITION = [
     {
         "type": "function",
         "function": {
-            "name": "start_rhythm_sync",
-            "description": "เปิดใช้งานระบบไฟกระพริบตามจังหวะ (Rhythm Sync) สำหรับสร้างบรรยากาศปาร์ตี้หรือความบันเทิง",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "duration": {"type": "integer", "description": "ระยะเวลาการทำงาน (วินาที) ค่าเริ่มต้นคือ 60"}
-                }
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
             "name": "generate_new_tool",
             "description": "สร้างเครื่องมือ (Tool) ใหม่ขึ้นมาเพื่อทำงานที่ระบบปัจจุบันยังทำไม่ได้ โดยการเขียนโค้ด Python",
             "parameters": {

@@ -1106,11 +1106,6 @@ async function initVisionSystem(video, canvas) {
         requestAnimationFrame(detectFrame);
     }
     detectFrame();
-}
-
-function triggerRhythmSync() {
-    sendMessage("จาร์วิส เปิดระบบ Rhythm Sync");
-}
 
 // --- [NACHAPOL SSE STREAMING TTS ENGINE] ---
 let ttsQueue = [];

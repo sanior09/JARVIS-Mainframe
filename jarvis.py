@@ -2148,13 +2148,12 @@ def get_relevant_tools(user_text, all_tools):
         "weather": ["get_weather"],
 
         # เพลงและดนตรี
-        "เพลง": ["search_web", "play_music", "start_rhythm_sync"],
-        "เปิดเพลง": ["play_music", "start_rhythm_sync"],
-        "ดนตรี": ["play_music", "start_rhythm_sync"],
-        "music": ["play_music", "start_rhythm_sync"],
+        "เพลง": ["search_web", "play_music"],
+        "เปิดเพลง": ["play_music"],
+        "ดนตรี": ["play_music"],
+        "music": ["play_music"],
         "song": ["play_music"],
-        "จังหวะ": ["start_rhythm_sync", "play_music"],
-        "rhythm": ["start_rhythm_sync"],
+        "จังหวะ": ["play_music"],
         "คอร์ด": ["search_web"],
         "คอร์ดเพลง": ["search_web"],
         "เนื้อเพลง": ["search_web"],
@@ -6272,32 +6271,6 @@ def send_email_notification(subject, body):
         logger.error(f"[EMAIL] Dispatch Failed: {e}")
         return False
 
-def sync_lights_to_music(duration=60):
-    """ระบบจำลองการกระพริบไฟตามจังหวะเพลง (Rhythm Sync)"""
-    def run_sync():
-        
-        """
-        Execute the scheduler's synchronous payload inside a Flask app context.
-
-        Inner closure bridging async APScheduler jobs that need Flask g/current_app.
-        """
-        colors = [[255, 0, 0], [0, 0, 255], [0, 255, 0], [255, 255, 0], [255, 0, 255], [0, 255, 255]]
-        end_time = time.time() + duration
-        try:
-            while time.time() < end_time:
-                color = random.choice(colors)
-                
-                control_light("all", "on", brightness=255, rgb_color=color, transition=0, silent=True)
-                time.sleep(0.6)
-                control_light("all", "on", brightness=80, rgb_color=color, transition=0, silent=True)
-                time.sleep(0.3)
-            
-            control_light("all", "on", brightness=255, kelvin=4500, transition=3, silent=True)
-        except Exception as e:
-            logger.error(f"Rhythm Sync Error: {e}")
-    
-    threading.Thread(target=run_sync, daemon=True).start()
-
 def _install_missing_dependencies(code: str) -> List[str]:
     """
     Parses the given Python code for import statements and attempts to install
@@ -7511,7 +7484,6 @@ def execute_tool_call(tool_call, project_path, user_raw_message=""):
         "run_evolution_scan": lambda a: __import__('jarvis_evolution').run_evolution_scan_operation(),
         "call_boss": lambda a: call_boss_operation(a.get("reason", "มีรายงานสำคัญจากระบบครับ"), a.get("message", "")),
         "analyze_molecular_structure": lambda a: analyze_molecular_structure_operation(a.get("element_name")),
-        "start_rhythm_sync": lambda a: (sync_lights_to_music(a.get("duration", 60)) or "เปิดระบบ Rhythm Sync เรียบร้อยครับท่าน"),
         "gui_control": lambda a: gui_control_operation(a.get("action"), a.get("x"), a.get("y"), a.get("text"), a.get("key")),
         "get_thermal_telemetry": lambda a: get_thermal_telemetry_operation(),
         "get_spatial_reconstruction": lambda a: get_spatial_reconstruction_operation(),
