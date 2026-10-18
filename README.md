@@ -23,14 +23,14 @@ graph LR
     end
 
     subgraph S2["Stage 2: Gateways & IPC Bus"]
-        PIPE["Named Pipe (jarvis_island)"]
+        PIPE["Named Pipe (jarvis_island_pipe)"]
         API["Flask Hub (:5050)"]
         VISION["Multimodal Ingestor"]
     end
 
     subgraph S3["Stage 3: Cognitive AI Brain"]
-        ROUTER["Neural AI Router (ai_router.py)"]
-        LLM["Multi-LLM Pool (Groq/Gemini/Claude/Ollama)"]
+        ROUTER["Neural AI Router (jarvis_core/ai_router.py)"]
+        LLM["Multi-LLM Pool (Groq/Gemini/Ollama)"]
         MEM["Synaptic Vector Memory & Graph"]
     end
 
@@ -136,10 +136,10 @@ python modules/dynamic_island.py
 cd jarvis-mobile
 npx expo start
 ```
-- **Autonomous Hands-Free Telephony:** รับสายและคุยสายอัตโนมัติด้วย AI ผ่านไมโครโฟนมือถือ
-- **Remote Voice Stream (STT/TTS):** พูดคุยแบบสองทางได้จากทุกที่
-- **Camera & Vision Ingestion:** สตรีมภาพจากกล้องมือถือให้ J.A.R.V.I.S. วิเคราะห์แบบสดๆ
-- **Remote Quick Actions:** สั่ง Sleep, Lockdown, รันสคริปต์, หรือเปิดโหมดเฝ้าระวังจากมือถือ
+- **Live Voice Interaction (STT/TTS):** โทรศัพท์และส่งเสียงพูดคุยโต้ตอบกับ J.A.R.V.I.S. แบบเรียลไทม์
+- **Multi-Modal Image Ingestion:** ถ่ายภาพหรือเลือกรูปจากมือถือส่งให้ J.A.R.V.I.S. วิเคราะห์
+- **Remote Document Ingestion:** แนบและส่งไฟล์เอกสารเข้าสู่คลังความรู้ของระบบ
+- **Remote Quick Actions:** สั่ง Sleep, Lockdown, สลับสกิน HUD หรือสั่งรันคำสั่งจากระยะไกล
 
 ### 🌐 3. Web Portal & Speech Interface
 เปิดเบราว์เซอร์ไปที่ `http://localhost:5050` เพื่อใช้งานเว็บพอร์ทัล, ระบบรับฟังเสียงผ่านเบราว์เซอร์ และ REST API
@@ -151,44 +151,43 @@ npx expo start
 ### 🧠 1. Cognitive & Autonomous Brain
 - **Autonomous Thought Engine:** จำลองระดับสารสื่อประสาท (Dopamine/Cortisol) กำหนดอารมณ์และสมาธิของ AI ตามภาระงานและคำสั่ง
 - **Agent Council & Tree of Thoughts:** ระบบจำลองบอร์ดบริหาร AI (LangGraph) อภิปรายและหาข้อสรุปในงานวิศวกรรมที่ซับซ้อน
-- **Neural AI Router & Provider Pool (`ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq, Gemini, Claude, DeepSeek หรือ Local Qwen ตามความเหมาะสมของประเภทงาน
-- **Cognitive Evolution & Memory Consolidation (`jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ระหว่างที่ระบบอยู่ในสถานะ Sleep
-- **Autonomous Ingestion Engine:** ตรวจจับและซึมซับเอกสารจาก `document_dropzone/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
-- **Hardware Governor & Cluster Offloader:** ตรวจสอบภาระเครื่องและ Offload งานประมวลผลขึ้น Cloud หรือโหนด LAN อัตโนมัติเมื่อฮาร์ดแวร์โอเวอร์โหลด
+- **Neural AI Router & Provider Pool (`jarvis_core/ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq (Llama-3.3-70b, Qwen3.8), Google Gemini (2.5 Flash), หรือ Local Ollama (Qwen2.5) ตามความเหมาะสมของประเภทงาน
+- **Cognitive Evolution & Memory Consolidation (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ระหว่างที่ระบบอยู่ในสถานะ Sleep
+- **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
+- **Resource-Conscious Architecture:** ออกแบบมาสำหรับรันบนคอมพิวเตอร์สเปกทั่วไป โดยปรับจูนการใช้ทรัพยากรให้ประหยัด RAM/CPU ที่สุด
 
 ### 📊 2. AI Quota Governor & Cost Protection (`modules/ai_quota_tracker.py`)
 - ติดตามและบันทึกปริมาณ Token, RPM (Requests Per Minute), และ TPM (Tokens Per Minute) ของทุก LLM Provider แบบเรียลไทม์
 - **Dynamic Fallback Routing:** สลับโมเดลอัตโนมัติเมื่อโมเดลหลักติด Limit (เช่น สลับจาก Groq ไป Gemini หรือ Local Engine) ป้องกันปัญหาระบบหยุดชะงัก 100%
 
 ### 🎙️ 3. Ultra Low-Latency Voice & Barge-In Engine
-- **Microsoft Edge Neural TTS (`jarvis_tts_edge.py`):** เสียงพากย์ภาษาไทยและอังกฤษคุณภาพสูง ฟรี ความเร็วระดับ Real-time
-- **ElevenLabs High-Fidelity Voice:** สลับเป็นเสียงระดับพรีเมียมเมื่อต้องการความคมชัดสูงสุด
-- **Voice Activity Detection (VAD) Barge-In (`jarvis_vad_bargein.py`):** ตรวจจับเสียงพูดของเจ้านายและตัดบทพูดของ J.A.R.V.I.S. ทันทีเมื่อเจ้านายพูดแทรก
-- **Speculative STT Intent Prediction (`jarvis_stt_stream.py`):** คาดเดาเจตนาล่วงหน้าตั้งแต่เจ้านายยังพูดไม่จบประโยค เพื่อลดค่าความหน่วง (Zero-Latency)
+- **Microsoft Edge Neural TTS (`modules/jarvis_tts_edge.py`):** เสียงพากย์ภาษาไทยและอังกฤษคุณภาพสูง ฟรี ความเร็วระดับ Real-time
+- **Voice Activity Detection (VAD) Barge-In (`modules/jarvis_vad_bargein.py`):** ตรวจจับเสียงพูดของเจ้านายและตัดบทพูดของ J.A.R.V.I.S. ทันทีเมื่อเจ้านายพูดแทรก
+- **Deepgram Streaming STT (`modules/jarvis_stt_stream.py`):** ถอดรหัสเสียงพูดสดแบบ Real-time Streaming ผ่าน WebSocket พร้อมฟังก์ชันลดความหน่วง
 
 ### 🤖 4. Autonomous Computer Agent & Windows Controller
-- **Screen & GUI Operator (`jarvis_computer_agent.py`, `agent_windows_core.py`):** วิเคราะห์หน้าจอด้วย Vision และคลิกเมาส์/พิมพ์คีย์บอร์ดเพื่อทำงานบน Windows โดยอัตโนมัติ
-- **Screen Takeover Overlay (`jarvis_screen_takeover_overlay.py`):** หน้าต่าง HUD ลอยตัวพร้อมเอฟเฟกต์ Laser Grid สแกนหน้าจอเมื่อเข้าสู่โหมดควบคุมคอมพิวเตอร์แบบเต็มรูปแบบ
+- **Screen & GUI Operator (`modules/jarvis_computer_agent.py`, `modules/agent_windows_core.py`):** วิเคราะห์หน้าจอด้วย Vision และคลิกเมาส์/พิมพ์คีย์บอร์ดเพื่อทำงานบน Windows โดยอัตโนมัติ
+- **Screen Takeover Overlay (`modules/jarvis_screen_takeover_overlay.py`):** หน้าต่าง HUD ลอยตัวพร้อมเอฟเฟกต์ Laser Grid สแกนหน้าจอเมื่อเข้าสู่โหมดควบคุมคอมพิวเตอร์
 
 ### 🎬 5. Video Editing & Generative Multimedia
-- **Automated Video Editor (`dynamic_tools/control_capcut.py`):** วิเคราะห์คลิป, สั่งงานโปรแกรมตัดต่อ, ควบคุม Timeline และประมวลผลวิดีโออัตโนมัติ
-- **ComfyUI Bridge (`comfyui_bridge.py`):** สั่งการ ComfyUI เรนเดอร์รูปภาพ AI ระดับสตูดิโอผ่านคำสั่งเสียง
+- **CapCut Automation Launcher (`dynamic_tools/control_capcut.py`):** เปิดและสั่งการ CapCut Desktop พร้อมโหลดโฟลเดอร์มีเดียสำหรับงานตัดต่อวิดีโอ
+- **ComfyUI Bridge (`modules/comfyui_bridge.py`):** เชื่อมต่อ ComfyUI REST/WebSocket สำหรับสร้างภาพ AI ผ่านคำสั่งเสียง
 
 ### 👁️ 6. Computer Vision & Hologram Subsystem
-- **Holographic Gesture Controller (`gesture_controller.py`, `holographic_gestures.py`):** ควบคุมคอมพิวเตอร์และสื่อด้วยภาษามือผ่านกล้อง Webcam
-- **3D Wireframe Hologram Visualizer (`hologram_visualizer.py`):** เรนเดอร์โมเดล 3D และโครงสร้างทางวิศวกรรมแบบ Wireframe
-- **Spatial Vision (`spatial_vision.py`):** ตรวจจับความผิดปกติและรอยบกพร่องบนแผ่นวงจรอิเล็กทรอนิกส์ (PCB)
+- **Holographic Gesture Controller (`modules/gesture_controller.py`, `modules/holographic_gestures.py`):** ควบคุมคอมพิวเตอร์และสื่อด้วยภาษามือผ่าน MediaPipe และกล้อง Webcam
+- **3D Wireframe Hologram Visualizer (`modules/hologram_visualizer.py`):** เรนเดอร์โมเดล 3D และโครงสร้างทางวิศวกรรมแบบ Wireframe
+- **Spatial Vision (`modules/spatial_vision.py`):** ตรวจจับความผิดปกติและรอยบกพร่องบนแผ่นวงจรอิเล็กทรอนิกส์ (PCB)
 
 ### 🛡️ 7. System Resilience & Self-Healing
 - **Watchdog Process Supervisor (`jarvis_watchdog.py`):** ดูแลโปรเซส 24/7 รีสตาร์ทระบบอัตโนมัติทันทีที่ตรวจพบข้อผิดพลาด
-- **Auto-Healer & Self-Patch Engine (`jarvis_auto_healer.py`, `jarvis_self_patch.py`):** วิเคราะห์ Stack Trace ข้อผิดพลาดและแพตช์โค้ดฉุกเฉินได้ด้วยตัวเอง
-- **Code Sentinel (`code_sentinel.py`):** สแกนความปลอดภัยโค้ดในระดับ AST เพื่อป้องกัน Infinite Loop และคำสั่งอันตราย
-- **Predictive Simulator (`predictive_simulator.py`):** จำลองผลกระทบของคำสั่งก่อนส่งไปสั่งการระดับ OS
+- **Auto-Healer & Self-Patch Engine (`modules/jarvis_auto_healer.py`, `modules/jarvis_self_patch.py`):** วิเคราะห์ Stack Trace ข้อผิดพลาดและแพตช์โค้ดฉุกเฉินได้ด้วยตัวเอง
+- **Code Sentinel (`modules/code_sentinel.py`):** สแกนความปลอดภัยโค้ดในระดับ AST เพื่อป้องกัน Infinite Loop และคำสั่งอันตราย
+- **Predictive Simulator (`modules/predictive_simulator.py`):** จำลองผลกระทบของคำสั่งก่อนส่งไปสั่งการระดับ OS
 
 ### 🕵️ 8. Subconscious Engine & Cyber Security Guard
-- **Subconscious Brain (`jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
-- **Uncensored Dark Mode Routing (`ai_router.py`):** สลับสมองไปยัง Local Uncensored Model โดยอัตโนมัติเมื่องานเกี่ยวข้องกับการทดสอบความปลอดภัยทางไซเบอร์
-- **Cyber Inspector & Guard Mode:** ตรวจจับอุปกรณ์บนเครือข่ายและสอดส่องกล้องวงจรปิดป้องกันผู้บุกรุก
+- **Subconscious Brain (`modules/jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
+- **Uncensored Dark Mode Routing (`jarvis_core/ai_router.py`):** สลับสมองไปยัง Local Uncensored Model โดยอัตโนมัติเมื่องานเกี่ยวข้องกับการทดสอบความปลอดภัยทางไซเบอร์
+- **Cyber Inspector & Network Scanner (`modules/cyber_inspector.py`):** ตรวจจับอุปกรณ์บนเครือข่าย Wi-Fi/LAN สแกนพอร์ต และประเมินความปลอดภัยเบื้องต้น
 
 ---
 

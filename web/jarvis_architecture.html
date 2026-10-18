@@ -869,10 +869,10 @@
             </div>
           </div>
         </div>
-        <div class="node-desc">Groq (Llama 3.3 70B), Google Gemini 2.5, DeepSeek R1, and Anthropic Claude 3.5 Sonnet.</div>
+        <div class="node-desc">Groq (Llama 3.3 70B, Qwen 2.5), Google Gemini 2.5 Flash, and Local Ollama (Qwen).</div>
         <div class="node-tags">
           <span class="tag tag-purple">Groq / Gemini</span>
-          <span class="tag">Claude / DeepSeek</span>
+          <span class="tag">Local Ollama</span>
         </div>
       </div>
 
@@ -1153,9 +1153,9 @@
       llm: {
         name: "LLM Provider Pool",
         type: "Cloud Inference Cluster",
-        status: "ACTIVE (Groq + Gemini + Claude)",
-        desc: "Provider endpoints: Groq (Llama-3.3-70b-versatile, ultra low latency), Google Gemini 2.5 Flash, DeepSeek R1, and Anthropic Claude 3.5 Sonnet.",
-        path: "Cloud REST APIs (Encrypted TLS)",
+        status: "ACTIVE (Groq + Gemini + Ollama)",
+        desc: "Provider endpoints: Groq (Llama-3.3-70b-versatile, ultra low latency), Google Gemini 2.5 Flash, and Local Ollama (Qwen2.5 1.5B).",
+        path: "Cloud REST APIs & Local Ollama IPC",
         inbound: ["Neural AI Router"],
         outbound: ["AI Quota Tracker", "Context Memory Buffer"]
       },
