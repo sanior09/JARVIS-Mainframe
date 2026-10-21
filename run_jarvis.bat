@@ -7,6 +7,9 @@ title J.A.R.V.I.S. Mainframe Interface
 :: [JARVIS CONFIG]
 :: ==========================================
 cd /d "%~dp0"
+if exist "%~dp0venv\Scripts\activate.bat" (
+    call "%~dp0venv\Scripts\activate.bat"
+)
 set "PYTHONPATH=%~dp0;%~dp0modules;%PYTHONPATH%"
 
 :: Define ANSI Escape Codes for Colors (High-tech Blue theme)

@@ -5,5 +5,8 @@ echo =======================================================
 echo    JARVIS MULTI-SYSTEM SIMULATOR - TEST FRAMEWORK
 echo =======================================================
 cd /d "%~dp0\.."
+if exist "venv\Scripts\activate.bat" (
+    call "venv\Scripts\activate.bat"
+)
 python tests\simulate_user_test.py %*
 pause

@@ -53,8 +53,9 @@ try:
     idx, selected_name = valid_mics[display_idx]
     print(f"\n✅ คุณเลือก: [{display_idx}] {selected_name}")
     
-    # อัปเดตไฟล์ .env
-    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    # อัปเดตไฟล์ .env ในโฟลเดอร์ Root ของโปรเจกต์
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    env_path = os.path.join(project_root, ".env")
     env_content = ""
     
     if os.path.exists(env_path):

@@ -13,8 +13,13 @@ echo [!] Please wait for the QR Code to appear.
 echo [!] Use your iPhone's camera to scan the QR Code.
 echo.
 
+cd /d "%~dp0.."
+if exist "venv\Scripts\activate.bat" (
+    call "venv\Scripts\activate.bat"
+)
+
 echo [!] Synchronizing Host IP with Mobile Config...
-python "%~dp0sync_mobile_ip.py"
+python scripts\sync_mobile_ip.py
 echo.
 
 cd /d "%~dp0..\jarvis-mobile"

@@ -95,6 +95,8 @@ static/generated_images/
 *.log
 scratch/
 temp_*.*
+bin/
+*.exe
 
 # IDE & OS Files
 .vscode/
