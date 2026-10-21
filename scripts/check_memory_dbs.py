@@ -13,7 +13,7 @@ def check_db(db_path):
             if t not in ['memories', 'user_profile', 'knowledge_graph', 'episodes', 'semantic_nodes']:
                 continue
             try:
-                rows = c.execute(f"SELECT * FROM {t}").fetchall()
+                rows = c.execute(f"SELECT * FROM {t}").fetchall()  # nosec B608
                 for row in rows:
                     print(row)
             except Exception as e:

@@ -101,7 +101,10 @@ def test_notifier_notify_methods(mock_post):
     # 2. notify_error
     mock_post.reset_mock()
     notifier.notify_error(error="Timeout connecting to server", context="Cloud Sync")
-    time.sleep(0.1)
+    for _ in range(25):
+        if mock_post.called:
+            break
+        time.sleep(0.02)
     assert mock_post.called
 
     # 3. notify_alert

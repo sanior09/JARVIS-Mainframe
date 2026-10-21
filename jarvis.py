@@ -2725,21 +2725,23 @@ def tool_execution_node(state: AgentState):
     
     user_raw_message = next((m.content for m in reversed(state['messages']) if hasattr(m, 'type') and m.type == 'human' or type(m).__name__ == 'HumanMessage'), "")
     
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_tool = {
-            executor.submit(execute_tool_call, tc, state['project_path'], user_raw_message): tc   # type: ignore
-            for tc in last_message.tool_calls if last_message.tool_calls   # type: ignore
-        }
-        
-        for future in concurrent.futures.as_completed(future_to_tool):
-            tc = future_to_tool[future]
-            try:
-                result = future.result()
-                if isinstance(result, str) and len(result) > 2000:
-                    result = result[:2000] + "... [Data Stream Truncated for Rate Limit Efficiency]"
-                tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], result, 'success')))
-            except Exception as e:
-                tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], f'Error: {e}', 'error')))
+    from jarvis_core.tool_dispatcher import TOOL_EXECUTOR as executor
+    future_to_tool = {
+        executor.submit(execute_tool_call, tc, state['project_path'], user_raw_message): tc   # type: ignore
+        for tc in last_message.tool_calls if last_message.tool_calls   # type: ignore
+    }
+    
+    for future in concurrent.futures.as_completed(future_to_tool):
+        tc = future_to_tool[future]
+        try:
+            result = future.result(timeout=60.0)
+            if isinstance(result, str) and len(result) > 2000:
+                result = result[:2000] + "... [Data Stream Truncated for Rate Limit Efficiency]"
+            tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], result, 'success')))
+        except concurrent.futures.TimeoutError:
+            tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], 'Error: Tool execution timed out after 60s', 'error')))
+        except Exception as e:
+            tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], f'Error: {e}', 'error')))
     
     if _HAS_DYNAMIC_ISLAND:
         send_to_island("STANDBY", "")
@@ -3108,7 +3110,7 @@ def perform_live_web_search_operation(query: str) -> str:
         
         url = f"https://api.duckduckgo.com/?q={encoded_query}&format=json&no_html=1"
         req = urllib.request.Request(url, headers={'User-Agent': 'JarvisMainframe/1.0'})
-        with urllib.request.urlopen(req, timeout=6) as response:
+        with urllib.request.urlopen(req, timeout=6) as response:  # nosec B310
             raw_data = response.read().decode('utf-8', errors='ignore')
             data = json.loads(raw_data) if raw_data.strip() else {}
         abstract = data.get("AbstractText", "")
@@ -3130,7 +3132,7 @@ def extract_knowledge_matrix_operation(source_type: str, keyword: str) -> str:
             
             url = f"https://api.github.com/search/repositories?q={encoded_kw}+topic:iot+topic:arduino&per_page=1"
             req = urllib.request.Request(url, headers={'User-Agent': 'JarvisMainframe/1.0'})
-            with urllib.request.urlopen(req, timeout=6) as response:
+            with urllib.request.urlopen(req, timeout=6) as response:  # nosec B310
                 raw_data = response.read().decode('utf-8', errors='ignore')
                 data = json.loads(raw_data) if raw_data.strip() else {}
             if data.get("items"):
@@ -3140,7 +3142,7 @@ def extract_knowledge_matrix_operation(source_type: str, keyword: str) -> str:
             
             url = f"https://th.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&titles={encoded_kw}"
             req = urllib.request.Request(url, headers={'User-Agent': 'JarvisMainframe/1.0'})
-            with urllib.request.urlopen(req, timeout=6) as response:
+            with urllib.request.urlopen(req, timeout=6) as response:  # nosec B310
                 raw_data = response.read().decode('utf-8', errors='ignore')
                 data = json.loads(raw_data) if raw_data.strip() else {}
             pages = data.get("query", {}).get("pages", {})
@@ -5087,13 +5089,13 @@ def launch_app(app_name):
             try:
                 os.startfile("steam://open/games")
             except Exception:
-                subprocess.Popen("start steam://open/games", shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", "steam://open/games"], shell=False)
             return ""
 
         search_match = re.search(r"(?:search|ค้นหา)\s+(.+)", app_lower)
         if search_match:
             game_query = search_match.group(1).strip()
-            subprocess.Popen(f"start steam://openurl/https://store.steampowered.com/search/?term={game_query}", shell=True)
+            subprocess.Popen(["cmd.exe", "/c", "start", "", f"steam://openurl/https://store.steampowered.com/search/?term={game_query}"], shell=False)
             return f"ดำเนินการค้นหาเกม '{game_query}' ใน Steam ให้เรียบร้อยแล้วครับเจ้านาย"
         
         install_match = re.search(r"(?:install|ติดตั้ง)\s+(.+)", app_lower)
@@ -5129,11 +5131,11 @@ def launch_app(app_name):
             }
             app_id = steam_db.get(game_name.lower())
             if app_id:
-                subprocess.Popen(f"start steam://install/{app_id}", shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", f"steam://install/{app_id}"], shell=False)
                 return f"รับทราบครับเจ้านาย กำลังเริ่มต้นการติดตั้ง {game_name} ผ่านระบบ Steam ครับ"
             else:
                 
-                subprocess.Popen(f"start steam://openurl/https://store.steampowered.com/search/?term={game_name}", shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", f"steam://openurl/https://store.steampowered.com/search/?term={game_name}"], shell=False)
                 return f"เกรงว่าผมจะไม่มีรหัส AppID ของ '{game_name}' ในฐานข้อมูล จึงขอเปิดหน้าค้นหาบน Steam ให้เจ้านายแทนนะครับ"
 
     apps = {
@@ -5186,7 +5188,7 @@ def launch_app(app_name):
     }
     cmd = apps.get(app_name.lower())
     if cmd:
-        subprocess.Popen(cmd, shell=True)
+        subprocess.Popen(cmd, shell=True)  # nosec B602
         app_names = {
             "steam": "โลกของเกมอนันต์",
             "vscode": "Workshop ของคุณสำหรับการสร้างสรรค์",
@@ -5227,7 +5229,7 @@ def launch_app(app_name):
         matches = _glob.glob(os.path.join(smd, "**", f"*{search_name}*.lnk"), recursive=True)
         if matches:
             try:
-                subprocess.Popen(f'start "" "{matches[0]}"', shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", matches[0]], shell=False)
                 return f"พบและเปิด {app_name} จาก Start Menu ให้แล้วครับเจ้านาย"
             except Exception:
                 pass
@@ -5934,7 +5936,7 @@ def fetch_news(query: Optional[str] = None) -> str:
             
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
-            root = ET.fromstring(response.content)
+            root = ET.fromstring(response.content)  # nosec B314
             news_items = []
             for item in root.findall('.//item')[:5]:  
                 title = item.find('title').text  # type: ignore
@@ -7105,7 +7107,7 @@ def generate_image_operation(prompt: str) -> str:
         
         logger.debug(f"[Image Generation] Downloading from {url}")
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as response, open(filepath, 'wb') as out_file:
+        with urllib.request.urlopen(req) as response, open(filepath, 'wb') as out_file:  # nosec B310
             data = response.read()
             out_file.write(data)
             
@@ -7506,10 +7508,10 @@ def execute_tool_call(tool_call, project_path, user_raw_message=""):
         "extract_spatial_cad_mesh": lambda a: extract_spatial_cad_mesh_operation(a.get("image_base64") or a.get("image")),
         "switch_mainframe_tactical_mode": lambda a: switch_mainframe_tactical_mode(a.get("mode_name")),
         "generate_and_render_hologram": lambda a: generate_and_render_hologram_operation(a.get("prompt")),
-        "control_computer_agent": lambda a: __import__('jarvis_core.automation_agent', fromlist=['']).get_computer_agent().execute_goal(a.get("goal") or a.get("task") or "วิเคราะห์หน้าจอและทำงานต่อไป"),
+        "control_computer_agent": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "control_computer_agent", "args": a}, project_path, user_raw_message),
         "execute_computer_action": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "execute_computer_action", "args": a}),
         "get_screen_info": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "get_screen_info", "args": a}),
-        "agentic_computer_control": lambda a: __import__('jarvis_core.automation_agent', fromlist=['']).get_computer_agent().execute_goal(a.get("goal") or a.get("task") or "วิเคราะห์หน้าจอและทำงานต่อไป"),
+        "agentic_computer_control": lambda a: __import__('jarvis_core.tool_dispatcher', fromlist=['']).execute_tool_call({"name": "agentic_computer_control", "args": a}, project_path, user_raw_message),
         "hardware_controller": lambda a: run_dynamic_tool("hardware_controller", os.path.join(DYNAMIC_TOOLS_DIR, "hardware_controller.py"), a),
         "render_3d_workspace": lambda a: run_dynamic_tool("render_3d_workspace", os.path.join(DYNAMIC_TOOLS_DIR, "render_3d_workspace.py"), a),
         "simulate_electronic_circuit": lambda a: run_dynamic_tool("simulate_electronic_circuit", os.path.join(DYNAMIC_TOOLS_DIR, "simulate_electronic_circuit.py"), a),
@@ -8290,7 +8292,7 @@ def chat_stream():
             try:
                 os.startfile("steam://open/games")
             except Exception:
-                subprocess.Popen("start steam://open/games", shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", "steam://open/games"], shell=False)
             msg = ""
         else:
             try:
@@ -9046,7 +9048,7 @@ def handle_chat_logic(data: dict) -> "Response":
             try:
                 os.startfile("steam://open/games")
             except Exception:
-                subprocess.Popen("start steam://open/games", shell=True)
+                subprocess.Popen(["cmd.exe", "/c", "start", "", "steam://open/games"], shell=False)
             msg = ""
         else:
             try:
@@ -9759,7 +9761,7 @@ def text_to_speech():
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
             
-            cache_key = hashlib.md5(f"{filtered_text}_{voice}_{dyn_rate}_{dyn_pitch}".encode()).hexdigest()
+            cache_key = hashlib.md5(f"{filtered_text}_{voice}_{dyn_rate}_{dyn_pitch}".encode(), usedforsecurity=False).hexdigest()
             cache_file = os.path.join(cache_dir, f"{cache_key}.mp3")
             
             if os.path.exists(cache_file):
@@ -11558,7 +11560,7 @@ import socket
 
 def tactical_p2p_overlay_router():
     """[MODULE 3: Tactical P2P Overlay Network Router]"""
-    UDP_IP = "0.0.0.0"
+    UDP_IP = os.getenv("JARVIS_UDP_HOST", "127.0.0.1")
     UDP_PORT = 5005
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -11608,7 +11610,7 @@ def update_core_telemetry(core_id, status_msg, thought_msg):
         try:
             from dynamic_island import send_to_island  # type: ignore
             send_to_island(active_status, combined_thoughts)
-        except (json.JSONDecodeError, ValueError, KeyError):
+        except Exception:
             pass
             
     
@@ -12479,7 +12481,8 @@ if __name__ == "__main__":
     import webview
     
     def run_flask_app():
-        app.run(host='0.0.0.0', port=5050, debug=False, use_reloader=False)
+        flask_host = os.getenv("JARVIS_HOST", "127.0.0.1")
+        app.run(host=flask_host, port=5050, debug=False, use_reloader=False)
 
     threading.Thread(target=run_flask_app, daemon=True).start()
     

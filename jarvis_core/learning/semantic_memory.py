@@ -59,7 +59,7 @@ class FallbackDenseEmbedding:
         tokens = cls.tokenize(text)
         vec = [0.0] * cls.EMBEDDING_DIM
         for idx, token in enumerate(tokens):
-            h = int(hashlib.md5(token.encode("utf-8")).hexdigest(), 16)
+            h = int(hashlib.md5(token.encode("utf-8"), usedforsecurity=False).hexdigest(), 16)
             slot = h % cls.EMBEDDING_DIM
             vec[slot] += 1.0 / (math.log(idx + 2))
 

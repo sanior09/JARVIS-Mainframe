@@ -208,7 +208,7 @@ class AgenticComputerController:
                             try:
                                 os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Steam\Steam.lnk")
                             except Exception:
-                                subprocess.Popen("start steam://open/main", shell=True)
+                                subprocess.Popen(["cmd.exe", "/c", "start", "", "steam://open/main"], shell=False)
                         time.sleep(1.0)
                         update_screen_takeover("สำเร็จ: เปิดโปรแกรม Steam เรียบร้อย")
                         return "เปิดโปรแกรม Steam ให้เรียบร้อยแล้วครับเจ้านาย"
@@ -216,7 +216,7 @@ class AgenticComputerController:
                 for app_kw, (exe_name, app_display) in app_commands.items():
                     if f"เปิด {app_kw}" in clean_goal or f"เปิด{app_kw}" in clean_goal:
                         update_screen_takeover(f"J.A.R.V.I.S. (พื้นหลัง): กำลังเปิด {app_display}...")
-                        subprocess.Popen([exe_name], shell=True)
+                        subprocess.Popen([exe_name], shell=False)
                         time.sleep(0.8)
                         update_screen_takeover(f"สำเร็จ: เปิดโปรแกรม {app_display} แล้ว")
                         time.sleep(0.8)

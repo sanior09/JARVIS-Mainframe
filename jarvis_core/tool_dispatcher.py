@@ -14,6 +14,7 @@ import random
 import subprocess
 import sys
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
 from typing import Any, Dict, List, Optional
 
 import requests
@@ -24,6 +25,10 @@ from jarvis_core.automation_agent import get_computer_agent
 logger = logging.getLogger("JarvisToolDispatcher")
 
 EMERGENCY_STOP_FLAG = False
+
+# Concurrency & GIL Safety Primitives
+GUI_ACTION_LOCK = threading.RLock()
+TOOL_EXECUTOR = ThreadPoolExecutor(max_workers=8, thread_name_prefix="JarvisToolWorker")
 
 
 def format_tool_response(name: str, result: Any, status: str = "success") -> str:
@@ -100,42 +105,45 @@ def execute_tool_call(tool_call: dict, project_path: str = "", user_raw_message:
     except PermissionError as e:
         return str(e)
 
-    # 1. Computer Use & Windows Automation Agent
+    # 1. Computer Use & Windows Automation Agent (Serialized via GUI_ACTION_LOCK)
     if name in ("control_computer_agent", "agentic_computer_control"):
         goal = args.get("goal") or args.get("task") or args.get("prompt") or user_raw_message
-        agent = get_computer_agent()
-        return agent.execute_goal(goal)
+        with GUI_ACTION_LOCK:
+            agent = get_computer_agent()
+            return agent.execute_goal(goal)
 
     elif name == "execute_computer_action":
         action = args.get("action", "")
-        agent = get_computer_agent()
-        if action == "click":
-            return agent.click(args.get("x", 0), args.get("y", 0)).__dict__
-        elif action == "type":
-            return agent.type_text(args.get("text", ""), press_enter=args.get("enter", False)).__dict__
-        elif action == "hotkey":
-            keys = args.get("keys", [])
-            return agent.hotkey(*keys).__dict__
-        elif action == "launch":
-            return agent.launch_app(args.get("app", "")).__dict__
-        elif action == "screenshot":
-            return {"screenshot_path": agent.take_screenshot()}
-        elif action == "focus":
-            return agent.focus_window(args.get("title", "")).__dict__
-        else:
-            return f"Unknown computer action: {action}"
+        with GUI_ACTION_LOCK:
+            agent = get_computer_agent()
+            if action == "click":
+                return agent.click(args.get("x", 0), args.get("y", 0)).__dict__
+            elif action == "type":
+                return agent.type_text(args.get("text", ""), press_enter=args.get("enter", False)).__dict__
+            elif action == "hotkey":
+                keys = args.get("keys", [])
+                return agent.hotkey(*keys).__dict__
+            elif action == "launch":
+                return agent.launch_app(args.get("app", "")).__dict__
+            elif action == "screenshot":
+                return {"screenshot_path": agent.take_screenshot()}
+            elif action == "focus":
+                return agent.focus_window(args.get("title", "")).__dict__
+            else:
+                return f"Unknown computer action: {action}"
 
     elif name == "get_screen_info" or name == "gui_get_screen_info":
-        agent = get_computer_agent()
-        active = agent.get_active_window()
-        windows = agent.list_open_windows()
-        return {
-            "screen_width": agent.screen_width,
-            "screen_height": agent.screen_height,
-            "active_window": active.title if active else None,
-            "open_windows_count": len(windows),
-            "open_windows": [w.title for w in windows[:10]],
-        }
+        with GUI_ACTION_LOCK:
+            agent = get_computer_agent()
+            active = agent.get_active_window()
+            windows = agent.list_open_windows()
+            return {
+                "screen_width": agent.screen_width,
+                "screen_height": agent.screen_height,
+                "active_window": active.title if active else None,
+                "open_windows_count": len(windows),
+                "open_windows": [w.title for w in windows[:10]],
+            }
 
     # 2. OS Service & Processes
     elif name == "manage_windows_processes":
@@ -384,3 +392,65 @@ def execute_tool_call(tool_call: dict, project_path: str = "", user_raw_message:
         logger.warning(f"Legacy tool lookup for {name} failed: {e}")
 
     return f"เครื่องมือ '{name}' ดำเนินการเสร็จสิ้นแล้วครับ"
+
+
+def execute_tool_call_async(
+    tool_call: dict,
+    project_path: str = "",
+    user_raw_message: str = ""
+):
+    """Submit a single tool call to the managed bounded thread pool."""
+    return TOOL_EXECUTOR.submit(execute_tool_call, tool_call, project_path, user_raw_message)
+
+
+def execute_tool_calls_batch(
+    tool_calls: List[dict],
+    project_path: str = "",
+    user_raw_message: str = "",
+    timeout_per_tool: float = 60.0
+) -> List[dict]:
+    """
+    Execute multiple tool calls with managed concurrency:
+    - Uses the bounded TOOL_EXECUTOR (max 8 workers) to avoid thread explosion.
+    - GUI actions are serialized via GUI_ACTION_LOCK.
+    - Enforces per-tool execution timeouts.
+    Returns list of dicts: {"id": tool_call_id, "name": tool_name, "result": result, "status": "success"|"error"}
+    """
+    if not tool_calls:
+        return []
+
+    future_to_tool = {
+        TOOL_EXECUTOR.submit(execute_tool_call, tc, project_path, user_raw_message): tc
+        for tc in tool_calls
+    }
+
+    results = []
+    for future in as_completed(future_to_tool):
+        tc = future_to_tool[future]
+        tc_id = tc.get("id") or tc.get("name")
+        tc_name = tc.get("name", "")
+        try:
+            res = future.result(timeout=timeout_per_tool)
+            results.append({
+                "id": tc_id,
+                "name": tc_name,
+                "result": res,
+                "status": "success"
+            })
+        except FuturesTimeoutError:
+            logger.error(f"[TOOL TIMEOUT] Tool '{tc_name}' exceeded {timeout_per_tool}s timeout limit.")
+            results.append({
+                "id": tc_id,
+                "name": tc_name,
+                "result": f"Execution timed out after {timeout_per_tool}s",
+                "status": "error"
+            })
+        except Exception as e:
+            logger.error(f"[TOOL ERROR] Tool '{tc_name}' failed: {e}")
+            results.append({
+                "id": tc_id,
+                "name": tc_name,
+                "result": f"Error: {e}",
+                "status": "error"
+            })
+    return results

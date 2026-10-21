@@ -80,7 +80,7 @@ def universal_app_launcher(args):
         target_path = shortcuts[best_match]
         try:
             # Use cmd /c start so Windows resolves the .lnk properly
-            subprocess.Popen(f'cmd.exe /c start "" "{target_path}"', shell=True)
+            subprocess.Popen(["cmd.exe", "/c", "start", "", target_path], shell=False)
             return f"เปิดโปรแกรม {best_match} ให้เรียบร้อยแล้วครับเจ้านาย"
         except Exception as e:
             logger.error(f"Launcher Error: {e}")

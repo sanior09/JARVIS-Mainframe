@@ -68,12 +68,12 @@ def reminder_thread(minutes: int, message: str):
         try:
             with open(vbs_path, 'w', encoding='utf-8') as f:
                 f.write(vbs_script)
-            subprocess.run(['wscript', vbs_path], shell=True)
+            subprocess.run(['wscript', vbs_path], shell=False)
         except Exception:
-            subprocess.run(["msg", "*", f"JARVIS REMINDER: {message}"])
+            subprocess.run(["msg", "*", f"JARVIS REMINDER: {message}"], shell=False)
             
         # Play a loud notification sound
-        subprocess.run(["powershell", "-c", "[System.Media.SystemSounds]::Exclamation.Play()"], shell=True)
+        subprocess.run(["powershell", "-NoProfile", "-Command", "[System.Media.SystemSounds]::Exclamation.Play()"], shell=False)
     else:
         # User is at the computer, use voice synthesis and a toast
         ps_command = f"""
@@ -81,8 +81,8 @@ def reminder_thread(minutes: int, message: str):
         $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
         $synth.Speak("Reminder from JARVIS. {message}")
         """
-        subprocess.run(["powershell", "-Command", ps_command], shell=True)
-        subprocess.run(["msg", "*", f"JARVIS REMINDER: {message}"])
+        subprocess.run(["powershell", "-NoProfile", "-Command", ps_command], shell=False)
+        subprocess.run(["msg", "*", f"JARVIS REMINDER: {message}"], shell=False)
 
 def execute(minutes: int, message: str) -> str:
     if minutes <= 0:

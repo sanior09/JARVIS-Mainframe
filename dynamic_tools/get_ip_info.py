@@ -26,7 +26,7 @@ def get_ip_info(params=None) -> dict:
         local_ip = 'ไม่สามารถดึงได้'
     # Get public IP
     try:
-        with urllib.request.urlopen('https://api.ipify.org?format=json', timeout=5) as response:
+        with urllib.request.urlopen('https://api.ipify.org?format=json', timeout=5) as response:  # nosec B310
             data = json.loads(response.read().decode())
             public_ip = data.get('ip', 'ไม่สามารถดึงได้')
     except Exception:

@@ -14,7 +14,7 @@ def check_db():
             t = table[0]
             print(f"\n--- {t} ---")
             try:
-                rows = c.execute(f"SELECT * FROM {t}").fetchall()
+                rows = c.execute(f"SELECT * FROM {t}").fetchall()  # nosec B608
                 for row in rows:
                     print(row)
             except Exception as e:

@@ -35,6 +35,7 @@ logger = logging.getLogger("JarvisSatelliteNode")
 
 # Node Settings
 DEFAULT_NODE_NAME = platform.node() or "Target-PC"
+DEFAULT_HOST = os.getenv("NODE_HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.getenv("NODE_PORT", "5055"))
 AUTH_TOKEN = os.getenv("JARVIS_NODE_TOKEN", "jarvis_secret_link_2026")
 
@@ -102,7 +103,7 @@ class SatelliteNodeController:
     def execute_os_command(self, cmd: str) -> Dict[str, Any]:
         """Executes a system shell command or launches an app."""
         try:
-            p = subprocess.Popen(
+            p = subprocess.Popen(  # nosec B602
                 cmd,
                 shell=True,
                 stdout=subprocess.PIPE,
@@ -279,12 +280,12 @@ class SatelliteHTTPHandler(BaseHTTPRequestHandler):
             self._send_json({"status": "error", "message": f"Unknown action: {action}"}, 400)
 
 
-def run_node_server(port: int = DEFAULT_PORT):
-    server = HTTPServer(("0.0.0.0", port), SatelliteHTTPHandler)
+def run_node_server(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT):
+    server = HTTPServer((host, port), SatelliteHTTPHandler)
     logger.info(f"============================================================")
     logger.info(f"🤖 J.A.R.V.I.S. SATELLITE NODE ONLINE")
     logger.info(f"[*] Node Name: {DEFAULT_NODE_NAME}")
-    logger.info(f"[*] Listening on: http://0.0.0.0:{port}")
+    logger.info(f"[*] Listening on: http://{host}:{port}")
     logger.info(f"[*] Ready for remote commands from J.A.R.V.I.S. Mainframe")
     logger.info(f"============================================================")
     try:

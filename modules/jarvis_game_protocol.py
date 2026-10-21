@@ -306,7 +306,7 @@ def resolve_steam_appid_dynamically(game_name: str) -> Tuple[Optional[str], Opti
     try:
         url = f"https://store.steampowered.com/api/storesearch/?term={urllib.parse.quote(game_name)}&l=english&cc=US"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=3.5) as resp:
+        with urllib.request.urlopen(req, timeout=3.5) as resp:  # nosec B310
             data = json.loads(resp.read().decode('utf-8'))
             if data.get("total", 0) > 0:
                 item = data["items"][0]

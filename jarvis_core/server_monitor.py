@@ -14,6 +14,7 @@ import time
 import socket
 import sqlite3
 import logging
+import threading
 from typing import Any, Dict, List, Optional
 
 import psutil
@@ -29,15 +30,31 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "data", "jarvis_memory.db")
 
 
-def get_full_server_telemetry() -> Dict[str, Any]:
+_TELEMETRY_CACHE: Dict[str, Any] = {}
+_TELEMETRY_CACHE_TIME: float = 0.0
+_TELEMETRY_CACHE_LOCK = threading.Lock()
+_CPU_INITIALIZED = False
+
+
+def get_full_server_telemetry(force_refresh: bool = False, max_age: float = 1.0) -> Dict[str, Any]:
     """
     Returns comprehensive telemetry for J.A.R.V.I.S. host machine and core process:
-    - CPU overall and per-core
+    - CPU overall and per-core (Non-blocking sampling with TTL caching)
     - Virtual Memory and Swap
     - Disk I/O & Space
     - J.A.R.V.I.S. Core Process metrics
     - Thermal / Saturation indicators
     """
+    global _TELEMETRY_CACHE, _TELEMETRY_CACHE_TIME, _CPU_INITIALIZED
+    now = time.time()
+    with _TELEMETRY_CACHE_LOCK:
+        if not force_refresh and _TELEMETRY_CACHE and (now - _TELEMETRY_CACHE_TIME < max_age):
+            return dict(_TELEMETRY_CACHE)
+
+    if not _CPU_INITIALIZED:
+        psutil.cpu_percent(interval=None)
+        _CPU_INITIALIZED = True
+
     vmem = psutil.virtual_memory()
     try:
         swap = psutil.swap_memory()
@@ -45,7 +62,8 @@ def get_full_server_telemetry() -> Dict[str, Any]:
     except Exception:
         swap_pct = 0.0
 
-    cpu_percent = psutil.cpu_percent(interval=0.1)
+    # Non-blocking CPU measurement prevents 100ms GIL / thread stall
+    cpu_percent = psutil.cpu_percent(interval=None)
     cpu_cores = psutil.cpu_percent(percpu=True, interval=None)
 
     # Core process stats
@@ -64,7 +82,7 @@ def get_full_server_telemetry() -> Dict[str, Any]:
     # Memory saturation alert
     is_saturated = (vmem.percent >= 85.0)
 
-    return {
+    payload = {
         "status": "success",
         "timestamp": time.time(),
         "cpu": {
@@ -97,6 +115,10 @@ def get_full_server_telemetry() -> Dict[str, Any]:
             "uptime_seconds": proc_uptime
         }
     }
+    with _TELEMETRY_CACHE_LOCK:
+        _TELEMETRY_CACHE = payload
+        _TELEMETRY_CACHE_TIME = payload["timestamp"]
+    return payload
 
 
 def check_listening_ports(target_ports: Optional[List[int]] = None) -> Dict[str, Any]:

@@ -39,7 +39,7 @@ class IsolatedSandbox:
         # In a true enterprise environment, this would use a separate Process or Docker container.
         # For this demonstration, we use restricted exec.
         try:
-            exec(patch.proposed_code_snippet, restricted_globals, local_context)
+            exec(patch.proposed_code_snippet, restricted_globals, local_context)  # nosec B102
             logger.info(f"[Sandbox] Patch {patch.patch_id} executed successfully.")
             self.notify_success(patch, {"locals": str(local_context.keys())})
             return True

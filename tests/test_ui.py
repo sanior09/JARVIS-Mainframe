@@ -28,4 +28,4 @@ if __name__ == "__main__":
     print("  Running on http://127.0.0.1:8080")
     print("  (AI and Neural Cores are OFF)")
     print("==================================================")
-    app.run(port=8080, debug=True)
+    app.run(port=8080, debug=False)

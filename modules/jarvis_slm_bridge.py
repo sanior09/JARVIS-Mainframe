@@ -74,7 +74,7 @@ class JarvisCoreBridge:
                 self.device = "cuda" if torch.cuda.is_available() else "cpu"
                 logger.info(f"[JARVIS-CORE BRIDGE] Loading model_ckpt.pt onto {self.device}...")
 
-                checkpoint = torch.load(str(CHECKPOINT_PATH), map_location=self.device, weights_only=False)
+                checkpoint = torch.load(str(CHECKPOINT_PATH), map_location=self.device, weights_only=True)
 
                 chars: list[str] = checkpoint.get("chars", [])
                 if not chars:

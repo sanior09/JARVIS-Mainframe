@@ -18,14 +18,14 @@ TOOL_SCHEMA = {
 def execute(minutes: int) -> str:
     if minutes <= 0:
         try:
-            subprocess.run(["shutdown", "-a"], shell=True, check=True)
+            subprocess.run(["shutdown", "-a"], shell=False, check=True)
             return "ยกเลิกการตั้งเวลาปิดเครื่องเรียบร้อยแล้วครับ"
         except subprocess.CalledProcessError:
             return "ไม่มีการตั้งเวลาปิดเครื่องอยู่ก่อนแล้วครับ"
     else:
         seconds = int(minutes * 60)
         # -s (shutdown) -t (time) -f (force close apps)
-        subprocess.run(["shutdown", "-s", "-f", "-t", str(seconds)], shell=True)
+        subprocess.run(["shutdown", "-s", "-f", "-t", str(seconds)], shell=False)
         
         # Calculate expected shutdown time
         import datetime

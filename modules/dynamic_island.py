@@ -18,8 +18,10 @@ import threading
 import time
 import urllib.request
 
-# pyrefly: ignore [missing-import]
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 from PyQt6.QtCore import (QEasingCurve, QPointF, QPropertyAnimation, QRect, QRectF, QSize, Qt,
                           QTimer)
 from PyQt6.QtGui import (QBrush, QColor, QDragEnterEvent, QDragLeaveEvent, QDropEvent,
@@ -2085,7 +2087,7 @@ class DynamicIsland(QWidget):
                     data=json.dumps({"model": engine_key}).encode('utf-8'),
                     headers={'Content-Type': 'application/json'}
                 )
-                with urllib.request.urlopen(req, timeout=2) as resp:
+                with urllib.request.urlopen(req, timeout=2) as resp:  # nosec B310
                     pass
             except Exception:
                 pass
@@ -2466,7 +2468,7 @@ class DynamicIsland(QWidget):
                 data=data_bytes,
                 headers={"Content-Type": "application/json"}
             )
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=30) as resp:  # nosec B310
                 res_json = json.loads(resp.read().decode("utf-8"))
                 reply = res_json.get("response", "")
                 if reply:
@@ -2486,7 +2488,7 @@ class DynamicIsland(QWidget):
                 data=data_bytes,
                 headers={"Content-Type": "application/json"}
             )
-            with urllib.request.urlopen(req, timeout=25) as resp:
+            with urllib.request.urlopen(req, timeout=25) as resp:  # nosec B310
                 res_json = json.loads(resp.read().decode("utf-8"))
                 reply = res_json.get("response", "")
                 if reply:
@@ -2583,7 +2585,7 @@ class DynamicIsland(QWidget):
                     data=data,
                     headers={'Content-Type': 'application/json'}
                 )
-                with urllib.request.urlopen(req, timeout=35) as resp:
+                with urllib.request.urlopen(req, timeout=35) as resp:  # nosec B310
                     res_json = json.loads(resp.read().decode('utf-8'))
                     reply = res_json.get("response", "")
                     if reply:

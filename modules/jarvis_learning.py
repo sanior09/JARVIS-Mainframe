@@ -105,7 +105,7 @@ class WebResearcher:
             url = f"https://api.duckduckgo.com/?q={encoded_topic}&format=json&no_html=1"
             req = urllib.request.Request(url, headers={'User-Agent': 'JarvisLearning/1.0'})
             
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=10) as response:  # nosec B310
                 data = json.loads(response.read().decode())
                 
             abstract = data.get("AbstractText", "")
@@ -117,7 +117,7 @@ class WebResearcher:
                     
                     jina_url = f"https://r.jina.ai/{abstract_url}"
                     jreq = urllib.request.Request(jina_url, headers={'User-Agent': 'Mozilla/5.0'})
-                    with urllib.request.urlopen(jreq, timeout=15) as jresp:
+                    with urllib.request.urlopen(jreq, timeout=15) as jresp:  # nosec B310
                         full_content = jresp.read().decode('utf-8')
                         return f"Source: {abstract_url}\n\nContent:\n{full_content[:5000]}"
                 except Exception as e:
@@ -130,7 +130,7 @@ class WebResearcher:
             logger.info(f"[Research] Using Jina Search for: {topic}")
             jina_search_url = f"https://s.jina.ai/{encoded_topic}"
             sreq = urllib.request.Request(jina_search_url, headers={'Accept': 'text/plain'})
-            with urllib.request.urlopen(sreq, timeout=15) as sresp:
+            with urllib.request.urlopen(sreq, timeout=15) as sresp:  # nosec B310
                 search_content = sresp.read().decode('utf-8')
                 return f"Search Results for '{topic}':\n\n{search_content[:5000]}"
                 

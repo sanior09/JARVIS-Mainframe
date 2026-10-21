@@ -26,7 +26,15 @@ from jarvis_core.research_service import (
 )
 
 from jarvis_core.automation_agent import WindowsAutomationAgent, get_computer_agent
-from jarvis_core.tool_dispatcher import execute_tool_call, format_tool_response, guardrail_validation
+from jarvis_core.tool_dispatcher import (
+    execute_tool_call,
+    execute_tool_call_async,
+    execute_tool_calls_batch,
+    format_tool_response,
+    guardrail_validation,
+    GUI_ACTION_LOCK,
+    TOOL_EXECUTOR,
+)
 from jarvis_core.web_app import create_app
 from jarvis_core.boot import perform_system_boot_sequence, start_background_daemons, execute_boot_automation
 from jarvis_core.state import update_core_telemetry, get_telemetry_snapshot
@@ -58,6 +66,10 @@ __all__ = [
     "WindowsAutomationAgent",
     "get_computer_agent",
     "execute_tool_call",
+    "execute_tool_call_async",
+    "execute_tool_calls_batch",
+    "GUI_ACTION_LOCK",
+    "TOOL_EXECUTOR",
     "format_tool_response",
     "guardrail_validation",
     "create_app",

@@ -3,7 +3,7 @@ import time
 
 def test_chat(prompt):
     print(f"Testing: {prompt}")
-    resp = requests.post("http://localhost:5050/chat", json={"message": prompt})
+    resp = requests.post("http://localhost:5050/chat", json={"message": prompt}, timeout=10)
     if resp.status_code == 200:
         data = resp.json()
         print("Response:", data.get('response'))

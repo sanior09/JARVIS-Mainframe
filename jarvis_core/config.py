@@ -65,7 +65,7 @@ MIC_INDEX = int(os.getenv("MIC_INDEX", "1")) if os.getenv("MIC_INDEX", "").isdig
 ENABLE_WAKE_WORD = os.getenv("ENABLE_WAKE_WORD", "true").lower() in ("true", "1", "yes")
 
 # Server Config
-HOST = os.getenv("JARVIS_HOST", "0.0.0.0")
+HOST = os.getenv("JARVIS_HOST", "127.0.0.1")
 PORT = int(os.getenv("JARVIS_PORT", "5050"))
 DEBUG = os.getenv("JARVIS_DEBUG", "false").lower() in ("true", "1")
 

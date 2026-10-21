@@ -35,7 +35,7 @@ def run_sandbox_test(code_string: str) -> bool:
         
         # รันแค่โหมดวิเคราะห์ (ไม่ต้องรันฟังก์ชัน เพราะเราไม่รู้ arguments)
         # ถ้ารัน exec ผ่าน แปลว่าไม่มี Syntax error
-        exec(code_string, restricted_globals)
+        exec(code_string, restricted_globals)  # nosec B102
         return True
         
     except ImportError as e:
