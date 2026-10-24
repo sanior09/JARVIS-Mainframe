@@ -3010,6 +3010,9 @@ const agentWaypoints = {
     code: { deskX: 70, deskY: 60 },
     friday: { deskX: 20, deskY: 70 },
     veronica: { deskX: 80, deskY: 30 },
+    edith: { deskX: 85, deskY: 70 },
+    u: { deskX: 15, deskY: 35 },
+    dume: { deskX: 50, deskY: 85 },
     roaming: [
         { x: 50, y: 50 }, { x: 40, y: 70 }, { x: 60, y: 40 },
         { x: 25, y: 55 }, { x: 75, y: 75 }, { x: 50, y: 30 },
@@ -3036,7 +3039,10 @@ class JarvisAgentNode {
             os: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAr0lEQVR4nGNkQID/DMQDRhiDBVn0xIkTROm2sLCAs5kYKARMA24AC1rAgAPSnOUiVsUn/+hT3wVMuCQYTdKxsok24P+ZmVjZGBYxoOnDpxjqGhQ9jMia8eokJiUyPMVjhjQjQh7EHjQJiWlQGcD4//kslABCAaAAlGaEqCEA/sPx0/8INo5oZsEmaGRkBKbPSTOCMxicf+4cXi+QBZjI00ZFA7AFOXJgweSxiVEHAABSjy6s6lt5jgAAAABJRU5ErkJggg==',
             code: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAArElEQVR4nGNkQID/DMQDRhiDBVk0xciIKN1zzp2Ds5kYKARMA24AC1rAgANy9qx0rIpT02ZS3wVMuCQYTdKxsok24P+ZmVjZGBYxoOnDpxjqGhQ9jMia8eokJiX6rA/AqWNL4Aa4PIg9eBIS06AygHGzrCdKACEDUABuCdwAVkMI/Idhn/UBcDauaGbEZoARtGA5d+4cIxY+Ti+QBZjI00ZFA7CGARZ5bGLUAQB2AzJb7YoZGwAAAABJRU5ErkJggg==',
             friday: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAsElEQVR4nGNkQID/DMQDRhiDBVn0/0F24nTb/4SzmRgoBEwDbgALWsBAApJ7EnbVX/Oo7wImXBKMJulY2UQb8P/MTKxsDIsY0PThUwx1DYoeRmTNeHUSlRJfW+PWIXoULg9iD56ExDSoDGBkeBiHEkDIABSAjKJHwWoIgf8w/P+1NZyNK5pZsAkaGRlBnASykYHhP4x/7tw5vF4gCzCRp42KBqBnJhBADiyYPDYx6gAAsBsvG7UOr6MAAAAASUVORK5CYII=',
-            veronica: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAq0lEQVR4nN1TAQrDIAw04ndEkP2pH9hesX2gfyoB6YNSKtpdnRZhhY4dFM8kFzVJSb0hqh+UiUHrs1P9AK7Vl9CXJzBFYWIh79NYDX7dhvNvoFsOgtOQdycQeAbyj4NUoTsKTrfZaQjFh8qeSZydaypsCJt/5b8zSPryBIQbmUZZh6ZVTBsCpZiy/TtI/mbnNt5qs6kZvfdxtczxB8t7Zv77LiRgsbK/ZjsHC3HKMrkrPsK3AAAAAElFTkSuQmCC'
+            veronica: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAq0lEQVR4nN1TAQrDIAw04ndEkP2pH9hesX2gfyoB6YNSKtpdnRZhhY4dFM8kFzVJSb0hqh+UiUHrs1P9AK7Vl9CXJzBFYWIh79NYDX7dhvNvoFsOgtOQdycQeAbyj4NUoTsKTrfZaQjFh8qeSZydaypsCJt/5b8zSPryBIQbmUZZh6ZVTBsCpZiy/TtI/mbnNt5qs6kZvfdxtczxB8t7Zv77LiRgsbK/ZjsHC3HKMrkrPsK3AAAAAElFTkSuQmCC',
+            edith: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAr0lEQVR4nGNkQID/DMQDRhiDBVn0xIkTROm2sLCAs5kYKARMA24AC1rAgAPSnOUiVsUn/+hT3wVMuCQYTdKxsok24P+ZmVjZGBYxoOnDpxjqGhQ9jMia8eokJiUyPMVjhjQjQh7EHjQJiWlQGcD4//kslABCAaAAlGaEqCEA/sPx0/8INo5oZsEmaGRkBKbPSTOCMxicf+4cXi+QBZjI00ZFA7AFOXJgweSxiVEHAABSjy6s6lt5jgAAAABJRU5ErkJggg==',
+            u: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAArElEQVR4nGNkQID/DMQDRhiDBVk0xciIKN1zzp2Ds5kYKARMA24AC1rAgANy9qx0rIpT02ZS3wVMuCQYTdKxsok24P+ZmVjZGBYxoOnDpxjqGhQ9jMia8eokJiX6rA/AqWNL4Aa4PIg9eBIS06AygHGzrCdKACEDUABuCdwAVkMI/Idhn/UBcDauaGbEZoARtGA5d+4cIxY+Ti+QBZjI00ZFA7CGARZ5bGLUAQB2AzJb7YoZGwAAAABJRU5ErkJggg==',
+            dume: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAAqElEQVR4nGNkQID/DMQDRhiDBVk0QEOEKN0bbryBs5kYKARMA24AC1rAgANy/ZJWrIoDY6qp7wImXBKMJulY2UQb8P/MTKxsDIsY0PThUwx1DYoeRmTNeHUSkxL/z8CjIwMhD2IPnoTENKgMYGQwmYkSQMgAFICMGRA1hMB/GP4/A8HGFc2M2AwwMjICM86dO8eIhY/TC2QBJvK0UdEArGGARR6bGHUAADzcLcNAwLPUAAAAAElFTkSuQmCC'
         };
         this.spriteUrl = spriteMap[this.id];
     }
@@ -3272,6 +3278,9 @@ function openAgentOfficeWindow() {
         activeAgents.push(new JarvisAgentNode('code', 'CODE ENGINE', '#4caf50', 'code'));
         activeAgents.push(new JarvisAgentNode('friday', 'F.R.I.D.A.Y.', '#ffeb3b', 'friday'));
         activeAgents.push(new JarvisAgentNode('veronica', 'VERONICA', '#d32f2f', 'veronica'));
+        activeAgents.push(new JarvisAgentNode('edith', 'E.D.I.T.H.', '#00e5ff', 'edith'));
+        activeAgents.push(new JarvisAgentNode('u', 'U. (YOU)', '#00ff88', 'u'));
+        activeAgents.push(new JarvisAgentNode('dume', 'D.U.M.-E.', '#ff9800', 'dume'));
         
         activeAgents.forEach(a => a.createDOM(agentContainer));
 
