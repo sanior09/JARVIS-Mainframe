@@ -48,7 +48,7 @@ def test_council_debate_parallel_execution():
         # Mock individual agent outputs and final synthesis
         def side_effect(messages, model=None):
             sys_msg = messages[0]["content"]
-            if "President of the Stark Industries" in sys_msg or "J.A.R.V.I.S." in sys_msg:
+            if "President of the Nachapol Industries" in sys_msg or "J.A.R.V.I.S." in sys_msg:
                 return {"content": "JARVIS: Master directive formulated successfully."}
             elif "F.R.I.D.A.Y." in sys_msg:
                 return {"content": "Friday: Code is optimized."}

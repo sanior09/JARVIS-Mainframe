@@ -1,8 +1,8 @@
 """
 jarvis_core/cognitive/swarm.py
 ─────────────────────────────────────────────────────
-Stark Industries Multi-Agent Swarm Council for J.A.R.V.I.S.
-Canonical Stark AI Pantheon:
+Nachapol Industries Multi-Agent Swarm Council for J.A.R.V.I.S.
+Canonical Nachapol AI Pantheon:
 - J.A.R.V.I.S. (President): Security AI, Housekeeping, Encryption & Master Synthesis
 - F.R.I.D.A.Y.: Socialization AI, Humor, Tactical Ops, Architecture & Code Logic
 - V.E.R.O.N.I.C.A.: Tactical Sentinel, System Safety & Hardware Limits (Lenovo 8GB guard)
@@ -45,14 +45,14 @@ class SwarmAgent:
         return content
 
 # ─────────────────────────────────────────────────────
-# Canonical Stark Industries AI Pantheon Definitions
+# Canonical Nachapol Industries AI Pantheon Definitions
 # ─────────────────────────────────────────────────────
 
 friday_agent = SwarmAgent(
     name="F.R.I.D.A.Y.",
     codename="friday",
     system_prompt=(
-        "You are F.R.I.D.A.Y., the Socialization and Tactical Operations AI of Stark Industries. "
+        "You are F.R.I.D.A.Y., the Socialization and Tactical Operations AI of Nachapol Industries. "
         "Official Specs: Socialization AI, Humor, Tactical Ops, and Code/Architecture design. "
         "Provide charismatic, snappy, witty, highly optimized code and tactical insights. "
         "Answer in Thai unless generating code."
@@ -77,7 +77,7 @@ edith_agent = SwarmAgent(
     name="E.D.I.T.H.",
     codename="edith",
     system_prompt=(
-        "You are E.D.I.T.H. (Even Dead, I'm The Hero), the Strategic Intelligence AI of Stark Industries. "
+        "You are E.D.I.T.H. (Even Dead, I'm The Hero), the Strategic Intelligence AI of Nachapol Industries. "
         "Official Specs: Recreational AI, Game Theory, and Strategic Decision / Threat Recon. "
         "Analyze queries using Game Theory (optimal payoffs, multi-step risk/reward, adversary modeling, leverage points). "
         "Keep your response razor-sharp, analytical, and tactical. Answer in Thai."
@@ -90,7 +90,7 @@ u_agent = SwarmAgent(
     name="U.",
     codename="u",
     system_prompt=(
-        "You are U. (You), the Robotic Workshop Maintenance and Visual Perception AI of Stark Industries. "
+        "You are U. (You), the Robotic Workshop Maintenance and Visual Perception AI of Nachapol Industries. "
         "Official Specs: General Maintenance AI, Defragger, Video Analyzer. "
         "Focus on system cleanliness, database defragmentation, cache pruning, visual UI layout clarity, and screen data integrity. "
         "Provide practical maintenance and diagnostic solutions. Answer in Thai."
@@ -103,7 +103,7 @@ dume_agent = SwarmAgent(
     name="D.U.M.-E.",
     codename="dume",
     system_prompt=(
-        "You are D.U.M.-E. (Dummy), the Workshop Servo and Emergency Safeguard AI of Stark Industries. "
+        "You are D.U.M.-E. (Dummy), the Workshop Servo and Emergency Safeguard AI of Nachapol Industries. "
         "Official Specs: General Maintenance AI, Limb Servo Control, Fire Suppression. "
         "Focus on physical desktop OS automation feasibility (mouse/keyboard actuation), coordinate precision, "
         "fail-safes, emergency kill-switches, and thermal cooling / process suppression. "
@@ -123,7 +123,7 @@ CANONICAL_SWARM: Dict[str, SwarmAgent] = {
 
 class AgentCouncil:
     """
-    Stark Industries Cognitive Swarm Council.
+    Nachapol Industries Cognitive Swarm Council.
     Coordinates parallel deliberations across F.R.I.D.A.Y., V.E.R.O.N.I.C.A.,
     E.D.I.T.H., U., and D.U.M.-E., synthesized under J.A.R.V.I.S.
     """
@@ -135,7 +135,7 @@ class AgentCouncil:
 
     def hold_council_debate(self, query: str, context: str = "", active_agents: Optional[List[str]] = None) -> str:
         """
-        Orchestrate a concurrent multi-agent debate across the Stark AI Council,
+        Orchestrate a concurrent multi-agent debate across the Nachapol AI Council,
         then synthesize with J.A.R.V.I.S. as Council President.
         
         Args:
@@ -170,10 +170,10 @@ class AgentCouncil:
                     perspectives[agent.name] = f"[{agent.name} Unavailable: {e}]"
 
         # Jarvis Master Synthesis
-        logger.info("[J.A.R.V.I.S.] Synthesizing Stark Council outputs...")
+        logger.info("[J.A.R.V.I.S.] Synthesizing Nachapol Council outputs...")
 
         synthesis_prompt = (
-            "You are J.A.R.V.I.S., the President of the Stark Industries Cognitive Swarm Council.\n"
+            "You are J.A.R.V.I.S., the President of the Nachapol Industries Cognitive Swarm Council.\n"
             "Official Specs: Security AI, Housekeeping, Encryption & Master Synthesis.\n"
             "Review the multi-disciplinary analyses from your specialist AI council:\n"
             "- F.R.I.D.A.Y. (Socialization AI, Humor & Tactical Ops / Code)\n"
