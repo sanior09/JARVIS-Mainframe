@@ -5,16 +5,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
 [![Architecture](https://img.shields.io/badge/Architecture-Autonomous%20AGI-107C41?style=for-the-badge)](web/jarvis_architecture.html)
+[![AI Council](https://img.shields.io/badge/AI%20Council-6%20Personas%20Quorum-8A2BE2?style=for-the-badge)](#ai-council)
+[![Agentic Skills](https://img.shields.io/badge/Agentic%20Skills-5%20Protocols-4A90E2?style=for-the-badge)](#skills-ecosystem)
 [![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE-00C4B4?style=for-the-badge)](#)
 
 ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
 
 <p align="center">
   <a href="#-system-architecture-blueprint-5-stage-pipeline">⚡ Architecture</a> •
+  <a href="#ai-council">🏛️ AI Council</a> •
   <a href="#-quick-start-nachapol-protocol">🚀 Quick Start</a> •
   <a href="#️-1-dynamic-island-desktop-hud-v3">🏝️ Dynamic Island</a> •
   <a href="#-2-jarvis-mobile-companion-app-react-native--expo-go">📱 Mobile App</a> •
-  <a href="#-8-subconscious-engine--cyber-security-guard">🕶️ Dark Mode</a> •
+  <a href="#skills-ecosystem">🧩 Skills Ecosystem</a> •
   <a href="#-บันทึกจากผู้พัฒนา-developers-note">📝 Dev Note</a>
 </p>
 
@@ -26,6 +29,25 @@
 <p align="center">
   <img src="docs/images/architecture_map.png" alt="J.A.R.V.I.S. System Architecture Blueprint" width="100%">
 </p>
+
+---
+
+<a id="ai-council"></a>
+## 🏛️ Nachapol Industries Multi-Agent Swarm Council
+*(สภาสมองกล 6 ขุนพลแห่ง Nachapol Industries — `jarvis_core/cognitive/swarm.py`)*
+
+เมื่อระบบเผชิญกับโจทย์ที่มีความซับซ้อนระดับวิศวกรรม (Tier 3 Complexity) **ComplexityClassifier** จะระดมพลและเปิดการประชุมสภา AI แบบคู่ขนานความเร็วแสง (**Concurrent ThreadPool Deliberation**) เพื่อรวบรวมมุมมองเฉพาะทาง 5 ขั้วความคิด ก่อนที่ J.A.R.V.I.S. ในฐานะประธานสภาจะสังเคราะห์เป็นแผนกลยุทธ์สูงสุด:
+
+| สมาชิกสภา | สีโหนด HUD | สเปกและหน้าที่หลัก (Official Specs) | ขอบเขตความเชี่ยวชาญ |
+| :---: | :---: | :--- | :--- |
+| 👔 **J.A.R.V.I.S.** | `#00c8ff` | **Council President**<br>• `Security AI`<br>• `Housekeeping`<br>• `Encryption` | ประธานสภา สังเคราะห์มุมมองของทุกฝ่ายด้วย British dry wit กำกับทิศทาง และวางแผนแม่บท (Master Directive) |
+| 👠 **F.R.I.D.A.Y.** | `#ffeb3b` | **Socialization & Tactical Ops**<br>• `Socialization AI`<br>• `Humor`<br>• `Tactical Ops` | นักสร้างสรรค์ ไหวพริบปฏิภาณ ออกแบบสถาปัตยกรรมโค้ด ไวยากรณ์ Python การคำนวณวงจรและคณิตศาสตร์ |
+| 🛡️ **V.E.R.O.N.I.C.A.** | `#d32f2f` | **Tactical Sentinel**<br>• `System Safety`<br>• `Resource Limits`<br>• `Defensive Check` | ผู้พิทักษ์ยุทธวิธี ตรวจจับช่องโหว่ความปลอดภัย ควบคุมเพดาน RAM/CPU ป้องกันระบบโอเวอร์โหลด |
+| 🕶️ **E.D.I.T.H.** | `#00e5ff` | **Strategic Intelligence**<br>• `Recreational AI`<br>• `Game Theory`<br>• `Weapons / Threat Recon` | มันสมองกลยุทธ์ วิเคราะห์ทฤษฎีเกม (Game Theory) คาดการณ์ความเสี่ยงหลายชั้น และคำนวณแต้มต่อสูงสุด |
+| 🔧 **U. (ยู)** | `#00ff88` | **Maintenance & Perception**<br>• `General Maintenance AI`<br>• `Defragger`<br>• `Video Analyzer` | สายตาและการบำรุงรักษา วิเคราะห์ภาพบนหน้าจอ (`analyze_desktop_screen_context`), Defrag SQLite และเคลียร์แคช |
+| 🧯 **D.U.M.-E. (ดัม-อี)** | `#ff9800` | **Servo & Safeguard**<br>• `General Maintenance AI`<br>• `Limb Servo Control`<br>• `Fire Suppression` | แขนกลควบคุมระบบ ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อน/ดับเพลิงฉุกเฉิน |
+
+> ⚡ **Ultra-Low Latency Concurrency:** ด้วยสถาปัตยกรรม `ThreadPoolExecutor` การประชุมสภาขุนพลดำเนินไปพร้อมกันแบบคู่ขนาน (Parallel Execution) ทำให้เวลาในการอภิปรายเสร็จสิ้นภายใน **~1 วินาที** (ลดลงจากระบบเดิมที่คิดทีละคนถึง 80%) พร้อมรองรับ **Selective Quorum** เลือกระดมพลเฉพาะตัวที่ตรงกับโจทย์ได้
 
 ---
 
@@ -139,10 +161,11 @@ npx expo start
 ## 🛠️ Comprehensive Super AGI Subsystems
 
 ### 🧠 1. Cognitive & Autonomous Brain
-- **Autonomous Thought Engine:** จำลองระดับสารสื่อประสาท (Dopamine/Cortisol) กำหนดอารมณ์และสมาธิของ AI ตามภาระงานและคำสั่ง
-- **Agent Council & Tree of Thoughts:** ระบบจำลองบอร์ดบริหาร AI (LangGraph) อภิปรายและหาข้อสรุปในงานวิศวกรรมที่ซับซ้อน
+- **Autonomous Thought Engine (`jarvis.py`):** กลไกจิตใต้สำนึกจำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol, Acetylcholine) คำนวณความเครียดตามอุณหภูมิ WMI/CPU โหลดจริง พร้อมระบบ **Thread-Safe Mutex Lock** ป้องกัน Race Conditions และระบบ **Zero-Delay Shutdown (`self.stop_event`)** คืนหน่วยความจำในพริบตา (<1 วินาที)
+- **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อเสนอแนะแนวทางแก้บั๊กหรือคู่มือเควสเกมอัตโนมัติ พร้อมตรวจจับ Smart Silence ปิดเสียงไม่รบกวนเมื่อเจ้านายกำลังรับชม YouTube, Netflix หรือสตรีมมิง
+- **Multi-Agent Swarm Council & Tree of Thoughts (`jarvis_core/cognitive/swarm.py`):** สภา AI 6 ขุนพล อภิปรายแบบคู่ขนาน (Parallel ThreadPool) ผสานกับ Tree of Thoughts แตกกิ่งกลยุทธ์ 3 เส้นทางสำหรับงานวิศวกรรมที่ซับซ้อน
 - **Neural AI Router & Provider Pool (`jarvis_core/ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq (Llama-3.3-70b, Qwen3.8), Google Gemini (2.5 Flash), หรือ Local Ollama (Qwen2.5) ตามความเหมาะสมของประเภทงาน
-- **Cognitive Evolution & Memory Consolidation (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ระหว่างที่ระบบอยู่ในสถานะ Sleep
+- **Cognitive Evolution & Memory Consolidation (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
 - **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
 - **Resource-Conscious Architecture:** ออกแบบมาสำหรับรันบนคอมพิวเตอร์สเปกทั่วไป โดยปรับจูนการใช้ทรัพยากรให้ประหยัด RAM/CPU ที่สุด
 
@@ -178,6 +201,15 @@ npx expo start
 - **Subconscious Brain (`modules/jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
 - **Uncensored Dark Mode (Autonomous Pentest Switching) (`jarvis_core/ai_router.py`):** แตกต่างจาก AI ทั่วไปที่มักถูกบล็อกด้วย Safety Guardrail เมื่อถามเรื่องความปลอดภัยไซเบอร์ — J.A.R.V.I.S. มีระบบตรวจจับคำสั่ง Ethical Hacking & Pentesting อัตโนมัติ เพื่อสลับสมองจาก Cloud ไปยัง **Local Uncensored Model (Qwen 27B Uncensored / Dolphin)** ประมวลผลแบบ Local ในเครื่อง 100% ไร้การเซ็นเซอร์ และรักษาความลับของระบบได้อย่างสมบูรณ์แบบ
 - **Cyber Inspector & Network Scanner (`modules/cyber_inspector.py`):** ตรวจจับอุปกรณ์บนเครือข่าย Wi-Fi/LAN สแกนพอร์ต และประเมินความปลอดภัยเบื้องต้น
+
+<a id="skills-ecosystem"></a>
+### 🧩 9. Agentic Skills Ecosystem (`.agents/skills/`)
+สถาปัตยกรรมคลังทักษะ Agentic เฉพาะทาง (Specialized Agentic Standards & Protocols) ที่ยกระดับ J.A.R.V.I.S. ให้ปฏิบัติงานและพัฒนาซอฟต์แวร์ได้อย่างไร้ข้อผิดพลาดตามมาตรฐานวิศวกรรมสากล:
+- **`computer-use-controller`:** มาตรฐานการควบคุม OS Desktop ขั้นสูง, การจำลอง Win32 Input, พิกัดหน้าจอ Multi-Monitor และ Failsafe Emergency Abort
+- **`human-grade-web-designer`:** มาตรฐาน UI/UX ชั้นครู ฉีกกรอบดีไซน์แบบ AI Template ซ้ำซาก เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
+- **`jarvis-module-scaffolder`:** โครงสร้างมาตรฐานในการขยายฟังก์ชันและโมดูลใหม่ของ J.A.R.V.I.S. โดยรักษาสถาปัตยกรรมแบบ Decoupled และป้องกันไฟล์หลักบวม
+- **`python-concurrency-guardian`:** กฎเหล็กควบคุม Thread Safety, การใช้ Mutex Lock, Zero-Delay Shutdown Events และ Windows COM Multi-threading
+- **`pytest-mock-master`:** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลองฮาร์ดแวร์ (WMI, Audio, Camera) และ External APIs ให้ทดสอบได้ 100% ทุกสภาพแวดล้อม
 
 ---
 
