@@ -701,8 +701,20 @@ except Exception as e:
     logger.error(f"[SCHEDULER] Failed to start APScheduler: {e}")
     jarvis_scheduler = None
 
+# ══════════════════════════════════════════════════════════════════════════════
+# 🧠 AUTONOMOUS THOUGHT ENGINE (Bio-Inspired Neurochemical Subconscious)
+# ══════════════════════════════════════════════════════════════════════════════
+
 class AutonomousThoughtEngine:
-    def __init__(self):
+    """
+    Nachapol Industries Autonomous Thought & Synaptic Engine.
+
+    Simulates homeostatic bio-neurochemical levels (Dopamine, Cortisol, Acetylcholine)
+    dynamically synchronized with real-time CPU stress and Windows WMI thermals.
+    Drives proactive background cognition and synaptic weight adaptation.
+    """
+
+    def __init__(self) -> None:
         """
         Initialise the Autonomous Thought Engine.
 
@@ -710,22 +722,29 @@ class AutonomousThoughtEngine:
         acetylcholine) and attempts to connect to the WMI thermal sensor
         namespace for hardware-aware adaptation.
         """
-        self.dopamine_level = 0.5
-        self.cortisol_level = 0.5
-        self.acetylcholine_level = 0.5
-        self.running = False
-        self.stop_event = threading.Event()
-        self._lock = threading.Lock()
-        self.synaptic_thread = None
-        self.proactive_thread = None
-        self.last_evolution_date = None
-        
+        # ── Bio-Inspired Neurochemical Substrates (Baseline: 0.5) ─────────────
+        self.dopamine_level: float = 0.5       # Reward, motivation, exploratory drive
+        self.cortisol_level: float = 0.5       # Stress, thermal throttling, risk aversion
+        self.acetylcholine_level: float = 0.5  # Focus, working memory, attention filter
+
+        # ── Thread Concurrency & Synchronization ──────────────────────────────
+        self.running: bool = False
+        self.stop_event: threading.Event = threading.Event()
+        self._lock: threading.Lock = threading.Lock()
+        self.synaptic_thread: Optional[threading.Thread] = None
+        self.proactive_thread: Optional[threading.Thread] = None
+
+        # ── Telemetry & Adaptive State ────────────────────────────────────────
+        self.last_evolution_date: Optional[Any] = None
+        self.wmi_client: Optional[Any] = None
+
         try:
             self.wmi_client = wmi.WMI(namespace="root\\wmi")
         except Exception as e:
+            logger.debug(f"[THOUGHT_ENGINE] WMI thermal probe unavailable ({e}); using baseline sensor fallback")
             self.wmi_client = None
 
-    def start(self):
+    def start(self) -> None:
         """
         Start the engine's background daemon threads.
 
@@ -733,23 +752,28 @@ class AutonomousThoughtEngine:
           * update_synaptic_weights -- monitors CPU/temp every 60 s.
           * proactive_background_loop -- runs autonomous tasks every 5 minutes.
 
-        Safe to call multiple times; subsequent calls are no-ops.
+        Safe to call multiple times; subsequent calls are thread-safe no-ops.
         """
-        if not self.running:
-            self.running = True
-            self.stop_event.clear()
-            self.synaptic_thread = threading.Thread(
-                target=self.update_synaptic_weights, 
-                daemon=True,
-                name="SynapticWeightsThread"
-            )
-            self.synaptic_thread.start()
-            self.proactive_thread = threading.Thread(
-                target=self.proactive_background_loop, 
-                daemon=True,
-                name="ProactiveThoughtThread"
-            )
-            self.proactive_thread.start()
+        with self._lock:
+            if not self.running:
+                self.running = True
+                self.stop_event.clear()
+                self.synaptic_thread = threading.Thread(
+                    target=self.update_synaptic_weights, 
+                    daemon=True,
+                    name="SynapticWeightsThread"
+                )
+                self.synaptic_thread.start()
+                self.proactive_thread = threading.Thread(
+                    target=self.proactive_background_loop, 
+                    daemon=True,
+                    name="ProactiveThoughtThread"
+                )
+                self.proactive_thread.start()
+                logger.info(
+                    "[THOUGHT_ENGINE] Daemons active — Baseline neurochemical state: DA=%.2f, COR=%.2f, ACh=%.2f",
+                    self.dopamine_level, self.cortisol_level, self.acetylcholine_level
+                )
 
     def stop(self, timeout: float = 2.0):
         """
