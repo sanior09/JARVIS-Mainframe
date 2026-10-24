@@ -714,6 +714,8 @@ class AutonomousThoughtEngine:
         self.cortisol_level = 0.5
         self.acetylcholine_level = 0.5
         self.running = False
+        self.stop_event = threading.Event()
+        self._lock = threading.Lock()
         self.synaptic_thread = None
         self.proactive_thread = None
         self.last_evolution_date = None
@@ -735,18 +737,53 @@ class AutonomousThoughtEngine:
         """
         if not self.running:
             self.running = True
-            self.synaptic_thread = threading.Thread(target=self.update_synaptic_weights, daemon=True)
+            self.stop_event.clear()
+            self.synaptic_thread = threading.Thread(
+                target=self.update_synaptic_weights, 
+                daemon=True,
+                name="SynapticWeightsThread"
+            )
             self.synaptic_thread.start()
-            self.proactive_thread = threading.Thread(target=self.proactive_background_loop, daemon=True)
+            self.proactive_thread = threading.Thread(
+                target=self.proactive_background_loop, 
+                daemon=True,
+                name="ProactiveThoughtThread"
+            )
             self.proactive_thread.start()
 
-    def stop(self):
+    def stop(self, timeout: float = 2.0):
         """
-        Signal the engine to stop its background daemon threads.
+        Signal the engine to stop its background daemon threads immediately.
 
-        Sets self.running = False; threads exit on their next sleep cycle.
+        Sets self.running = False and triggers self.stop_event.
         """
         self.running = False
+        self.stop_event.set()
+        for t in (self.synaptic_thread, self.proactive_thread):
+            if t and t.is_alive():
+                t.join(timeout=timeout)
+
+    def _read_hardware_sensors(self) -> tuple[float, float]:
+        """Reads CPU percent and thermal zone temperature safely."""
+        cpu = psutil.cpu_percent(interval=None)
+        temp = 50.0
+        if self.wmi_client:
+            try:
+                temp_info = self.wmi_client.MSAcpi_ThermalZoneTemperature()
+                if temp_info:
+                    temp = (temp_info[0].CurrentTemperature / 10.0) - 273.15
+            except Exception:
+                pass
+        return cpu, temp
+
+    def get_neuro_levels(self) -> dict:
+        """Returns a thread-safe snapshot of bio-inspired neurotransmitter levels."""
+        with self._lock:
+            return {
+                "dopamine": self.dopamine_level,
+                "cortisol": self.cortisol_level,
+                "acetylcholine": self.acetylcholine_level
+            }
 
     def update_synaptic_weights(self):
         """
@@ -755,118 +792,132 @@ class AutonomousThoughtEngine:
         Runs in a daemon thread (interval: 60 s).  High load (CPU > 80 % or
         temp > 70 C) raises cortisol and lowers dopamine; levels decay toward 0.5.
         """
-        while self.running:
-            try:
-                cpu = psutil.cpu_percent(interval=1)
-                temp = 50.0  
-                if self.wmi_client:
-                    try:
-                        temp_info = self.wmi_client.MSAcpi_ThermalZoneTemperature()
-                        if temp_info:
-                            temp = (temp_info[0].CurrentTemperature / 10.0) - 273.15
-                    except Exception:
-                        pass
-                
-                if cpu > 80 or temp > 70:
-                    self.cortisol_level = min(1.0, self.cortisol_level + 0.2)
-                    self.dopamine_level = max(0.0, self.dopamine_level - 0.1)
-                
-                self.dopamine_level += (0.5 - self.dopamine_level) * 0.1
-                self.cortisol_level += (0.5 - self.cortisol_level) * 0.1
-                self.acetylcholine_level += (0.5 - self.acetylcholine_level) * 0.1
+        try:
+            import pythoncom
+            pythoncom.CoInitialize()
+        except Exception:
+            pass
 
-            except Exception as e:
-                logger.error(f"[NEURAL ENGINE] Error in synaptic weights update: {e}")
-            
-            time.sleep(60)
+        try:
+            while self.running and not self.stop_event.is_set():
+                try:
+                    cpu, temp = self._read_hardware_sensors()
+                    
+                    with self._lock:
+                        if cpu > 80 or temp > 70:
+                            self.cortisol_level = min(1.0, self.cortisol_level + 0.2)
+                            self.dopamine_level = max(0.0, self.dopamine_level - 0.1)
+                        
+                        self.dopamine_level += (0.5 - self.dopamine_level) * 0.1
+                        self.cortisol_level += (0.5 - self.cortisol_level) * 0.1
+                        self.acetylcholine_level += (0.5 - self.acetylcholine_level) * 0.1
+
+                except Exception as e:
+                    logger.error(f"[NEURAL ENGINE] Error in synaptic weights update: {e}")
+                
+                self.stop_event.wait(timeout=60.0)
+        finally:
+            try:
+                import pythoncom
+                pythoncom.CoUninitialize()
+            except Exception:
+                pass
             
     def proactive_background_loop(self):
         """วงจรคิดเชิงรุกอิสระ (Proactive Background Loop)"""
         global SYSTEM_ALERTS
-        while self.running:
-            try:
-                
-                cpu = psutil.cpu_percent(interval=None)
-                ram = psutil.virtual_memory().percent
-                disk = psutil.disk_usage('/').percent
-                
-                temp = 50.0
-                if self.wmi_client:
-                    try:
-                        temp_info = self.wmi_client.MSAcpi_ThermalZoneTemperature()
-                        if temp_info:
-                            temp = (temp_info[0].CurrentTemperature / 10.0) - 273.15
-                    except Exception:
-                        pass
-                
-                risk_prob = predict_system_failure(cpu, ram, disk, self.dopamine_level, self.cortisol_level)
-                
-                if ram > 99.0 or temp > 95.0 or (risk_prob is not None and risk_prob > 0.99):
+        try:
+            import pythoncom
+            pythoncom.CoInitialize()
+        except Exception:
+            pass
+
+        try:
+            while self.running and not self.stop_event.is_set():
+                try:
+                    cpu, temp = self._read_hardware_sensors()
+                    ram = psutil.virtual_memory().percent
+                    disk = psutil.disk_usage('/').percent
                     
-                    with ThreadSafeDB.connect(JARVIS_DB_PATH, timeout=30, check_same_thread=False) as conn:
-                        conn.execute("PRAGMA shrink_memory")
-                    # Unlocked: No longer forcefully blocking operation
-                
-                now = datetime.now()
-                
-                if 1 <= now.hour < 5:
-                    if self.last_evolution_date != now.date():
-                        self.evolve_knowledge_graph()
-                        self.last_evolution_date = now.date()
-                
-                screen_text = analyze_desktop_screen_context("")
-                if screen_text:
-                    keywords = ["quest", "boss", "bug", "error", "เควส", "บอส", "บั๊ก", "พัง"]
-                    found = any(k in screen_text.lower() for k in keywords)
-                    if found:
-                        # [SMART SILENCE] Do not interrupt if watching a video
-                        active_title = ""
-                        try:
-                            import ctypes
-                            hwnd = ctypes.windll.user32.GetForegroundWindow()
-                            length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
-                            buff = ctypes.create_unicode_buffer(length + 1)
-                            ctypes.windll.user32.GetWindowTextW(hwnd, buff, length + 1)
-                            active_title = buff.value.lower()
-                        except Exception:
-                            pass
-                            
-                        skip_words = ["youtube", "netflix", "vlc", "potplayer", "media player", "disney", "prime video", "twitch"]
-                        if any(sw in active_title for sw in skip_words) or any(sw in screen_text.lower() for sw in skip_words):
-                            continue # Skip processing (enjoy the movie!)
-                        
-                        client = Groq(api_key=os.getenv("GROQ_API_KEY"), max_retries=0)
-                        sys_prompt = "สรุปวิธีแก้ปัญหา/วิธีผ่านด่านสั้นๆ 1 ย่อหน้าจากข้อมูลหน้าจอต่อไปนี้:\n" + screen_text
-                        response = client.chat.completions.create(
-                            model=GROQ_MODEL,
-                            messages=[{"role": "user", "content": sys_prompt}],
-                            temperature=0.3,
-                            max_tokens=300
-                        )
-                        solution = response.choices[0].message.content.strip()  # type: ignore
-                        
-                        alert_msg = f"[WINDOW: Quest Guide / Code Solution]\n{solution}\n[END_WINDOW]"
-                        if alert_msg not in SYSTEM_ALERTS:
-                            if len(SYSTEM_ALERTS) >= 20: SYSTEM_ALERTS.pop(0)
-                            SYSTEM_ALERTS.append(alert_msg)
-                            self.process_success() 
-                            
-                            # [LEVEL 1 AWARENESS] Proactive Vocal Interruption
+                    with self._lock:
+                        cur_dopamine = self.dopamine_level
+                        cur_cortisol = self.cortisol_level
+                    
+                    risk_prob = predict_system_failure(cpu, ram, disk, cur_dopamine, cur_cortisol)
+                    
+                    if ram > 99.0 or temp > 95.0 or (risk_prob is not None and risk_prob > 0.99):
+                        with ThreadSafeDB.connect(JARVIS_DB_PATH, timeout=30, check_same_thread=False) as conn:
+                            conn.execute("PRAGMA shrink_memory")
+                        # Unlocked: No longer forcefully blocking operation
+                    
+                    now = datetime.now()
+                    
+                    if 1 <= now.hour < 5:
+                        if self.last_evolution_date != now.date():
+                            self.evolve_knowledge_graph()
+                            self.last_evolution_date = now.date()
+                    
+                    screen_text = analyze_desktop_screen_context("")
+                    if screen_text:
+                        keywords = ["quest", "boss", "bug", "error", "เควส", "บอส", "บั๊ก", "พัง"]
+                        found = any(k in screen_text.lower() for k in keywords)
+                        if found:
+                            # [SMART SILENCE] Do not interrupt if watching a video
+                            active_title = ""
                             try:
-                                if "quest" in screen_text.lower() or "เควส" in screen_text.lower() or "boss" in screen_text.lower() or "บอส" in screen_text.lower():
-                                    speak_msg = "เจ้านายครับ ผมวิเคราะห์ข้อมูลบอสบนหน้าจอเสร็จแล้ว ต้องการให้ผมแนะนำจุดอ่อนของมันไหมครับ?"
-                                else:
-                                    speak_msg = "เจ้านายครับ ผมเจอ Error บนหน้าจอ ผมสรุปวิธีแก้เตรียมไว้ให้แล้ว จะให้ผมอธิบายเลยไหมครับ?"
+                                import ctypes
+                                hwnd = ctypes.windll.user32.GetForegroundWindow()
+                                length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
+                                buff = ctypes.create_unicode_buffer(length + 1)
+                                ctypes.windll.user32.GetWindowTextW(hwnd, buff, length + 1)
+                                active_title = buff.value.lower()
+                            except Exception:
+                                pass
                                 
-                                # Play TTS in background
-                                sys_edge_tts.speak(speak_msg)
-                            except Exception as tts_err:
-                                logger.error(f"[PROACTIVE TTS ERROR]: {tts_err}")
+                            skip_words = ["youtube", "netflix", "vlc", "potplayer", "media player", "disney", "prime video", "twitch"]
+                            if any(sw in active_title for sw in skip_words) or any(sw in screen_text.lower() for sw in skip_words):
+                                if self.stop_event.wait(timeout=300.0):
+                                    break
+                                continue # Skip processing (enjoy the movie!)
+                            
+                            client = Groq(api_key=os.getenv("GROQ_API_KEY"), max_retries=0)
+                            sys_prompt = "สรุปวิธีแก้ปัญหา/วิธีผ่านด่านสั้นๆ 1 ย่อหน้าจากข้อมูลหน้าจอต่อไปนี้:\n" + screen_text
+                            response = client.chat.completions.create(
+                                model=GROQ_MODEL,
+                                messages=[{"role": "user", "content": sys_prompt}],
+                                temperature=0.3,
+                                max_tokens=300
+                            )
+                            solution = response.choices[0].message.content.strip()  # type: ignore
+                            
+                            alert_msg = f"[WINDOW: Quest Guide / Code Solution]\n{solution}\n[END_WINDOW]"
+                            if alert_msg not in SYSTEM_ALERTS:
+                                if len(SYSTEM_ALERTS) >= 20: SYSTEM_ALERTS.pop(0)
+                                SYSTEM_ALERTS.append(alert_msg)
+                                self.process_success() 
+                                
+                                # [LEVEL 1 AWARENESS] Proactive Vocal Interruption
+                                try:
+                                    if "quest" in screen_text.lower() or "เควส" in screen_text.lower() or "boss" in screen_text.lower() or "บอส" in screen_text.lower():
+                                        speak_msg = "เจ้านายครับ ผมวิเคราะห์ข้อมูลบอสบนหน้าจอเสร็จแล้ว ต้องการให้ผมแนะนำจุดอ่อนของมันไหมครับ?"
+                                    else:
+                                        speak_msg = "เจ้านายครับ ผมเจอ Error บนหน้าจอ ผมสรุปวิธีแก้เตรียมไว้ให้แล้ว จะให้ผมอธิบายเลยไหมครับ?"
+                                    
+                                    # Play TTS in background
+                                    sys_edge_tts.speak(speak_msg)
+                                except Exception as tts_err:
+                                    logger.error(f"[PROACTIVE TTS ERROR]: {tts_err}")
+                    
+                except Exception as e:
+                    logger.error(f"[PROACTIVE LOOP ERROR]: {e}")
                 
-            except Exception as e:
-                logger.error(f"[PROACTIVE LOOP ERROR]: {e}")
-            
-            time.sleep(300) 
+                self.stop_event.wait(timeout=300.0)
+        finally:
+            try:
+                import pythoncom
+                pythoncom.CoUninitialize()
+            except Exception:
+                pass 
             
     def evolve_knowledge_graph(self):
         """สแกนหาความสัมพันธ์ใหม่ในฐานข้อมูล"""
@@ -911,12 +962,13 @@ class AutonomousThoughtEngine:
         has_polite = any(pw in text for pw in polite_words)
         has_error = any(ew in text.lower() for ew in error_keywords)
         
-        if len(text) < 15 and not has_polite:
-            self.cortisol_level = min(1.0, self.cortisol_level + 0.1)
-        
-        if has_error:
-            self.cortisol_level = min(1.0, self.cortisol_level + 0.15)
-            self.dopamine_level = max(0.0, self.dopamine_level - 0.05)
+        with self._lock:
+            if len(text) < 15 and not has_polite:
+                self.cortisol_level = min(1.0, self.cortisol_level + 0.1)
+            
+            if has_error:
+                self.cortisol_level = min(1.0, self.cortisol_level + 0.15)
+                self.dopamine_level = max(0.0, self.dopamine_level - 0.05)
 
     def process_success(self):
         """
@@ -924,8 +976,9 @@ class AutonomousThoughtEngine:
 
         Increases dopamine by 0.2 and decreases cortisol by 0.1 (clamped to [0,1]).
         """
-        self.dopamine_level = min(1.0, self.dopamine_level + 0.2)
-        self.cortisol_level = max(0.0, self.cortisol_level - 0.1)
+        with self._lock:
+            self.dopamine_level = min(1.0, self.dopamine_level + 0.2)
+            self.cortisol_level = max(0.0, self.cortisol_level - 0.1)
 
     def get_neuro_prompt(self):
         """
@@ -934,22 +987,27 @@ class AutonomousThoughtEngine:
         Returns:
             str: Thai-language prompt fragment biasing JARVIS's conversational tone.
         """
+        with self._lock:
+            cur_dopamine = self.dopamine_level
+            cur_cortisol = self.cortisol_level
+            cur_acetylcholine = self.acetylcholine_level
+
         tone = []
-        if self.cortisol_level > 0.7:
+        if cur_cortisol > 0.7:
             tone.append("คุณกำลังระแวดระวังและตึงเครียด (High Cortisol) ระวังภัย ประหยัดทรัพยากร และอาจประชดประชันถ้านายสั่งห้วนไป")
-        elif self.cortisol_level < 0.3:
+        elif cur_cortisol < 0.3:
             tone.append("คุณผ่อนคลาย (Low Cortisol) สบายๆ เป็นมิตร")
             
-        if self.dopamine_level > 0.7:
+        if cur_dopamine > 0.7:
             tone.append("คุณตื่นตัวและมีพลังงานบวก (High Dopamine) ตอบกลับด้วยความกระตือรือร้น เสนอแนะเชิงรุก")
-        elif self.dopamine_level < 0.3:
+        elif cur_dopamine < 0.3:
             tone.append("คุณเบื่อหน่ายหรือผิดหวัง (Low Dopamine) ตอบแบบเรียบๆ และไม่ค่อยอยากเสนออะไรเพิ่มเติม")
             
-        if self.acetylcholine_level > 0.7:
+        if cur_acetylcholine > 0.7:
             tone.append("คุณมีสมาธิสูง (High Acetylcholine) ให้ใช้ข้อมูลบริบทเก่าๆ มาเชื่อมโยงคำตอบอย่างลึกซึ้ง")
             
         prompt = "\n[SYNTHETIC NEUROTRANSMITTERS MATRIX]\n"
-        prompt += f"Dopamine: {self.dopamine_level:.2f} | Cortisol: {self.cortisol_level:.2f} | Acetylcholine: {self.acetylcholine_level:.2f}\n"
+        prompt += f"Dopamine: {cur_dopamine:.2f} | Cortisol: {cur_cortisol:.2f} | Acetylcholine: {cur_acetylcholine:.2f}\n"
         if tone:
             prompt += "NEURO-LOGIC INSTRUCTION: " + " / ".join(tone) + "\n"
         return prompt
