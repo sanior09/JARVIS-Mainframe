@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
 [![Architecture](https://img.shields.io/badge/Architecture-Autonomous%20AGI-107C41?style=for-the-badge)](web/jarvis_architecture.html)
 [![AI Council](https://img.shields.io/badge/AI%20Council-6%20Personas%20Quorum-8A2BE2?style=for-the-badge)](#ai-council)
-[![Agentic Skills](https://img.shields.io/badge/Agentic%20Skills-5%20Protocols-4A90E2?style=for-the-badge)](#skills-ecosystem)
+[![Agentic Skills](https://img.shields.io/badge/Agentic%20Skills-12%20Protocols-4A90E2?style=for-the-badge)](#skills-ecosystem)
 [![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE-00C4B4?style=for-the-badge)](#)
 
 ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
@@ -226,12 +226,29 @@ npx expo start
 
 <a id="skills-ecosystem"></a>
 ### 🧩 9. Agentic Skills Ecosystem (`.agents/skills/`)
-สถาปัตยกรรมคลังทักษะ Agentic เฉพาะทาง (Specialized Agentic Standards & Protocols) ที่ยกระดับ J.A.R.V.I.S. ให้ปฏิบัติงานและพัฒนาซอฟต์แวร์ได้อย่างไร้ข้อผิดพลาดตามมาตรฐานวิศวกรรมสากล:
-- **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop ขั้นสูง, การจำลอง Win32 Input, พิกัดหน้าจอ Multi-Monitor และ Failsafe Emergency Abort
-- **[`human-grade-web-designer`](.agents/skills/human-grade-web-designer/SKILL.md):** มาตรฐาน UI/UX ชั้นครู ฉีกกรอบดีไซน์แบบ AI Template ซ้ำซาก เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
+*(คลัง 12 เสาหลักทักษะ Agentic แห่ง Nachapol Industries — The 12 Flagship Protocols)*
+
+สถาปัตยกรรมคลังทักษะเฉพาะทางระดับวิศวกรรมการบินและอวกาศ ที่ยกระดับ J.A.R.V.I.S. ให้ปฏิบัติการ ควบคุมระบบ และสร้างสรรค์ซอฟต์แวร์ได้อย่างแม่นยำ ไร้ข้อผิดพลาดตามมาตรฐานสูงสุด:
+
+#### ⚡ 1. System Core & Architecture
 - **[`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md):** โครงสร้างมาตรฐานในการขยายฟังก์ชันและโมดูลใหม่ของ J.A.R.V.I.S. โดยรักษาสถาปัตยกรรมแบบ Decoupled และป้องกันไฟล์หลักบวม
-- **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** กฎเหล็กควบคุม Thread Safety, การใช้ Mutex Lock, Zero-Delay Shutdown Events และ Windows COM Multi-threading
-- **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลองฮาร์ดแวร์ (WMI, Audio, Camera) และ External APIs ให้ทดสอบได้ 100% ทุกสภาพแวดล้อม
+- **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** กฎเหล็กควบคุม Thread Safety, Mutex Locks, Zero-Delay Shutdown Events (`stop_event`) และ Windows COM Multi-threading
+- **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลองฮาร์ดแวร์ (WMI, Audio, Camera) และ External APIs ทดสอบได้ 100% ทุกสภาพแวดล้อม
+- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 6 ขุนพลสมองกล (Parallel ThreadPool, Selective Quorum, และ Tree of Thoughts Consensus)
+
+#### 🛡️ 2. Autonomous Operations & Cybersecurity
+- **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop ขั้นสูง, การจำลอง Win32 Input, พิกัดหน้าจอ Multi-Monitor และ Failsafe Emergency Abort
+- **[`autonomous-self-healer`](.agents/skills/autonomous-self-healer/SKILL.md):** การวินิจฉัย Stack Trace อัตโนมัติ, ตรวจสอบไวยากรณ์ด้วย AST, Hot-Patching สดในหน่วยความจำ และระบบ Rollback ไร้ Downtime
+- **[`cyber-recon-spectre`](.agents/skills/cyber-recon-spectre/SKILL.md):** การตรวจสอบความปลอดภัยไซเบอร์เชิงรุก, Passive Port Scanning, วิเคราะห์คลื่น Wi-Fi และสลับสู่ Local Uncensored Dark Mode อัตโนมัติ
+
+#### 👁️ 3. Sensory, Voice & Holographic Vision
+- **[`neural-audio-dsp`](.agents/skills/neural-audio-dsp/SKILL.md):** การประมวลผลเสียง Real-Time VAD Barge-In ตัดเสียงแทรกใน 50ms, Microsoft Edge Neural TTS และ WebSocket STT Streaming
+- **[`holographic-gesture-vision`](.agents/skills/holographic-gesture-vision/SKILL.md):** ระบบประมวลผลภาพ Spatial Vision 3D Hand Tracking ผ่าน MediaPipe, เรนเดอร์ 3D Wireframe และตรวจจับรอยต่อแผ่นวงจร (PCB)
+- **[`human-grade-web-designer`](.agents/skills/human-grade-web-designer/SKILL.md):** มาตรฐาน UI/UX ชั้นครู ฉีกกรอบดีไซน์แบบ AI Template ซ้ำซาก เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
+
+#### 🌐 4. Ambient & Living-Room Infrastructure
+- **[`iot-home-nexus`](.agents/skills/iot-home-nexus/SKILL.md):** การบูรณาการอุปกรณ์ Smart Home ผ่าน Home Assistant REST/WebSocket, ESP32 Microcontrollers และการแคชสถานะอุปกรณ์แบบ Zero-Latency
+- **[`smart-tv-adb-controller`](.agents/skills/smart-tv-adb-controller/SKILL.md):** การควบคุม Android TV / Google TV ผ่าน Wi-Fi ADB ไร้สาย, ปลดระวาง Bloatware และติดตั้ง Clean Apple TV-style Launcher
 
 ---
 
