@@ -19,7 +19,7 @@ from jarvis_core.ai_router import call_nachapol_core
 logger = logging.getLogger("JARVIS.Swarm")
 
 class SwarmAgent:
-    def __init__(self, name: str, codename: str, system_prompt: str, role_description: str, avatar_color: str = "#00c8ff"):
+    def __init__(self, name: str, codename: str, system_prompt: str, role_description: str, avatar_color: str = "#ffd700"):
         self.name = name
         self.codename = codename
         self.system_prompt = system_prompt
@@ -58,7 +58,7 @@ friday_agent = SwarmAgent(
         "Answer in Thai unless generating code."
     ),
     role_description="Socialization AI, Humor & Tactical Ops Specialist",
-    avatar_color="#ffeb3b"
+    avatar_color="#00c8ff"
 )
 
 veronica_agent = SwarmAgent(

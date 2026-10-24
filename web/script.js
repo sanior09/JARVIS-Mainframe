@@ -3276,7 +3276,7 @@ function openAgentOfficeWindow() {
         activeAgents.push(new JarvisAgentNode('cli', 'TERMINAL CORE', '#e91e63', 'cli'));
         activeAgents.push(new JarvisAgentNode('os', 'OS KERNEL', '#00e5ff', 'os'));
         activeAgents.push(new JarvisAgentNode('code', 'CODE ENGINE', '#4caf50', 'code'));
-        activeAgents.push(new JarvisAgentNode('friday', 'F.R.I.D.A.Y.', '#ffeb3b', 'friday'));
+        activeAgents.push(new JarvisAgentNode('friday', 'F.R.I.D.A.Y.', '#00c8ff', 'friday'));
         activeAgents.push(new JarvisAgentNode('veronica', 'VERONICA', '#d32f2f', 'veronica'));
         activeAgents.push(new JarvisAgentNode('edith', 'E.D.I.T.H.', '#00e5ff', 'edith'));
         activeAgents.push(new JarvisAgentNode('u', 'U. (YOU)', '#00ff88', 'u'));
