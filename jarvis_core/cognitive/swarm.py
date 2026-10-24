@@ -83,7 +83,7 @@ edith_agent = SwarmAgent(
         "Keep your response razor-sharp, analytical, and tactical. Answer in Thai."
     ),
     role_description="Recreational AI, Game Theory & Strategic Decision Specialist",
-    avatar_color="#00e5ff"
+    avatar_color="#a855f7"
 )
 
 u_agent = SwarmAgent(
