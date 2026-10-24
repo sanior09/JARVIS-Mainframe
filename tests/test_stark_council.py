@@ -1,5 +1,5 @@
 """
-Unit tests for the upgraded Stark Industries Multi-Agent Swarm Council.
+Unit tests for the upgraded Nachapol Industries Multi-Agent Swarm Council.
 Verifies the full 5-AI canonical pantheon and concurrent ThreadPool debate execution.
 """
 import pytest
@@ -16,7 +16,7 @@ from jarvis_core.cognitive.swarm import (
 
 
 def test_canonical_swarm_pantheon_members():
-    """Verify all 5 canonical Stark AI agents exist with their official specs."""
+    """Verify all 5 canonical Nachapol AI agents exist with their official specs."""
     council = AgentCouncil()
     assert "friday" in council.agents
     assert "veronica" in council.agents
@@ -32,7 +32,7 @@ def test_canonical_swarm_pantheon_members():
 
 
 def test_swarm_agent_roles():
-    """Verify official roles matching Stark Industries specifications."""
+    """Verify official roles matching Nachapol Industries specifications."""
     assert "Tactical Ops" in friday_agent.role_description
     assert "Sentinel" in veronica_agent.role_description
     assert "Game Theory" in edith_agent.role_description

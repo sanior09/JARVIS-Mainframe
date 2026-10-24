@@ -12,17 +12,18 @@
 ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
 
 <p align="center">
-  <a href="#-system-architecture-blueprint-5-stage-pipeline">⚡ Architecture</a> •
+  <a href="#architecture">⚡ Architecture</a> •
   <a href="#ai-council">🏛️ AI Council</a> •
-  <a href="#-quick-start-nachapol-protocol">🚀 Quick Start</a> •
-  <a href="#️-1-dynamic-island-desktop-hud-v3">🏝️ Dynamic Island</a> •
-  <a href="#-2-jarvis-mobile-companion-app-react-native--expo-go">📱 Mobile App</a> •
+  <a href="#quick-start">🚀 Quick Start</a> •
+  <a href="#dynamic-island">🏝️ Dynamic Island</a> •
+  <a href="#mobile-app">📱 Mobile App</a> •
   <a href="#skills-ecosystem">🧩 Skills Ecosystem</a> •
-  <a href="#-บันทึกจากผู้พัฒนา-developers-note">📝 Dev Note</a>
+  <a href="#dev-note">📝 Dev Note</a>
 </p>
 
 ---
 
+<a id="architecture"></a>
 ## ⚡ System Architecture Blueprint (5-Stage Pipeline)
 สามารถดับเบิลคลิกเปิดไฟล์ **[`jarvis_architecture.html`](web/jarvis_architecture.html)** ในเว็บเบราว์เซอร์ เพื่อสำรวจแผนผังการทำงานของระบบแบบอินเทอร์แอคทีฟ (Zero-Overlap Pipeline Model):
 
@@ -51,6 +52,7 @@
 
 ---
 
+<a id="quick-start"></a>
 ## 🚀 Quick Start (Nachapol Protocol)
 
 ### 1. เตรียม Mainframe และ Local LLM (Ollama)
@@ -91,6 +93,7 @@ GROQ_MODEL=llama-3.3-70b-versatile
 GROQ_FAST_MODEL=qwen/qwen3.8-27b
 GROQ_STT_MODEL=whisper-large-v3
 GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash
 OLLAMA_MODEL=qwen2.5:1.5b
 
 # Smart Home & IoT (Home Assistant)
@@ -138,6 +141,7 @@ python jarvis.py
 
 ## 🖥️ Companion Clients & Interface
 
+<a id="dynamic-island"></a>
 ### 🏝️ 1. Dynamic Island Desktop HUD v3
 แผงหน้าปัดลอยตัวสไตล์ Cyberpunk บนหน้าจอ Windows พร้อมแอนิเมชัน Glassmorphism:
 
@@ -155,6 +159,7 @@ python modules/dynamic_island.py
 - **AI Quota Gauge:** แสดงแถบสถานะโควตา API (Groq, Gemini, Ollama) แบบเรียลไทม์
 - **Zero-Latency Named Pipe:** เชื่อมต่อกับคอร์ J.A.R.V.I.S. ผ่าน `\\.\pipe\jarvis_island_pipe`
 
+<a id="mobile-app"></a>
 ### 📱 2. JARVIS Mobile Companion App (React Native / Expo Go)
 ควบคุมและสั่งการ J.A.R.V.I.S. จากระยะไกลผ่านสมาร์ตโฟน:
 ```bash
@@ -222,11 +227,11 @@ npx expo start
 <a id="skills-ecosystem"></a>
 ### 🧩 9. Agentic Skills Ecosystem (`.agents/skills/`)
 สถาปัตยกรรมคลังทักษะ Agentic เฉพาะทาง (Specialized Agentic Standards & Protocols) ที่ยกระดับ J.A.R.V.I.S. ให้ปฏิบัติงานและพัฒนาซอฟต์แวร์ได้อย่างไร้ข้อผิดพลาดตามมาตรฐานวิศวกรรมสากล:
-- **`computer-use-controller`:** มาตรฐานการควบคุม OS Desktop ขั้นสูง, การจำลอง Win32 Input, พิกัดหน้าจอ Multi-Monitor และ Failsafe Emergency Abort
-- **`human-grade-web-designer`:** มาตรฐาน UI/UX ชั้นครู ฉีกกรอบดีไซน์แบบ AI Template ซ้ำซาก เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
-- **`jarvis-module-scaffolder`:** โครงสร้างมาตรฐานในการขยายฟังก์ชันและโมดูลใหม่ของ J.A.R.V.I.S. โดยรักษาสถาปัตยกรรมแบบ Decoupled และป้องกันไฟล์หลักบวม
-- **`python-concurrency-guardian`:** กฎเหล็กควบคุม Thread Safety, การใช้ Mutex Lock, Zero-Delay Shutdown Events และ Windows COM Multi-threading
-- **`pytest-mock-master`:** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลองฮาร์ดแวร์ (WMI, Audio, Camera) และ External APIs ให้ทดสอบได้ 100% ทุกสภาพแวดล้อม
+- **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop ขั้นสูง, การจำลอง Win32 Input, พิกัดหน้าจอ Multi-Monitor และ Failsafe Emergency Abort
+- **[`human-grade-web-designer`](.agents/skills/human-grade-web-designer/SKILL.md):** มาตรฐาน UI/UX ชั้นครู ฉีกกรอบดีไซน์แบบ AI Template ซ้ำซาก เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
+- **[`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md):** โครงสร้างมาตรฐานในการขยายฟังก์ชันและโมดูลใหม่ของ J.A.R.V.I.S. โดยรักษาสถาปัตยกรรมแบบ Decoupled และป้องกันไฟล์หลักบวม
+- **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** กฎเหล็กควบคุม Thread Safety, การใช้ Mutex Lock, Zero-Delay Shutdown Events และ Windows COM Multi-threading
+- **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลองฮาร์ดแวร์ (WMI, Audio, Camera) และ External APIs ให้ทดสอบได้ 100% ทุกสภาพแวดล้อม
 
 ---
 
@@ -257,6 +262,7 @@ npx expo start
 
 ---
 
+<a id="dev-note"></a>
 ## 📝 บันทึกจากผู้พัฒนา (Developer's Note)
 
 > *"โปรเจกต์นี้เริ่มต้นขึ้นจากการสร้างผู้ช่วยส่วนตัวไว้ใช้งานจริงในชีวิตประจำวันของผมเอง ฟังก์ชันและการตั้งค่าบางส่วนจึงถูกออกแบบมาให้ตอบโจทย์กับเครื่องคอมพิวเตอร์และสภาพแวดล้อมส่วนตัวของผมเป็นหลัก*
