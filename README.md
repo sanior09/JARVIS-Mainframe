@@ -1,25 +1,39 @@
-# J.A.R.V.I.S. Neural Matrix (Super AGI Edition)
-**Nachapol Industries Advanced Intelligence System**
+<div align="center">
+
+# ⚡ J.A.R.V.I.S. // NEURAL MATRIX ⚡
+### *Nachapol Industries Advanced Super AGI Mainframe*
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
+[![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE%2024%2F7-00C4B4?style=for-the-badge)](#)
+
 [![Architecture](https://img.shields.io/badge/Architecture-Autonomous%20AGI-107C41?style=for-the-badge)](web/jarvis_architecture.html)
 [![AI Council](https://img.shields.io/badge/AI%20Council-6%20Personas%20Quorum-8A2BE2?style=for-the-badge)](#ai-council)
 [![Agentic Skills](https://img.shields.io/badge/Agentic%20Skills-12%20Protocols-4A90E2?style=for-the-badge)](#skills-ecosystem)
-[![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE-00C4B4?style=for-the-badge)](#)
-
-ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง ที่ออกแบบมาเพื่อการทำงานครอบคลุมตั้งแต่วิศวกรรมซอฟต์แวร์, การควบคุมระบบปฏิบัติการ Windows แบบอัตโนมัติ, ระบบ Dynamic Island Desktop HUD, แอปพลิเคชันมือถือ Mobile Companion, ไปจนถึง 3D Holographic, Multi-LLM Quota Governance และ Autonomous Cognitive Evolution
+[![Local Engine](https://img.shields.io/badge/Local%20Engine-Ollama%20Uncensored-FF4081?style=for-the-badge)](https://ollama.ai/)
 
 <p align="center">
-  <a href="#architecture">⚡ Architecture</a> •
-  <a href="#ai-council">🏛️ AI Council</a> •
-  <a href="#quick-start">🚀 Quick Start</a> •
-  <a href="#dynamic-island">🏝️ Dynamic Island</a> •
-  <a href="#mobile-app">📱 Mobile App</a> •
-  <a href="#skills-ecosystem">🧩 Skills Ecosystem</a> •
-  <a href="#dev-note">📝 Dev Note</a>
+  <b>ระบบผู้ช่วยอัจฉริยะแบบ AGI (Artificial General Intelligence) ระดับสูง</b><br>
+  ครอบคลุมวิศวกรรมซอฟต์แวร์ • ควบคุมระบบปฏิบัติการ Windows อัตโนมัติ • Dynamic Island Desktop HUD • Mobile Companion<br>
+  3D Holographic Gestures • Multi-LLM Quota Governance • Autonomous Cognitive Evolution
 </p>
+
+<p align="center">
+  <a href="#architecture"><b>⚡ Architecture</b></a> •
+  <a href="#ai-council"><b>🏛️ AI Council</b></a> •
+  <a href="#quick-start"><b>🚀 Quick Start</b></a> •
+  <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
+  <a href="#mobile-app"><b>📱 Mobile App</b></a> •
+  <a href="#skills-ecosystem"><b>🧩 Skills Ecosystem</b></a> •
+  <a href="#dev-note"><b>📝 Dev Note</b></a>
+</p>
+
+| แกนประมวลผล (Core) | สถาปัตยกรรม (Architecture) | สภาสมองกล (Swarm Quorum) | ความเร็วตอบสนอง (Latency) | ระบบปฏิบัติการ (OS Support) |
+| :---: | :---: | :---: | :---: | :---: |
+| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `6 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
+
+</div>
 
 ---
 
@@ -41,14 +55,15 @@
 
 | สมาชิกสภา | สีโหนด HUD | สเปกและหน้าที่หลัก (Official Specs) | ขอบเขตความเชี่ยวชาญ |
 | :---: | :---: | :--- | :--- |
-| 👔 **J.A.R.V.I.S.** | `#00c8ff` | **Council President**<br>• `Security AI`<br>• `Housekeeping`<br>• `Encryption` | ประธานสภา สังเคราะห์มุมมองของทุกฝ่ายด้วย British dry wit กำกับทิศทาง และวางแผนแม่บท (Master Directive) |
-| 👠 **F.R.I.D.A.Y.** | `#ffeb3b` | **Socialization & Tactical Ops**<br>• `Socialization AI`<br>• `Humor`<br>• `Tactical Ops` | นักสร้างสรรค์ ไหวพริบปฏิภาณ ออกแบบสถาปัตยกรรมโค้ด ไวยากรณ์ Python การคำนวณวงจรและคณิตศาสตร์ |
-| 🛡️ **V.E.R.O.N.I.C.A.** | `#d32f2f` | **Tactical Sentinel**<br>• `System Safety`<br>• `Resource Limits`<br>• `Defensive Check` | ผู้พิทักษ์ยุทธวิธี ตรวจจับช่องโหว่ความปลอดภัย ควบคุมเพดาน RAM/CPU ป้องกันระบบโอเวอร์โหลด |
-| 🕶️ **E.D.I.T.H.** | `#00e5ff` | **Strategic Intelligence**<br>• `Recreational AI`<br>• `Game Theory`<br>• `Weapons / Threat Recon` | มันสมองกลยุทธ์ วิเคราะห์ทฤษฎีเกม (Game Theory) คาดการณ์ความเสี่ยงหลายชั้น และคำนวณแต้มต่อสูงสุด |
-| 🔧 **U. (ยู)** | `#00ff88` | **Maintenance & Perception**<br>• `General Maintenance AI`<br>• `Defragger`<br>• `Video Analyzer` | สายตาและการบำรุงรักษา วิเคราะห์ภาพบนหน้าจอ (`analyze_desktop_screen_context`), Defrag SQLite และเคลียร์แคช |
-| 🧯 **D.U.M.-E. (ดัม-อี)** | `#ff9800` | **Servo & Safeguard**<br>• `General Maintenance AI`<br>• `Limb Servo Control`<br>• `Fire Suppression` | แขนกลควบคุมระบบ ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อน/ดับเพลิงฉุกเฉิน |
+| 👔 **J.A.R.V.I.S.** | [![#00c8ff](https://img.shields.io/badge/%2300c8ff-00c8ff?style=flat-square)](#) | **Council President**<br>• `Security AI`<br>• `Housekeeping`<br>• `Encryption` | ประธานสภา สังเคราะห์มุมมองของทุกฝ่ายด้วย British dry wit กำกับทิศทาง และวางแผนแม่บท (Master Directive) |
+| 👠 **F.R.I.D.A.Y.** | [![#ffeb3b](https://img.shields.io/badge/%23ffeb3b-ffeb3b?style=flat-square&labelColor=333333)](#) | **Socialization & Tactical Ops**<br>• `Socialization AI`<br>• `Humor`<br>• `Tactical Ops` | นักสร้างสรรค์ ไหวพริบปฏิภาณ ออกแบบสถาปัตยกรรมโค้ด ไวยากรณ์ Python การคำนวณวงจรและคณิตศาสตร์ |
+| 🛡️ **V.E.R.O.N.I.C.A.** | [![#d32f2f](https://img.shields.io/badge/%23d32f2f-d32f2f?style=flat-square)](#) | **Tactical Sentinel**<br>• `System Safety`<br>• `Resource Limits`<br>• `Defensive Check` | ผู้พิทักษ์ยุทธวิธี ตรวจจับช่องโหว่ความปลอดภัย ควบคุมเพดาน RAM/CPU ป้องกันระบบโอเวอร์โหลด |
+| 🕶️ **E.D.I.T.H.** | [![#00e5ff](https://img.shields.io/badge/%2300e5ff-00e5ff?style=flat-square)](#) | **Strategic Intelligence**<br>• `Recreational AI`<br>• `Game Theory`<br>• `Weapons / Threat Recon` | มันสมองกลยุทธ์ วิเคราะห์ทฤษฎีเกม (Game Theory) คาดการณ์ความเสี่ยงหลายชั้น และคำนวณแต้มต่อสูงสุด |
+| 🔧 **U. (ยู)** | [![#00ff88](https://img.shields.io/badge/%2300ff88-00ff88?style=flat-square&labelColor=333333)](#) | **Maintenance & Perception**<br>• `General Maintenance AI`<br>• `Defragger`<br>• `Video Analyzer` | สายตาและการบำรุงรักษา วิเคราะห์ภาพบนหน้าจอ (`analyze_desktop_screen_context`), Defrag SQLite และเคลียร์แคช |
+| 🧯 **D.U.M.-E. (ดัม-อี)** | [![#ff9800](https://img.shields.io/badge/%23ff9800-ff9800?style=flat-square)](#) | **Servo & Safeguard**<br>• `General Maintenance AI`<br>• `Limb Servo Control`<br>• `Fire Suppression` | แขนกลควบคุมระบบ ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อน/ดับเพลิงฉุกเฉิน |
 
-> ⚡ **Ultra-Low Latency Concurrency:** ด้วยสถาปัตยกรรม `ThreadPoolExecutor` การประชุมสภาขุนพลดำเนินไปพร้อมกันแบบคู่ขนาน (Parallel Execution) ทำให้เวลาในการอภิปรายเสร็จสิ้นภายใน **~1 วินาที** (ลดลงจากระบบเดิมที่คิดทีละคนถึง 80%) พร้อมรองรับ **Selective Quorum** เลือกระดมพลเฉพาะตัวที่ตรงกับโจทย์ได้
+> [!TIP]
+> **Ultra-Low Latency Concurrency:** ด้วยสถาปัตยกรรม `ThreadPoolExecutor` การประชุมสภาขุนพลดำเนินไปพร้อมกันแบบคู่ขนาน (Parallel Execution) ทำให้เวลาในการอภิปรายเสร็จสิ้นภายใน **~1 วินาที** (ลดลงจากระบบเดิมที่คิดทีละคนถึง 80%) พร้อมรองรับ **Selective Quorum** เลือกระดมพลเฉพาะตัวที่ตรงกับโจทย์ได้
 
 ---
 
@@ -116,7 +131,8 @@ DEEPGRAM_API_KEY=your_deepgram_key
 OWNER_NAME=Sir
 COMPUTER_CONTROL_MODE=background
 ```
-> 💡 **การปรับแต่งข้อมูลผู้ใช้งาน (Personalization):**  
+> [!NOTE]
+> **การปรับแต่งข้อมูลผู้ใช้งาน (Personalization):**  
 > สามารถกำหนดชื่อที่ต้องการให้ J.A.R.V.I.S. เรียกขานท่านได้ใน `.env` ที่ตัวแปร `OWNER_NAME` (เช่น `OWNER_NAME=เจ้านาย` หรือ `OWNER_NAME=Sir`)
 
 ### 4. เริ่มปฏิบัติการระบบ (System Execution)
@@ -126,7 +142,8 @@ COMPUTER_CONTROL_MODE=background
 ```cmd
 run_jarvis.bat
 ```
-*ระบบจะตรวจสอบสภาพแวดล้อม Python, ติดตั้งโมดูลที่ขาดอัตโนมัติ, สตาร์ท `agent_windows_core.py` ในเบื้องหลัง และรันผ่าน **`jarvis_watchdog.py`** เพื่อเฝ้าระวังและกู้คืนระบบแบบ 24/7 Auto-Recovery*
+> [!IMPORTANT]
+> **24/7 Watchdog Supervisor:** สคริปต์จะตรวจสอบสภาพแวดล้อม Python, ติดตั้งโมดูลที่ขาดอัตโนมัติ, สตาร์ท `agent_windows_core.py` ในเบื้องหลัง และรันผ่าน **`jarvis_watchdog.py`** เพื่อเฝ้าระวังและกู้คืนระบบแบบ Auto-Recovery ตลอดเวลา
 
 #### ⚪ ตัวเลือกที่ 2: รันแบบ Manual
 ```bash
@@ -282,6 +299,7 @@ npx expo start
 <a id="dev-note"></a>
 ## 📝 บันทึกจากผู้พัฒนา (Developer's Note)
 
+> [!NOTE]
 > *"โปรเจกต์นี้เริ่มต้นขึ้นจากการสร้างผู้ช่วยส่วนตัวไว้ใช้งานจริงในชีวิตประจำวันของผมเอง ฟังก์ชันและการตั้งค่าบางส่วนจึงถูกออกแบบมาให้ตอบโจทย์กับเครื่องคอมพิวเตอร์และสภาพแวดล้อมส่วนตัวของผมเป็นหลัก*
 >
 > *นอกจากนี้ คอมพิวเตอร์ที่ผมใช้พัฒนายังเป็นเครื่องสเปกทั่วไปที่ไม่ได้แรงมาก หลายโมดูลจึงถูกปรับจูน (Optimize) ให้เน้นประหยัดทรัพยากรที่สุด หากเพื่อนๆ นักพัฒนาท่านใดนำไปใช้ แล้วมีฮาร์ดแวร์หรือ GPU ที่แรงกว่า หรืออยากปรับปรุง/อัปเกรดระบบส่วนไหนให้ทรงพลังยิ่งขึ้น **สามารถ Fork, ดัดแปลง หรือสร้าง Pull Request เพื่อพัฒนาต่อยอดได้เต็มที่ตามสบายเลยครับ!**"*
@@ -302,4 +320,7 @@ npx expo start
 ## 📜 License
 This project is open-source under the [MIT License](LICENSE).
 
-*Developed & Architected by Nachapol Industries*
+<br>
+<div align="center">
+  <sub>Architected & Engineered with precision by <b>Nachapol Industries</b> • Mainframe Operational Status: <b>100.0% OPTIMAL</b></sub>
+</div>
