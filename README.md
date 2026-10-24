@@ -53,11 +53,28 @@
 
 ## 🚀 Quick Start (Nachapol Protocol)
 
-### 1. เตรียม Mainframe และ Local LLM
-ติดตั้ง [Ollama](https://ollama.ai/) และดาวน์โหลดโมเดลพื้นฐานสำหรับงาน Local / Uncensored:
-```bash
-ollama pull qwen2.5:1.5b
-```
+### 1. เตรียม Mainframe และ Local LLM (Ollama)
+J.A.R.V.I.S. ขับเคลื่อนด้วยสมองหลักจาก **Cloud Neural Engine (Groq: Llama 3.3 70B / Qwen 27B และ Google Gemini 2.5 Flash)** ซึ่งประมวลผลผ่าน API ความเร็วสูง โดยไม่ต้องดาวน์โหลดไฟล์โมเดลหนักเครื่อง
+
+อย่างไรก็ตาม สำหรับ **โหมดออฟไลน์ (Offline Fallback), เฝ้าระวังจิตใต้สำนึก (Subconscious Engine)** และ **Uncensored Dark Mode (ความปลอดภัยไซเบอร์)** ให้ติดตั้ง [Ollama](https://ollama.ai/) และเลือกดึงโมเดลตามระดับฮาร์ดแวร์ของท่าน:
+
+- **🟢 ระดับเริ่มต้น (ประหยัดทรัพยากรสูงสุด):**
+  ```bash
+  ollama pull qwen2.5:1.5b
+  ```
+  *(ขนาดเบาเพียง ~1 GB กิน RAM น้อยมาก เหมาะกับคอมพิวเตอร์สเปกทั่วไปเพื่อตอบสนอง Reflex ทันใจ)*
+
+- **🔴 สาย Ethical Pentest & Cybersecurity (Uncensored Dark Mode):**
+  ```bash
+  ollama pull dolphin-llama3
+  ```
+  *(โมเดลปลดล็อก Guardrail สำหรับเจาะระบบเชิงจริยธรรม, แกะรอยมัลแวร์ และงานด้าน Security ในเครื่อง 100%)*
+
+- **⚡ ระดับประสิทธิภาพสูงสำหรับงานวิศวกรรม (Power User / มีการ์ดจอแยก):**
+  ```bash
+  ollama pull qwen2.5-coder:7b
+  ```
+  *(มีความสามารถในการเขียนโค้ดและวิเคราะห์ทางวิศวกรรมระดับลึก ทำงานแบบ Local ได้อย่างทรงพลัง)*
 
 ### 2. ติดตั้ง Dependencies
 ```bash
