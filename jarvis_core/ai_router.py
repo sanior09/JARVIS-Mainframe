@@ -1115,7 +1115,7 @@ async def call_groq_stream_async(messages, model=None):
         yield "ระบบยังไม่ได้ตั้งค่า API Key ครับ"
         return
         
-    selected_model = model or os.getenv("GROQ_MODEL") or os.getenv("GROQ_DEFAULT_MODEL") or "qwen/qwen3.8-27b"
+    selected_model = model or os.getenv("GROQ_MODEL") or os.getenv("GROQ_DEFAULT_MODEL") or "openai/gpt-oss-120b"
     client = AsyncGroq(api_key=api_key, max_retries=0)
     
     # Serialize messages similar to main logic

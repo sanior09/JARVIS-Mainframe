@@ -1,4 +1,4 @@
-# ━━━ Core Web & System ━━━
+# --- Core Web & System ---
 requests
 pyautogui
 psutil
@@ -15,7 +15,7 @@ pywin32; sys_platform == 'win32'
 WMI; sys_platform == 'win32'
 keyboard
 
-# ━━━ AI & LLM Orchestration ━━━
+# --- AI & LLM Orchestration ---
 groq
 google-generativeai
 langchain-core
@@ -26,7 +26,7 @@ aiosqlite
 SQLAlchemy
 duckduckgo-search
 
-# ━━━ Audio, Voice & Media ━━━
+# --- Audio, Voice & Media ---
 edge-tts
 pygame
 sounddevice
@@ -34,7 +34,7 @@ aiohttp
 websockets
 deepgram-sdk
 
-# ━━━ Data Science & ML ━━━
+# --- Data Science & ML ---
 numpy
 scipy
 pandas
@@ -43,7 +43,7 @@ matplotlib
 networkx
 APScheduler
 
-# ━━━ Document Processing & Utilities ━━━
+# --- Document Processing & Utilities ---
 PyPDF2
 python-docx
 openpyxl
@@ -52,10 +52,10 @@ youtube-transcript-api
 feedparser
 cryptography
 
-# ━━━ Computer Vision & Desktop UI ━━━
+# --- Computer Vision & Desktop UI ---
 opencv-python
 mediapipe
 PyQt6
 
-# ━━━ Messaging & Integration ━━━
+# --- Messaging & Integration ---
 line-bot-sdk

@@ -165,12 +165,12 @@ class BuddyWidget(QWidget):
             "name": "Cursor"
         },
         "jarvis": {
-            "body_top": QColor("#0EA5E9"),
-            "body_bot": QColor("#0369A1"),
-            "border": QColor("#00E5FF"),
-            "eyes": QColor("#F0FDFA"),
-            "cheeks": QColor(0, 229, 255, 120),
-            "glow": QColor(0, 229, 255, 180),
+            "body_top": QColor("#FDE047"),
+            "body_bot": QColor("#B45309"),
+            "border": QColor("#FFD700"),
+            "eyes": QColor("#2B1D00"),
+            "cheeks": QColor(255, 215, 0, 120),
+            "glow": QColor(255, 215, 0, 180),
             "name": "JARVIS Arc"
         },
         "gemini": {

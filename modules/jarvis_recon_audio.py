@@ -57,7 +57,7 @@ except Exception as e:
 
 class StarkReconAudioEngine:
     """
-    Stark Industries Remote Reconnaissance & Optical Demodulation Audio Engine.
+    Nachapol Industries Remote Reconnaissance & Optical Demodulation Audio Engine.
     Singleton controller for eavesdropping, acoustic filtering, and telemetry.
     """
     _instance: Optional[StarkReconAudioEngine] = None

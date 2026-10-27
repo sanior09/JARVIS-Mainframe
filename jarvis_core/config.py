@@ -51,7 +51,7 @@ HA_URL = os.getenv("HA_URL", "http://homeassistant.local:8123").rstrip("/")
 HA_TOKEN = os.getenv("HA_TOKEN", "")
 
 # LLM Models
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_FAST_MODEL = os.getenv("GROQ_FAST_MODEL", "qwen/qwen3.8-27b")
 GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "llama-3.2-90b-vision-preview")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")

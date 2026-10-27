@@ -66,27 +66,22 @@ python scripts\boot_fx.py --status "Core Runtime: Python Environment" "ONLINE"
 :: ตรวจสอบและติดตั้ง Dependencies ที่จำเป็น
 set "REQUIRED_PACKAGES=langchain_core langgraph beautifulsoup4 python-dotenv chromadb psutil requests waitress duckduckgo_search langgraph-checkpoint-sqlite pyautogui opencv-python mediapipe aiohttp websockets line-bot-sdk groq apscheduler sqlalchemy"
 
-for %%P in (%REQUIRED_PACKAGES%) do (
-    python -m pip show %%P >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo %CYAN%  [!] Synthesizing missing neural component: %%P...%RESET%
-        python -m pip install %%P >nul
-        if %errorlevel% neq 0 (
-            echo %RED%  [ERROR] Component synthesis failed: %%P.%RESET%
-            pause
-            exit /b 1
-        ) else (
-          echo %GREEN%  [*] Neural component integrated: %%P.%RESET%
-        )
-    )
+set /a PKG_TOTAL=0
+set /a PKG_OK=0
+set "PKG_FAIL="
+for %%P in (%REQUIRED_PACKAGES%) do call :check_pkg %%P
+if defined PKG_FAIL (
+    pause
+    exit /b 1
 )
 
 python scripts\boot_fx.py --bar "Auditing Core Libraries & AI Subsystems" 0.60
-python scripts\boot_fx.py --status "Neural Dependencies: 19/19 Packages" "SYNCED"
+python scripts\boot_fx.py --status "Neural Dependencies: %PKG_OK%/%PKG_TOTAL% Packages" "SYNCED"
 echo.
 
 python scripts\boot_fx.py --type "  [ PURGING TEMPORARY CACHE ]" cyan 0.012
-del /s /q *.log >nul 2>&1
+del /q *.log >nul 2>&1
+if exist "logs\" del /q "logs\*.log" >nul 2>&1
 python scripts\boot_fx.py --bar "Defragmenting Memory & Cache Buffers" 0.50
 python scripts\boot_fx.py --status "System Cache & Execution Logs" "OPTIMIZED"
 echo.
@@ -130,3 +125,23 @@ echo.
 echo %RED%  [!] J.A.R.V.I.S. session ended (Exit Code: %errorlevel%).%RESET%
 echo %CYAN%  Press any key to close this terminal window...%RESET%
 pause >nul
+exit /b
+
+:: ==========================================
+:: [SUBROUTINE] Verify / install one package (runtime errorlevel, not parse-time)
+:: ==========================================
+:check_pkg
+set /a PKG_TOTAL+=1
+python -m pip show %1 >nul 2>&1
+if errorlevel 1 (
+    echo %CYAN%  [!] Synthesizing missing neural component: %1...%RESET%
+    python -m pip install %1 >nul 2>&1
+    if errorlevel 1 (
+        echo %RED%  [ERROR] Component synthesis failed: %1.%RESET%
+        set "PKG_FAIL=1"
+        exit /b 1
+    )
+    echo %GREEN%  [*] Neural component integrated: %1.%RESET%
+)
+set /a PKG_OK+=1
+exit /b 0

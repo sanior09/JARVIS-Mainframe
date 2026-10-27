@@ -1106,6 +1106,7 @@ async function initVisionSystem(video, canvas) {
         requestAnimationFrame(detectFrame);
     }
     detectFrame();
+}
 
 // --- [NACHAPOL SSE STREAMING TTS ENGINE] ---
 let ttsQueue = [];
@@ -3272,9 +3273,9 @@ function openAgentOfficeWindow() {
     activeAgents = [];
     setTimeout(() => {
         const agentContainer = document.getElementById('agents-container');
-        activeAgents.push(new JarvisAgentNode('web', 'WEB CRAWLER', '#ff9800', 'web'));
-        activeAgents.push(new JarvisAgentNode('cli', 'TERMINAL CORE', '#e91e63', 'cli'));
-        activeAgents.push(new JarvisAgentNode('os', 'OS KERNEL', '#00e5ff', 'os'));
+        activeAgents.push(new JarvisAgentNode('web', 'WEB CRAWLER', '#ff4fa3', 'web'));
+        activeAgents.push(new JarvisAgentNode('cli', 'TERMINAL CORE', '#90a4ae', 'cli'));
+        activeAgents.push(new JarvisAgentNode('os', 'OS KERNEL', '#f5f5f5', 'os'));
         activeAgents.push(new JarvisAgentNode('code', 'CODE ENGINE', '#4caf50', 'code'));
         activeAgents.push(new JarvisAgentNode('friday', 'F.R.I.D.A.Y.', '#00c8ff', 'friday'));
         activeAgents.push(new JarvisAgentNode('veronica', 'VERONICA', '#d32f2f', 'veronica'));

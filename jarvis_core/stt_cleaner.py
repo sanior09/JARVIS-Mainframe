@@ -12,7 +12,7 @@ class STTCleanerEngine:
     def __init__(self):
         self.api_key = os.getenv("GROQ_API_KEY")
         # Using a very fast model for near-instant correction
-        self.model = os.getenv("GROQ_MODEL", "llama3-8b-8192")
+        self.model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
         if self.api_key:
             self.client = Groq(api_key=self.api_key, max_retries=1)
         else:

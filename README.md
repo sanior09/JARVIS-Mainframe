@@ -71,27 +71,30 @@
 ## 🚀 Quick Start (Nachapol Protocol)
 
 ### 1. เตรียม Mainframe และ Local LLM (Ollama)
-J.A.R.V.I.S. ขับเคลื่อนด้วยสมองหลักจาก **Cloud Neural Engine (Groq: Llama 3.3 70B / Qwen 27B และ Google Gemini 2.5 Flash)** ซึ่งประมวลผลผ่าน API ความเร็วสูง โดยไม่ต้องดาวน์โหลดไฟล์โมเดลหนักเครื่อง
+J.A.R.V.I.S. ขับเคลื่อนด้วยสมองหลักจาก **Cloud Neural Engine (Groq: GPT-OSS 120B / Qwen 27B และ Google Gemini 3.6 Flash)** ซึ่งประมวลผลผ่าน API ความเร็วสูง โดยไม่ต้องดาวน์โหลดไฟล์โมเดลหนักเครื่อง
 
 อย่างไรก็ตาม สำหรับ **โหมดออฟไลน์ (Offline Fallback), เฝ้าระวังจิตใต้สำนึก (Subconscious Engine)** และ **Uncensored Dark Mode (ความปลอดภัยไซเบอร์)** ให้ติดตั้ง [Ollama](https://ollama.ai/) และเลือกดึงโมเดลตามระดับฮาร์ดแวร์ของท่าน:
 
-- **🟢 ระดับเริ่มต้น (ประหยัดทรัพยากรสูงสุด):**
+- **🟢 ระดับเริ่มต้น / Reflex (`OLLAMA_FAST_MODEL`, ประหยัดทรัพยากรสูงสุด):**
   ```bash
-  ollama pull qwen2.5:1.5b
+  ollama pull qwen:4b
   ```
-  (ขนาดเบาเพียง ~1 GB กิน RAM น้อยมาก เหมาะกับคอมพิวเตอร์สเปกทั่วไปเพื่อตอบสนอง Reflex ทันใจ)
+  (ขนาดเบา กิน RAM น้อย เหมาะกับคอมพิวเตอร์สเปกทั่วไปเพื่อตอบสนอง Reflex ทันใจ)
 
 - **🔴 สาย Ethical Pentest & Cybersecurity (Uncensored Dark Mode):**
   ```bash
   ollama pull dolphin-llama3
   ```
-  (โมเดลปลดล็อก Guardrail สำหรับเจาะระบบเชิงจริยธรรม, แกะรอยมัลแวร์ และงานด้าน Security ในเครื่อง 100%)
+  (โมเดลปลดล็อก Guardrail สำหรับเจาะระบบเชิงจริยธรรม, แกะรอยมัลแวร์ และงานด้าน Security ในเครื่อง 100% — ทำหน้าที่เป็นตัวสำรองอัตโนมัติของ `qwen-uncensored`)
 
-- **⚡ ระดับประสิทธิภาพสูงสำหรับงานวิศวกรรม (Power User / มีการ์ดจอแยก):**
+- **🟣 โมเดล Local หลัก (`OLLAMA_MODEL=qwen-uncensored`):**
+  เป็นแท็กโมเดล Qwen แบบ Uncensored ที่ลงทะเบียนไว้ในเครื่องผู้ใช้เอง (เช่น สร้างด้วย `ollama create qwen-uncensored -f Modelfile` จากไฟล์ GGUF ที่ท่านเลือก) ระบบจะเรียกใช้เป็นอันดับแรกในโหมด Dark Mode และหากโหลดช้าจะ Fallback ไปยัง `dolphin-llama3` อัตโนมัติ
+
+- **⚡ ระดับประสิทธิภาพสูงสำหรับงานวิศวกรรม (ทางเลือก / มีการ์ดจอแยก):**
   ```bash
   ollama pull qwen2.5-coder:7b
   ```
-  (มีความสามารถในการเขียนโค้ดและวิเคราะห์ทางวิศวกรรมระดับลึก ทำงานแบบ Local ได้อย่างทรงพลัง)
+  (มีความสามารถในการเขียนโค้ดและวิเคราะห์ทางวิศวกรรมระดับลึก ตั้งค่าผ่าน `OLLAMA_MODEL` ได้ตามต้องการ)
 
 ### 2. ติดตั้ง Dependencies
 ```bash
@@ -104,12 +107,13 @@ pip install -r requirements.txt
 ```env
 # AI Providers (Groq, Gemini, Ollama)
 GROQ_API_KEY=your_groq_api_key
-GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_MODEL=openai/gpt-oss-120b
 GROQ_FAST_MODEL=qwen/qwen3.8-27b
 GROQ_STT_MODEL=whisper-large-v3
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
-OLLAMA_MODEL=qwen2.5:1.5b
+GEMINI_MODEL=gemini-3.6-flash
+OLLAMA_MODEL=qwen-uncensored
+OLLAMA_FAST_MODEL=qwen:4b
 
 # Smart Home & IoT (Home Assistant)
 HOME_ASSISTANT_URL=http://homeassistant.local:8123
@@ -203,7 +207,7 @@ npx expo start
 - **Autonomous Thought Engine (`jarvis.py`):** กลไกจิตใต้สำนึกจำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol, Acetylcholine) คำนวณความเครียดตามอุณหภูมิ WMI/CPU โหลดจริง พร้อมระบบ **Thread-Safe Mutex Lock** ป้องกัน Race Conditions และระบบ **Zero-Delay Shutdown (`self.stop_event`)** คืนหน่วยความจำในพริบตา (<1 วินาที)
 - **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อเสนอแนะแนวทางแก้บั๊กหรือคู่มือเควสเกมอัตโนมัติ พร้อมตรวจจับ Smart Silence ปิดเสียงไม่รบกวนเมื่อเจ้านายกำลังรับชม YouTube, Netflix หรือสตรีมมิง
 - **Multi-Agent Swarm Council & Tree of Thoughts (`jarvis_core/cognitive/swarm.py`):** สภา AI 6 ขุนพล อภิปรายแบบคู่ขนาน (Parallel ThreadPool) ผสานกับ Tree of Thoughts แตกกิ่งกลยุทธ์ 3 เส้นทางสำหรับงานวิศวกรรมที่ซับซ้อน
-- **Neural AI Router & Provider Pool (`jarvis_core/ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq (Llama-3.3-70b, Qwen3.8), Google Gemini (2.5 Flash), หรือ Local Ollama (Qwen2.5) ตามความเหมาะสมของประเภทงาน
+- **Neural AI Router & Provider Pool (`jarvis_core/ai_router.py`):** กระจายงานอย่างชาญฉลาดไปยัง Groq (GPT-OSS 120B, Qwen3.8 27B), Google Gemini (3.6 Flash), หรือ Local Ollama (Qwen-Uncensored / Qwen 4B / Dolphin) ตามความเหมาะสมของประเภทงาน
 - **Cognitive Evolution & Memory Consolidation (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
 - **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
 - **Resource-Conscious Architecture:** ออกแบบมาสำหรับรันบนคอมพิวเตอร์สเปกทั่วไป โดยปรับจูนการใช้ทรัพยากรให้ประหยัด RAM/CPU ที่สุด

@@ -2,7 +2,7 @@
 STARK ENVIRONMENTAL & THERMOGRAPHIC SCANNER SUBSYSTEM (INFRARED / IR-NDT)
 ========================================================================
 Inspired by Avengers: Age of Ultron (Tony Stark's Hydra Lab IR Wall Scan) &
-Stark Industries Non-Destructive Structural Thermography.
+Nachapol Industries Non-Destructive Structural Thermography.
 
 Key Capabilities:
 1. Radiometric & False-Color Thermal Gradient Analysis (Simulation, Webcam, or USB IR Camera).
@@ -39,7 +39,7 @@ SCAN_OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 class StarkThermalScanner:
     """
-    Stark Industries Infrared & Structural Building Scanner.
+    Nachapol Industries Infrared & Structural Building Scanner.
     Singleton engine for thermographic analysis, thermal bridging, and draft detection.
     """
     _instance: Optional[StarkThermalScanner] = None
@@ -228,7 +228,7 @@ class StarkThermalScanner:
 
         # 4. Stark Header & Telemetry Bars
         header_color = (0, 255, 200)
-        cv2.putText(hud, "STARK INDUSTRIES // MARK-XLIII TACTICAL HUD", (35, 38),
+        cv2.putText(hud, "NACHAPOL INDUSTRIES // MARK-XLIII TACTICAL HUD", (35, 38),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.68, header_color, 2, cv2.LINE_AA)
         cv2.putText(hud, "OPTICAL THERMOGRAPHY & STRUCTURAL INTEGRITY SCAN", (35, 62),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.44, (160, 200, 200), 1, cv2.LINE_AA)
