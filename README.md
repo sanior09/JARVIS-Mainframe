@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
 [![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE%2024%2F7-00C4B4?style=for-the-badge)](#)
+[![CI Pipeline](https://img.shields.io/github/actions/workflow/status/sanior09/JARVIS-Mainframe/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%20PIPELINE)](https://github.com/sanior09/JARVIS-Mainframe/actions)
 
 [![Architecture](https://img.shields.io/badge/Architecture-Autonomous%20AGI-107C41?style=for-the-badge)](web/jarvis_architecture.html)
 [![AI Council](https://img.shields.io/badge/AI%20Council-6%20Personas%20Quorum-8A2BE2?style=for-the-badge)](#ai-council)

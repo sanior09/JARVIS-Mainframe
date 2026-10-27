@@ -1,0 +1,50 @@
+name: J.A.R.V.I.S. Mainframe CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-test:
+    name: Neural Integrity & Unit Verification
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 🛰️ Checkout Mainframe Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Initialize Python 3.10 Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 📦 Synthesize Neural Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: 🔍 Verify Python AST Syntax & Compilation
+        run: |
+          python -m compileall -q -x "venv|node_modules|\.git|backups|scratch" .
+
+      - name: 🌐 Audit Web Hologram & Interface Scripts
+        run: |
+          node --check web/script.js
+          node --check web/brain.js
+          node --check web/radar.js
+
+      - name: 🧪 Execute Fast Automated Test Suite
+        env:
+          OWNER_NAME: "Sir"
+          COMPUTER_CONTROL_MODE: "background"
+        run: |
+          python -m pytest tests/test_advanced_core.py tests/test_config_and_state.py tests/test_metrics.py tests/test_notifier.py tests/test_stark_council.py tests/test_utils.py tests/test_concurrency_dispatcher.py tests/test_automation_agent.py tests/test_web_app.py -v -o addopts=
