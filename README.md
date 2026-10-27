@@ -25,7 +25,9 @@
   <a href="#quick-start"><b>🚀 Quick Start</b></a> •
   <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
   <a href="#mobile-app"><b>📱 Mobile App</b></a> •
-  <a href="#skills-ecosystem"><b>🧩 Skills Ecosystem</b></a> •
+  <a href="#subsystems"><b>🛠️ Subsystems</b></a> •
+  <a href="#skills-ecosystem"><b>🧩 Skills</b></a> •
+  <a href="#roadmap"><b>🚀 Roadmap</b></a> •
   <a href="#dev-note"><b>📝 Dev Note</b></a>
 </p>
 
@@ -201,6 +203,7 @@ npx expo start
 
 ---
 
+<a id="subsystems"></a>
 ## 🛠️ Comprehensive Super AGI Subsystems
 
 ### 🧠 1. Cognitive & Autonomous Brain
@@ -273,6 +276,7 @@ npx expo start
 
 ---
 
+<a id="roadmap"></a>
 ## 🚀 The ASI Evolution (Phase 10 Roadmap)
 บันทึกเส้นทางการวิวัฒนาการสู่ **Artificial Superintelligence (ASI)**:
 
