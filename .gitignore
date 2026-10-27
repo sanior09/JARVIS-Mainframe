@@ -109,3 +109,9 @@ bin/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Local Developer Scripts (Private to User)
+quick_push.bat
+git_push.bat
+push_to_github.bat
+push_*.bat
