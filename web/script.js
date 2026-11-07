@@ -3467,13 +3467,15 @@ function onARWorkbenchResize() {
     }
 }
 
-async function triggerARObjectRecon() {
+async function triggerARObjectRecon(customPrompt = 'สแกนสิ่งนี้') {
     const statusBadge = document.getElementById('ar-hud-status');
     const laser = document.getElementById('ar-scan-laser');
     const scanBtn = document.getElementById('ar-scan-trigger-btn');
     const arVideo = document.getElementById('ar-webcam-feed');
+    const candidatesLayer = document.getElementById('ar-candidates-layer');
+    const banner = document.getElementById('ar-selection-banner');
 
-    if (statusBadge) statusBadge.innerText = 'ANALYZING SURFACE OPTICS...';
+    if (statusBadge) statusBadge.innerText = 'SCANNING DESK SURFACE...';
     if (laser) laser.style.display = 'block';
     if (scanBtn) {
         scanBtn.disabled = true;
@@ -3508,7 +3510,7 @@ async function triggerARObjectRecon() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 image: frameBase64,
-                prompt: 'สแกนวัตถุบนโต๊ะทำงานและกางพิมพ์เขียว HUD'
+                prompt: customPrompt
             })
         });
 
@@ -3518,8 +3520,19 @@ async function triggerARObjectRecon() {
         if (laser) laser.style.display = 'none';
         if (scanBtn) {
             scanBtn.disabled = false;
-            scanBtn.innerText = '⌖ RESCAN OBJECT';
+            scanBtn.innerText = '⌖ RESCAN DESK';
         }
+
+        // Scenario A: Multiple candidates detected -> Circle them all and ask user
+        if (data.mode === 'multiple_candidates' && data.candidates && data.candidates.length > 1) {
+            if (statusBadge) statusBadge.innerText = `DETECTED ${data.candidates.length} CANDIDATES`;
+            renderARCandidates(data.candidates, data.voice_text);
+            return;
+        }
+
+        // Scenario B: Single target or deep dive ready
+        if (candidatesLayer) candidatesLayer.innerHTML = '';
+        if (banner) banner.style.display = 'none';
         if (statusBadge) statusBadge.innerText = 'TARGET LOCKED & GROUNDED';
 
         renderARReconOverlay(data);
@@ -3529,6 +3542,103 @@ async function triggerARObjectRecon() {
         if (laser) laser.style.display = 'none';
         if (scanBtn) { scanBtn.disabled = false; scanBtn.innerText = '⌖ SCAN DESK OBJECT'; }
         if (statusBadge) statusBadge.innerText = 'OPTICS ERROR';
+    }
+}
+
+function renderARCandidates(candidates, voicePrompt) {
+    const layer = document.getElementById('ar-candidates-layer');
+    const banner = document.getElementById('ar-selection-banner');
+    const bannerText = document.getElementById('ar-selection-text');
+    const cardsLayer = document.getElementById('ar-cards-layer');
+    const reticle = document.getElementById('ar-target-reticle');
+    const svg = document.getElementById('ar-leader-svg');
+
+    // Hide any previous single-target HUD
+    if (cardsLayer) cardsLayer.style.display = 'none';
+    if (reticle) reticle.style.display = 'none';
+    if (svg) svg.innerHTML = '';
+
+    if (!layer) return;
+    layer.innerHTML = '';
+
+    candidates.forEach((c, idx) => {
+        const bbox = c.bbox || [30, 30, 60, 60];
+        const top = bbox[0];
+        const left = bbox[1];
+        const height = Math.max(12, bbox[2] - bbox[0]);
+        const width = Math.max(15, bbox[3] - bbox[1]);
+
+        const boxEl = document.createElement('div');
+        boxEl.className = 'ar-candidate-box';
+        boxEl.style.top = top + '%';
+        boxEl.style.left = left + '%';
+        boxEl.style.width = width + '%';
+        boxEl.style.height = height + '%';
+        boxEl.onclick = () => selectARCandidate(c.id, c.name);
+
+        boxEl.innerHTML = `
+            <div class="candidate-corner top-left"></div>
+            <div class="candidate-corner top-right"></div>
+            <div class="candidate-corner bottom-left"></div>
+            <div class="candidate-corner bottom-right"></div>
+            <div class="candidate-badge">
+                <span class="candidate-num">[${c.id}]</span>
+                <span class="candidate-name">${(c.name_th || c.name).toUpperCase()}</span>
+            </div>
+        `;
+        layer.appendChild(boxEl);
+    });
+
+    // Display Prompt Banner
+    if (banner) {
+        if (bannerText) {
+            bannerText.innerText = voicePrompt || `ตรวจพบ ${candidates.length} รายการ: คลิกหรือระบุชิ้นที่ต้องการหาข้อมูล`;
+        }
+        banner.style.display = 'flex';
+    }
+
+    // Play Voice Pill
+    const audioPill = document.getElementById('ar-audio-pill');
+    const voiceText = document.getElementById('ar-voice-feedback');
+    if (audioPill && voiceText && voicePrompt) {
+        voiceText.innerText = voicePrompt;
+        audioPill.style.display = 'flex';
+    }
+
+    playWakeSound();
+}
+
+async function selectARCandidate(candidateId, candidateName = '') {
+    const statusBadge = document.getElementById('ar-hud-status');
+    const laser = document.getElementById('ar-scan-laser');
+    const banner = document.getElementById('ar-selection-banner');
+    const candidatesLayer = document.getElementById('ar-candidates-layer');
+
+    if (statusBadge) statusBadge.innerText = `DEEP-DIVING CANDIDATE [${candidateId}]...`;
+    if (laser) laser.style.display = 'block';
+    if (banner) banner.style.display = 'none';
+
+    playHologramWhoosh();
+
+    try {
+        const response = await fetch('/api/spatial/ar_recon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt: `ชิ้นที่ ${candidateId}`
+            })
+        });
+
+        const data = await response.json();
+        if (laser) laser.style.display = 'none';
+        if (candidatesLayer) candidatesLayer.innerHTML = '';
+        if (statusBadge) statusBadge.innerText = 'TARGET LOCKED & GROUNDED';
+
+        renderARReconOverlay(data);
+    } catch (err) {
+        console.error('[AR WORKBENCH] Candidate Selection Error:', err);
+        if (laser) laser.style.display = 'none';
+        if (statusBadge) statusBadge.innerText = 'SELECTION ERROR';
     }
 }
 

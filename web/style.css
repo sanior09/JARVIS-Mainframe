@@ -1635,3 +1635,96 @@ input {
     color: #ffffff;
     line-height: 1.4;
 }
+
+
+/* --- Multi-Candidate Reticles & Interactive Selection --- */
+.ar-candidates-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 14;
+}
+
+.ar-candidate-box {
+    position: absolute;
+    pointer-events: all;
+    border: 2px dashed #00ffff;
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.15);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: arCandidateBreathe 2s infinite alternate;
+}
+
+.ar-candidate-box:hover {
+    border-color: #ff003c;
+    border-style: solid;
+    box-shadow: 0 0 25px rgba(255, 0, 60, 0.6), inset 0 0 15px rgba(255, 0, 60, 0.3);
+    transform: scale(1.02);
+}
+
+@keyframes arCandidateBreathe {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.candidate-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+}
+.candidate-corner.top-left { top: -2px; left: -2px; border-top: 2px solid #00ffff; border-left: 2px solid #00ffff; }
+.candidate-corner.top-right { top: -2px; right: -2px; border-top: 2px solid #00ffff; border-right: 2px solid #00ffff; }
+.candidate-corner.bottom-left { bottom: -2px; left: -2px; border-bottom: 2px solid #00ffff; border-left: 2px solid #00ffff; }
+.candidate-corner.bottom-right { bottom: -2px; right: -2px; border-bottom: 2px solid #00ffff; border-right: 2px solid #00ffff; }
+
+.candidate-badge {
+    position: absolute;
+    top: -26px;
+    left: 0;
+    background: rgba(4, 12, 22, 0.9);
+    border: 1px solid #00ffff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
+.candidate-num {
+    color: #00ffcc;
+}
+
+/* Banner prompt */
+.ar-selection-banner {
+    position: absolute;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(3, 8, 16, 0.92);
+    border: 1px solid rgba(0, 229, 255, 0.6);
+    border-radius: 24px;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 25;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+    backdrop-filter: blur(12px);
+}
+
+.banner-icon {
+    font-size: 18px;
+}
+
+.banner-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.8px;
+}
