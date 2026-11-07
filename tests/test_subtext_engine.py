@@ -76,3 +76,4 @@ def test_ai_router_integration_with_subtext_engine():
         system_content = messages[0]["content"]
         assert "COGNITIVE SUBTEXT & THEORY OF MIND" in system_content
         assert "Marcus Aurelius" in system_content
+

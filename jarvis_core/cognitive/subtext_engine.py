@@ -25,11 +25,11 @@ class SubtextCognitiveEngine:
 
     # Commands that are purely operational and should bypass subtext analysis for zero-latency execution
     BYPASS_PATTERNS = [
-        r"^(เปิด|ปิด|รัน|สตาร์ท|stop|start|open|close|launch|kill)\s+[a-zA-Z0-9_\-\.]+$",
-        r"^(เพิ่ม|ลด|หรี่|ปรับ)?เสียง",
+        r"^(เปิด|ปิด|รัน|สตาร์ท|stop|start|open|close|launch|kill)\s+[\w\s\.\-]+?(หน่อย|ให้หน่อย|ที|ให้ผมหน่อย|ครับ|ค่ะ|please)?$",
+        r"^(เพิ่ม|ลด|หรี่|ปรับ)?\s*เสียง(หน่อย|ที|ครับ|ค่ะ)?$",
         r"^(กี่โมง|วันที่เท่าไหร่|สภาพอากาศ|อุณหภูมิ|เช็คเน็ต|ip\s*address|speedtest)",
         r"^(แคปจอ|ถ่ายรูปหน้าจอ|ปิดจอ|เปิดไฟ)",
-        r"^cls|clear|dir|ls|ping|exit|quit$"
+        r"^(cls|clear|dir|ls|ping|exit|quit)$"
     ]
 
     # Archetype & Philosophical Wisdom Matrix for Instant Heuristics
@@ -128,3 +128,4 @@ class SubtextCognitiveEngine:
 
 # Global singleton instance
 subtext_engine = SubtextCognitiveEngine()
+
