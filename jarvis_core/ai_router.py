@@ -886,6 +886,22 @@ def call_nachapol_core(
             # ----------------------------------------------------
 
             # ----------------------------------------------------
+            # J.A.R.V.I.S. Internal Subsystem: System Anatomy & Self-Introspection
+            # ----------------------------------------------------
+            try:
+                from jarvis_core.cognitive.system_anatomy import system_anatomy_engine
+                anatomy_injection = system_anatomy_engine.get_anatomy_prompt_injection(actual_query)
+                if anatomy_injection:
+                    logger.info("🩺 [SYSTEM ANATOMY] Introspection grounding engaged for self-query.")
+                    if messages and isinstance(messages[0], dict) and messages[0].get("role") == "system":
+                        messages[0]["content"] = str(messages[0].get("content", "")) + anatomy_injection
+                    else:
+                        messages.insert(0, {"role": "system", "content": anatomy_injection})
+            except Exception as _anat_err:
+                logger.debug(f"[SYSTEM ANATOMY] {_anat_err}")
+            # ----------------------------------------------------
+
+            # ----------------------------------------------------
             # JARVIS Internal Subsystem: Active Window / Screen Context
             # ----------------------------------------------------
             try:
