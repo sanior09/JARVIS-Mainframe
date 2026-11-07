@@ -111,6 +111,25 @@ def _normalize_tool_calls(raw_tool_calls: Optional[List[Any]]) -> Optional[List[
     return normalized or None
 
 
+def sanitize_thai_cadence(text: str) -> str:
+    """
+    Polishes Thai prosody and cadence:
+    1. Removes unnatural mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -'.
+    2. Strips orphaned trailing 'เจ้านาย.' or 'เจ้านาย' at the very end of sentences.
+    3. Normalizes whitespace.
+    """
+    if not text or not isinstance(text, str):
+        return text
+    import re
+    # 1. Clean mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -'
+    text = re.sub(r'(\w+)\s+(ครับ|ครับผม|ครับเจ้านาย)\s*[-–—]\s*', r'\1 - ', text)
+    # 2. Fix dangling isolated 'เจ้านาย.' or 'เจ้านาย' at the very end of text (not preceded by ครับ)
+    text = re.sub(r'(?<!ครับ)(?<!ครับผม)\s+เจ้านาย[\.\s]*$', '.', text)
+    # 3. Clean double spaces
+    text = re.sub(r'\s{2,}', ' ', text).strip()
+    return text
+
+
 def call_groq_model(
     messages: List[Dict[str, Any]],
     tools: Optional[List[Dict]] = None,
@@ -1100,7 +1119,10 @@ def call_nachapol_core(
             name, func = engines[engine_key]
             try:
                 logger.debug(f"[ROUTER] Trying {name}...")
-                return func()
+                res = func()
+                if isinstance(res, dict) and "content" in res and res["content"]:
+                    res["content"] = sanitize_thai_cadence(res["content"])
+                return res
             except Exception as e:
                 last_error = e
                 logger.warning(f"[FALLBACK] {name} failed ({e}). Trying next...")

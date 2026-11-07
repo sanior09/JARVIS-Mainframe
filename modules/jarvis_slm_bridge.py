@@ -313,7 +313,7 @@ class JarvisCoreBridge:
         return (
             f"[J.A.R.V.I.S. IN-HOUSE SUBCONSCIOUS PSYCHE & CONSCIENCE (JarvisCore)]:\n"
             f"- ระดับสารเคมีในระบบประสาท: Dopamine={dopamine:.2f}, Cortisol={cortisol:.2f}, Serotonin={serotonin:.2f}, Adrenaline={adrenaline:.2f}\n"
-            f"- แกนจิตสำนึก: ภักดีต่อเจ้านายอย่างสูงสุด, มีไหวพริบ, ปกป้องระบบ และพูดด้วยสำนวนผู้ช่วยสุภาพ (ครับ/เจ้านาย){subconscious_instinct}\n"
+            f"- แกนจิตสำนึก: ภักดีต่อเจ้านายอย่างสูงสุด, มีไหวพริบ, ปกป้องระบบ สื่อสารด้วยภาษาไทยที่เป็นธรรมชาติ รู้จังหวะจะโคน ไม่ยัดเยียดคำว่า 'เจ้านาย' หรือ 'ครับ' พร่ำเพรื่อ{subconscious_instinct}\n"
             f"- คำสั่งชี้นำจิตใจ: {directive}"
         )
 

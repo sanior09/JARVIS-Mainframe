@@ -12,3 +12,4 @@ python scripts\demo_cognitive_pipeline.py
 
 echo.
 pause
+

@@ -8,7 +8,24 @@ Verifies subtext extraction, literary & psychological framing, and prompt inject
 import pytest
 from unittest.mock import patch, MagicMock
 from jarvis_core.cognitive.subtext_engine import SubtextCognitiveEngine, subtext_engine
-from jarvis_core.ai_router import call_nachapol_core
+from jarvis_core.ai_router import call_nachapol_core, sanitize_thai_cadence
+
+
+def test_sanitize_thai_cadence():
+    """Verify Thai prosody sanitizer cleans up awkward LLM tokens."""
+    # 1. Awkward dangling 'เจ้านาย.' at end of explanation
+    dirty1 = "การออกแบบวัสดุใหม่หรือการทำโมเดลทางเคมี เจ้านาย."
+    clean1 = sanitize_thai_cadence(dirty1)
+    assert clean1 == "การออกแบบวัสดุใหม่หรือการทำโมเดลทางเคมี."
+
+    # 2. Awkward mid-sentence 'ครับ -'
+    dirty2 = "ประมาณช่วงต้น-กลางทศวรรษ 2030 - 2040 ครับ - เทคโนโลยียังต้องแก้ไข"
+    clean2 = sanitize_thai_cadence(dirty2)
+    assert clean2 == "ประมาณช่วงต้น-กลางทศวรรษ 2030 - 2040 - เทคโนโลยียังต้องแก้ไข"
+
+    # 3. Legitimate confirmation should be preserved
+    valid_confirm = "เปิดระบบปรับอากาศให้เรียบร้อยแล้วครับเจ้านาย"
+    assert sanitize_thai_cadence(valid_confirm) == valid_confirm
 
 
 def test_subtext_engine_bypass_operational_commands():
