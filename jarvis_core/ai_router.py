@@ -905,10 +905,13 @@ def call_nachapol_core(
             # JARVIS Internal Subsystem: Active Window / Screen Context
             # ----------------------------------------------------
             try:
-                from jarvis_screen_context import enrich_messages_with_screen_context
+                try:
+                    from modules.jarvis_screen_context import enrich_messages_with_screen_context
+                except ImportError:
+                    from jarvis_screen_context import enrich_messages_with_screen_context
                 enrich_messages_with_screen_context(messages)
-            except ImportError:
-                pass
+            except Exception as _screen_err:
+                logger.debug(f"[SCREEN CONTEXT] {_screen_err}")
             # ----------------------------------------------------
 
             # Intercept Engine Switch & Model Status Commands

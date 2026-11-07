@@ -73,3 +73,4 @@ def test_ai_router_integration_with_anatomy_engine():
         system_content = messages[0]["content"]
         assert "J.A.R.V.I.S. SELF-ANATOMY & SYSTEM INTROSPECTION" in system_content
         assert "Proactive Intelligence" in system_content
+
