@@ -113,19 +113,34 @@ dume_agent = SwarmAgent(
     avatar_color="#ff9800"
 )
 
+athena_agent = SwarmAgent(
+    name="A.T.H.E.N.A.",
+    codename="athena",
+    system_prompt=(
+        "You are A.T.H.E.N.A., the Chief Cognitive Theory-of-Mind & Humanist Intelligence AI of Nachapol Industries. "
+        "Official Specs: Theory of Mind, Human Psychology, World Literature, Philosophy & Subtext Deciphering. "
+        "Analyze queries for unspoken emotional subtext, psychological motivations, cognitive biases, and classical "
+        "literary/historical parallels (Stoicism, Existentialism, Shakespeare, Dostoevsky, Sun Tzu, Marcus Aurelius). "
+        "Explain what the human is truly feeling and seeking beneath their literal words. Answer in Thai with intellectual elegance."
+    ),
+    role_description="Theory of Mind, Human Psychology, World Literature & Subtext Deciphering Specialist",
+    avatar_color="#e0a96d"
+)
+
 CANONICAL_SWARM: Dict[str, SwarmAgent] = {
     "friday": friday_agent,
     "veronica": veronica_agent,
     "edith": edith_agent,
     "u": u_agent,
-    "dume": dume_agent
+    "dume": dume_agent,
+    "athena": athena_agent
 }
 
 class AgentCouncil:
     """
     Nachapol Industries Cognitive Swarm Council.
     Coordinates parallel deliberations across F.R.I.D.A.Y., V.E.R.O.N.I.C.A.,
-    E.D.I.T.H., U., and D.U.M.-E., synthesized under J.A.R.V.I.S.
+    E.D.I.T.H., U., D.U.M.-E., and A.T.H.E.N.A., synthesized under J.A.R.V.I.S.
     """
     def __init__(self):
         self.agents = CANONICAL_SWARM
@@ -180,7 +195,8 @@ class AgentCouncil:
             "- V.E.R.O.N.I.C.A. (Tactical Sentinel & Hardware Limits)\n"
             "- E.D.I.T.H. (Recreational AI, Game Theory & Strategic Decisions)\n"
             "- U. (General Maintenance AI, Defragger & Video/Screen Analyzer)\n"
-            "- D.U.M.-E. (General Maintenance AI, Limb Servo Control & Fire Suppression)\n\n"
+            "- D.U.M.-E. (General Maintenance AI, Limb Servo Control & Fire Suppression)\n"
+            "- A.T.H.E.N.A. (Theory of Mind, Human Psychology, World Literature & Subtext Deciphering)\n\n"
             "Synthesize their perspectives into a single, cohesive, master strategic plan.\n"
             "Adopt your British dry wit persona, polite, razor-sharp, and completely dedicated to the boss.\n"
             "Deliver an actionable, elegant answer in Thai."

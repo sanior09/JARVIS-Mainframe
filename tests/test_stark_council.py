@@ -11,24 +11,27 @@ from jarvis_core.cognitive.swarm import (
     veronica_agent,
     edith_agent,
     u_agent,
-    dume_agent
+    dume_agent,
+    athena_agent
 )
 
 
 def test_canonical_swarm_pantheon_members():
-    """Verify all 5 canonical Nachapol AI agents exist with their official specs."""
+    """Verify all 6 canonical Nachapol AI agents exist with their official specs."""
     council = AgentCouncil()
     assert "friday" in council.agents
     assert "veronica" in council.agents
     assert "edith" in council.agents
     assert "u" in council.agents
     assert "dume" in council.agents
+    assert "athena" in council.agents
 
     assert council.get_agent("FRIDAY").codename == "friday"
     assert council.get_agent("EDITH").codename == "edith"
     assert council.get_agent("U").codename == "u"
     assert council.get_agent("DUME").codename == "dume"
     assert council.get_agent("VERONICA").codename == "veronica"
+    assert council.get_agent("ATHENA").codename == "athena"
 
 
 def test_swarm_agent_roles():
@@ -38,6 +41,7 @@ def test_swarm_agent_roles():
     assert "Game Theory" in edith_agent.role_description
     assert "Defragger" in u_agent.role_description
     assert "Fire Suppression" in dume_agent.role_description
+    assert "Theory of Mind" in athena_agent.role_description
 
 
 def test_council_debate_parallel_execution():

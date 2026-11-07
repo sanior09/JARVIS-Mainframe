@@ -851,6 +851,22 @@ def call_nachapol_core(
             # ----------------------------------------------------
 
             # ----------------------------------------------------
+            # J.A.R.V.I.S. Internal Subsystem: Cognitive Theory of Mind & Subtext
+            # ----------------------------------------------------
+            try:
+                from jarvis_core.cognitive.subtext_engine import subtext_engine
+                subtext_injection = subtext_engine.get_subtext_prompt_injection(actual_query, messages)
+                if subtext_injection:
+                    logger.info("🧠 [SUBTEXT ENGINE] Human psychology & literary subtext engaged.")
+                    if messages and isinstance(messages[0], dict) and messages[0].get("role") == "system":
+                        messages[0]["content"] = str(messages[0].get("content", "")) + subtext_injection
+                    else:
+                        messages.insert(0, {"role": "system", "content": subtext_injection})
+            except Exception as _subtext_err:
+                logger.debug(f"[SUBTEXT INJECTION] {_subtext_err}")
+            # ----------------------------------------------------
+
+            # ----------------------------------------------------
             # JARVIS Internal Subsystem: Active Window / Screen Context
             # ----------------------------------------------------
             try:
