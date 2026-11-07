@@ -85,12 +85,12 @@
                 border-radius: 3px;
             }
             #camera-container {
-                top: 70px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 240px;
-                height: 135px;
-                border-radius: 4px;
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
             }
             #calibration-panel {
                 top: 215px;
@@ -176,10 +176,10 @@
                 padding: 8px 15px;
             }
             #camera-container {
-                top: 20px;
-                left: 20px;
-                width: 260px;
-                height: 146px;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
             }
             #calibration-panel {
                 top: 180px;
@@ -263,6 +263,11 @@
     <div id="camera-container">
         <video id="webcam" autoplay playsinline></video>
         <canvas id="vision-overlay"></canvas>
+        <div class="camera-hud-vignette"></div>
+        <div id="camera-hud-toolbar" class="camera-hud-toolbar">
+            <span class="camera-hud-badge">● LIVE OPTICAL FEED</span>
+            <button class="camera-tool-btn" id="cam-flip-btn" onclick="toggleCameraMirror()">⇄ FLIP MIRROR</button>
+        </div>
         <div id="qr-toast-link" style="display: none; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(255, 102, 0, 0.9); border: 1px solid #ff9933; padding: 6px 12px; border-radius: 20px; font-family: 'Orbitron', monospace; font-size: 10px; color: #fff; box-shadow: 0 0 15px rgba(255, 102, 0, 0.6); z-index: 1005; cursor: pointer; text-align: center; white-space: nowrap; pointer-events: all;"></div>
         <div id="laser-range-display">LASER RANGE: AWAITING...</div>
     </div>

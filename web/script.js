@@ -125,9 +125,12 @@ async function toggleCamera() {
 
     if (!webcamStream) {
         try {
-            webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            webcamStream = await navigator.mediaDevices.getUserMedia({
+                video: { width: { ideal: 1920 }, height: { ideal: 1080 } }
+            });
             video.srcObject = webcamStream;
             container.style.display = 'block';
+            document.body.classList.add('camera-fullscreen-active');
             btn.innerText = 'VISION: ON';
             playWakeSound();
             isVisionActive = true;
@@ -141,12 +144,31 @@ async function toggleCamera() {
         }
         initVisionSystem(video, canvas);
     } else {
-        webcamStream.getTracks().forEach(track => track.stop());
-        webcamStream = null;
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+            webcamStream = null;
+        }
         container.style.display = 'none';
+        document.body.classList.remove('camera-fullscreen-active');
         btn.innerText = 'VISION: OFF';
         isVisionActive = false;
         isDetecting = false; // [OPTIMIZED] คืนค่าล็อกเมื่อปิดกล้อง
+    }
+}
+
+function toggleCameraMirror() {
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('vision-overlay');
+    const flipBtn = document.getElementById('cam-flip-btn');
+    if (!video) return;
+
+    video.classList.toggle('mirrored');
+    if (canvas) canvas.classList.toggle('mirrored');
+
+    const isMirrored = video.classList.contains('mirrored');
+    if (flipBtn) {
+        flipBtn.innerText = isMirrored ? '⇄ MIRROR: ON' : '⇄ FLIP MIRROR';
+        flipBtn.style.borderColor = isMirrored ? '#ff9900' : 'rgba(0, 200, 255, 0.4)';
     }
 }
 
@@ -2228,6 +2250,22 @@ function startListening() {
                                 statusBar.innerText = 'CRITICAL: ARCHIVE LINK FAILED';
                             });
                         }
+                        return;
+                    }
+                    if (/(เปิดกล้อง|เปิดระบบกล้อง|เปิดวิชั่น|open camera|activate camera|turn on camera|เปิดตา)/i.test(lowerCommand)) {
+                        if (!webcamStream) {
+                            toggleCamera();
+                        }
+                        speak("เปิดระบบกล้องออปติคอลเต็มจอภาพเรียบร้อยครับเจ้านาย");
+                        statusBar.innerText = 'OPTICAL FEED: FULLSCREEN ACTIVE';
+                        return;
+                    }
+                    if (/(ปิดกล้อง|ปิดระบบกล้อง|ปิดวิชั่น|close camera|turn off camera|deactivate camera|ปิดตา)/i.test(lowerCommand)) {
+                        if (webcamStream) {
+                            toggleCamera();
+                        }
+                        speak("ปิดระบบกล้องเรียบร้อยครับ");
+                        statusBar.innerText = 'OPTICAL FEED: OFFLINE';
                         return;
                     }
                     if (/(หาข้อมูลเกี่ยวกับสิ่งนี้|สแกนสิ่งนี้|สแกนวัตถุบนโต๊ะ|สแกนวัตถุ|สิ่งนี้คืออะไร|นี่คืออะไร|มันคืออะไร)/i.test(lowerCommand)) {
