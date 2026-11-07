@@ -77,6 +77,14 @@ class SubtextCognitiveEngine:
             if re.search(pattern, q_clean):
                 return False
 
+        # Real-time grounding queries focus on factual world intelligence rather than psychological subtext
+        try:
+            from jarvis_core.cognitive.grounding_engine import grounding_engine
+            if grounding_engine.is_grounding_query(q_clean):
+                return False
+        except ImportError:
+            pass
+
         # If query is long or contains conversational/reflective indicators
         if len(q_clean) > 25:
             return True
@@ -88,6 +96,37 @@ class SubtextCognitiveEngine:
             "ทำได้ไหม", "ทำไมถึง", "จริงไหม", "ชอบ", "เบื่อ", "สนุก", "ยาก"
         ]
         return any(w in q_clean for w in check_words)
+
+    def classify_intent(self, query: str) -> str:
+        """
+        Classifies intent into:
+        - 'realtime_intel': Current news, briefing, temporal events requiring live RSS grounding
+        - 'reflective': Emotional, philosophical, creative, human psychology queries
+        - 'operational': Direct commands, OS tools, quick system tasks
+        """
+        if not query or len(query.strip()) < 2:
+            return "operational"
+
+        q_clean = query.strip().lower()
+
+        # 1. Real-time world intelligence / news briefing
+        try:
+            from jarvis_core.cognitive.grounding_engine import grounding_engine
+            if grounding_engine.is_grounding_query(q_clean):
+                return "realtime_intel"
+        except ImportError:
+            pass
+
+        # 2. Operational bypass
+        for pattern in self.BYPASS_PATTERNS:
+            if re.search(pattern, q_clean):
+                return "operational"
+
+        # 3. Reflective & theory of mind
+        if self.should_analyze_subtext(query):
+            return "reflective"
+
+        return "operational"
 
     def extract_wisdom_heuristics(self, query: str) -> Optional[Dict[str, str]]:
         """Fast rule-based thematic matching for immediate subtext enrichment (< 1 ms)."""

@@ -43,18 +43,31 @@ def demonstrate_query(query_text: str):
     print(f"{BOLD}💬 ข้อความจากเจ้านาย:{RESET} \"{YELLOW}{query_text}{RESET}\"")
     print(f"{CYAN}{'-' * 75}{RESET}")
 
-    # STEP 1: Fast-Path Filter
+    # STEP 1: Intent Triage
     time.sleep(0.1)
-    is_reflective = subtext_engine.should_analyze_subtext(query_text)
+    intent_type = subtext_engine.classify_intent(query_text)
     print(f"{BOLD}🔍 [ขั้นตอนที่ 1: การจำแนกประเภทคำสั่ง (Intent Triage)]{RESET}")
-    if is_reflective:
+    if intent_type == "realtime_intel":
+        print(f"   ► สถานะ: {CYAN}Real-Time World Intelligence & News Briefing (เชื่อมต่อสัญญาณข่าวสารและข้อมูลสด){RESET}")
+    elif intent_type == "reflective":
         print(f"   ► สถานะ: {MAGENTA}Reflective / Conversational / Emotional Query (เปิดการทำงานสมองขั้นสูง){RESET}")
     else:
         print(f"   ► สถานะ: {GREEN}Operational Command (ข้ามการคิดซับเท็กซ์เพื่อรันเครื่องมือทันที < 0 ms){RESET}")
 
-    # STEP 2: Subtext & Theory of Mind Analysis
-    print(f"\n{BOLD}🧠 [ขั้นตอนที่ 2: การอ่านระหว่างบรรทัด (Theory of Mind & Psychology)]{RESET}")
-    if is_reflective:
+    # STEP 2: Subtext & Theory of Mind Analysis / Temporal Grounding
+    print(f"\n{BOLD}🧠 [ขั้นตอนที่ 2: การอ่านระหว่างบรรทัดและเจตนา (Subtext & Grounding Analysis)]{RESET}")
+    if intent_type == "realtime_intel":
+        try:
+            from jarvis_core.cognitive.grounding_engine import grounding_engine
+            headlines = grounding_engine.fetch_live_headlines(query_text, limit=2)
+            category = grounding_engine.detect_category(query_text)
+            print(f"   ► {BOLD}เป้าหมายข้อมูล (Intel Focus):{RESET} สรุปสถานการณ์โลกและเหตุการณ์ปัจจุบัน ({category.upper()})")
+            print(f"   ► {BOLD}การตรึงข้อเท็จจริง (Temporal Grounding):{RESET} ดึงข้อมูลสดจาก Live RSS เพื่อป้องกันภาพหลอน (Anti-Hallucination Active)")
+            if headlines:
+                print(f"   ► {BOLD}ตัวอย่างข้อมูลภาคสนามล่าสุด:{RESET} \"{headlines[0]}\"")
+        except Exception as _g_err:
+            print(f"   ► Grounding telemetry: {_g_err}")
+    elif intent_type == "reflective":
         heuristics = subtext_engine.extract_wisdom_heuristics(query_text)
         if heuristics:
             print(f"   ► {BOLD}สภาวะทางจิตวิทยา (Psychological Lens):{RESET} {heuristics['psychology']}")

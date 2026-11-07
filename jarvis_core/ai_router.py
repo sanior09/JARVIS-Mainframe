@@ -902,6 +902,22 @@ def call_nachapol_core(
             # ----------------------------------------------------
 
             # ----------------------------------------------------
+            # JARVIS Internal Subsystem: Real-Time World & Temporal Grounding
+            # ----------------------------------------------------
+            try:
+                from jarvis_core.cognitive.grounding_engine import grounding_engine
+                grounding_injection = grounding_engine.get_grounding_prompt_injection(actual_query)
+                if grounding_injection:
+                    logger.info("📡 [GROUNDING ENGINE] Live world intel grounding engaged.")
+                    if messages and isinstance(messages[0], dict) and messages[0].get("role") == "system":
+                        messages[0]["content"] = str(messages[0].get("content", "")) + grounding_injection
+                    else:
+                        messages.insert(0, {"role": "system", "content": grounding_injection})
+            except Exception as _ground_err:
+                logger.debug(f"[GROUNDING ENGINE] {_ground_err}")
+            # ----------------------------------------------------
+
+            # ----------------------------------------------------
             # JARVIS Internal Subsystem: Active Window / Screen Context
             # ----------------------------------------------------
             try:
