@@ -251,4 +251,21 @@ def create_app() -> Flask:
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
+    @app.route("/api/spatial/ar_recon", methods=["POST"])
+    def api_spatial_ar_recon():
+        """[SPATIAL AR WORKBENCH] Endpoint สแกนวิเคราะห์วัตถุบนโต๊ะและกาง HUD เลนส์ AR เต็มรูปแบบ"""
+        try:
+            data = request.get_json(silent=True) or {}
+            img_b64 = data.get("image") or data.get("image_base64", "")
+            user_prompt = data.get("prompt") or data.get("query", "หาข้อมูลเกี่ยวกับสิ่งนี้ให้หน่อย")
+            if not img_b64:
+                return jsonify({"success": False, "error": "No image payload provided"}), 400
+
+            from modules.spatial_ar_workbench import spatial_ar_workbench
+            result = spatial_ar_workbench.analyze_desk_object(img_b64, user_prompt)
+            return jsonify(result)
+        except Exception as e:
+            logger.error(f"[SPATIAL AR] API error: {e}", exc_info=True)
+            return jsonify({"success": False, "error": str(e)}), 500
+
     return app

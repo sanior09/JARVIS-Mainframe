@@ -100,3 +100,4 @@ def test_ai_router_grounding_integration():
             assert response is not None
             assert "Verified Event Today" in messages[0]["content"]
             assert "REAL-TIME TEMPORAL GROUNDING" in messages[0]["content"]
+

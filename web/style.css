@@ -1147,3 +1147,491 @@ input {
         display: none; /* Hide on mobile portrait to avoid crowding small screens */
     }
 }
+
+/* ==========================================================================
+   J.A.R.V.I.S. AR SPATIAL WORKBENCH HUD (HUW PROSSER / STARK LABS)
+   ========================================================================== */
+
+.ar-workbench-viewport {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    background: #02060b;
+    overflow: hidden;
+    font-family: 'Share Tech Mono', 'Orbitron', monospace;
+    color: #00ffff;
+    user-select: none;
+}
+
+#ar-webcam-feed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.08) brightness(0.92) saturate(1.1);
+    z-index: 1;
+}
+
+#ar-workbench-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.ar-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background-image: 
+        linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+}
+
+.ar-laser-beam {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, #ffffff, #00ffff, transparent);
+    box-shadow: 0 0 15px #00ffff, 0 0 35px #00ffff;
+    z-index: 5;
+    pointer-events: none;
+    animation: arLaserSweep 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes arLaserSweep {
+    0% { top: 10%; opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { top: 90%; opacity: 0.2; }
+}
+
+.ar-hud-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 20;
+    background: linear-gradient(to bottom, rgba(2, 6, 11, 0.95), rgba(2, 6, 11, 0.4) 70%, transparent);
+    border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.ar-hud-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ar-pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+    animation: arPulse 1.2s infinite alternate;
+}
+
+@keyframes arPulse {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 18px #00ffff; }
+}
+
+.ar-title-text {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+}
+
+.ar-badge {
+    padding: 3px 8px;
+    font-size: 10px;
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    background: rgba(0, 229, 255, 0.1);
+    border-radius: 3px;
+    letter-spacing: 1px;
+}
+
+.ar-hud-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.ar-hud-btn {
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.ar-hud-btn.action-scan {
+    background: rgba(0, 229, 255, 0.15);
+    border: 1px solid #00ffff;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+.ar-hud-btn.action-scan:hover {
+    background: #00ffff;
+    color: #02060b;
+    box-shadow: 0 0 20px #00ffff;
+}
+
+.ar-hud-btn.action-close {
+    background: rgba(255, 50, 70, 0.15);
+    border: 1px solid #ff3246;
+    color: #ff3246;
+}
+
+.ar-hud-btn.action-close:hover {
+    background: #ff3246;
+    color: #ffffff;
+}
+
+/* --- SVG Leader Lines Layer --- */
+.ar-leader-svg-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 12;
+}
+
+/* --- Reticle Lock Box --- */
+.ar-target-reticle {
+    position: absolute;
+    z-index: 15;
+    pointer-events: none;
+    border: 1px dashed rgba(0, 229, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.25), inset 0 0 15px rgba(0, 229, 255, 0.15);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reticle-corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+}
+
+.reticle-corner.top-left {
+    top: -2px; left: -2px;
+    border-top: 3px solid #ff003c;
+    border-left: 3px solid #ff003c;
+    box-shadow: -2px -2px 8px rgba(255, 0, 60, 0.6);
+}
+
+.reticle-corner.top-right {
+    top: -2px; right: -2px;
+    border-top: 3px solid #ff003c;
+    border-right: 3px solid #ff003c;
+    box-shadow: 2px -2px 8px rgba(255, 0, 60, 0.6);
+}
+
+.reticle-corner.bottom-left {
+    bottom: -2px; left: -2px;
+    border-bottom: 3px solid #ff003c;
+    border-left: 3px solid #ff003c;
+    box-shadow: -2px 2px 8px rgba(255, 0, 60, 0.6);
+}
+
+.reticle-corner.bottom-right {
+    bottom: -2px; right: -2px;
+    border-bottom: 3px solid #ff003c;
+    border-right: 3px solid #ff003c;
+    box-shadow: 2px 2px 8px rgba(255, 0, 60, 0.6);
+}
+
+.reticle-center-crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(255, 0, 60, 0.6);
+    border-radius: 50%;
+    animation: arRotateReticle 6s linear infinite;
+}
+
+.reticle-center-crosshair::before,
+.reticle-center-crosshair::after {
+    content: '';
+    position: absolute;
+    background: #ff003c;
+}
+
+.reticle-center-crosshair::before {
+    top: 50%; left: -6px; right: -6px; height: 1px; transform: translateY(-50%);
+}
+
+.reticle-center-crosshair::after {
+    left: 50%; top: -6px; bottom: -6px; width: 1px; transform: translateX(-50%);
+}
+
+@keyframes arRotateReticle {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.reticle-label-badge {
+    position: absolute;
+    top: -28px;
+    left: 0;
+    background: rgba(255, 0, 60, 0.25);
+    border: 1px solid #ff003c;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* --- Floating AR HUD Cards --- */
+.ar-cards-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 16;
+}
+
+.ar-hud-card {
+    position: absolute;
+    pointer-events: all;
+    background: rgba(5, 12, 20, 0.88);
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    border-radius: 6px;
+    padding: 12px 16px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 16px rgba(0, 229, 255, 0.15);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.ar-hud-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 229, 255, 0.3);
+    border-color: #00ffff;
+}
+
+.ar-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+    padding-bottom: 6px;
+}
+
+.ar-card-tag {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    width: fit-content;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+.ar-card-tag.red-tag { background: rgba(255, 0, 60, 0.2); color: #ff3366; border: 1px solid #ff003c; }
+.ar-card-tag.cyan-tag { background: rgba(0, 229, 255, 0.2); color: #00ffff; border: 1px solid #00ffff; }
+.ar-card-tag.green-tag { background: rgba(0, 255, 170, 0.2); color: #00ffaa; border: 1px solid #00ffaa; }
+.ar-card-tag.yellow-tag { background: rgba(255, 200, 0, 0.2); color: #ffcc00; border: 1px solid #ffcc00; }
+.ar-card-tag.purple-tag { background: rgba(180, 100, 255, 0.2); color: #c084fc; border: 1px solid #a855f7; }
+
+.ar-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #ffffff;
+}
+
+.ar-card-body {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #c9e8f5;
+}
+
+.ar-card-body ul {
+    margin: 0;
+    padding-left: 14px;
+    list-style-type: square;
+}
+
+.ar-card-body li {
+    margin-bottom: 4px;
+}
+
+/* Card Specific Layout Positions (Matching Huw Prosser's desk layout) */
+.card-top-left {
+    top: 76px;
+    left: 28px;
+    width: 280px;
+}
+
+.card-top-right {
+    top: 76px;
+    right: 28px;
+    width: 320px;
+}
+
+.card-mid-left {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 28px;
+    width: 220px;
+}
+
+.card-mid-right {
+    top: 48%;
+    transform: translateY(-50%);
+    right: 28px;
+    width: 300px;
+}
+
+.card-bottom-center {
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    height: 220px;
+}
+
+.card-bottom-right {
+    bottom: 24px;
+    right: 28px;
+    width: 300px;
+}
+
+/* Price Value Styling */
+.ar-price-display {
+    font-size: 38px;
+    font-weight: 900;
+    color: #00ffaa;
+    text-shadow: 0 0 16px rgba(0, 255, 170, 0.6);
+    font-family: 'Orbitron', monospace;
+    line-height: 1.1;
+}
+
+.ar-price-thb {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.ar-price-status {
+    font-size: 10px;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 1px;
+}
+
+/* Telemetry Barchart */
+.ar-barchart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.ar-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+}
+
+.ar-bar-label {
+    width: 60px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.ar-bar-track {
+    flex: 1;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.ar-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0099ff, #00ffff);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(0, 229, 255, 0.6);
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ar-bar-value {
+    width: 28px;
+    text-align: right;
+    font-weight: 700;
+    color: #00ffff;
+}
+
+/* Video Wrapper */
+.ar-video-wrapper {
+    width: 100%;
+    height: calc(100% - 32px);
+    overflow: hidden;
+    border-radius: 4px;
+    background: #000000;
+}
+
+.ar-video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Audio Pill */
+.ar-audio-pill {
+    position: absolute;
+    bottom: 24px;
+    left: 28px;
+    max-width: 420px;
+    background: rgba(4, 9, 16, 0.9);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    border-radius: 24px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 25;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    backdrop-filter: blur(12px);
+}
+
+.ar-voice-icon {
+    font-size: 16px;
+    animation: arPulse 0.8s infinite alternate;
+}
+
+.ar-voice-text {
+    font-size: 11px;
+    color: #ffffff;
+    line-height: 1.4;
+}

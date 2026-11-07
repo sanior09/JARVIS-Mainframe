@@ -279,9 +279,106 @@
         <button class="nachapol-btn" onclick="toggleCamera()">VISION: OFF</button>
         <button class="nachapol-btn" id="thermal-toggle" onclick="toggleThermalMode()">THERMAL: OFF</button>
         <button class="nachapol-btn" id="spatial-toggle" onclick="toggleSpatialMode()">SPATIAL SCANNER</button>
+        <button class="nachapol-btn" id="ar-workbench-toggle" onclick="toggleARWorkbench()" style="border-color: #00ffff; color: #00ffff; box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);">⌖ AR WORKBENCH</button>
         <button class="nachapol-btn" id="office-toggle" onclick="toggleAgentOffice()">AGENT OFFICE</button>
         <button class="nachapol-btn" onclick="closeAllHolograms()">CLOSE ALL HOLOGRAMS</button>
         <button class="nachapol-btn btn-reset" onclick="resetMemory()">PURGE MEMORY</button>
+    </div>
+
+    <!-- J.A.R.V.I.S. AR SPATIAL WORKBENCH HUD (HUW PROSSER / STARK LABS) -->
+    <div id="ar-workbench-container" class="ar-workbench-viewport" style="display: none;">
+        <video id="ar-webcam-feed" autoplay playsinline muted></video>
+        <canvas id="ar-workbench-canvas"></canvas>
+
+        <div class="ar-grid-overlay"></div>
+        <div id="ar-scan-laser" class="ar-laser-beam" style="display: none;"></div>
+
+        <div class="ar-hud-header">
+            <div class="ar-hud-title">
+                <span class="ar-pulse-dot"></span>
+                <span class="ar-title-text">J.A.R.V.I.S. // DESK AR WORKBENCH & SPATIAL RECON</span>
+                <span class="ar-badge" id="ar-hud-status">STANDBY</span>
+            </div>
+            <div class="ar-hud-actions">
+                <button class="ar-hud-btn action-scan" id="ar-scan-trigger-btn" onclick="triggerARObjectRecon()">⌖ SCAN DESK OBJECT</button>
+                <button class="ar-hud-btn action-close" onclick="toggleARWorkbench(false)">✕ EXIT</button>
+            </div>
+        </div>
+
+        <svg id="ar-leader-svg" class="ar-leader-svg-layer"></svg>
+
+        <div id="ar-target-reticle" class="ar-target-reticle" style="display: none;">
+            <div class="reticle-corner top-left"></div>
+            <div class="reticle-corner top-right"></div>
+            <div class="reticle-corner bottom-left"></div>
+            <div class="reticle-corner bottom-right"></div>
+            <div class="reticle-center-crosshair"></div>
+            <div class="reticle-label-badge">
+                <span class="reticle-lock-icon">⌖</span>
+                <span id="reticle-object-name">TARGET ACQUIRED</span>
+            </div>
+        </div>
+
+        <div id="ar-cards-layer" class="ar-cards-layer" style="display: none;">
+            <div id="ar-card-security" class="ar-hud-card card-top-left">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag red-tag">SECURITY MATRIX</span>
+                    <span class="ar-card-title" id="ar-card-sec-title">SECURITY & PROTOCOL ANALYSIS</span>
+                </div>
+                <div class="ar-card-body" id="ar-card-sec-body"></div>
+            </div>
+
+            <div id="ar-card-specs" class="ar-hud-card card-top-right">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag cyan-tag">HARDWARE ARCHITECTURE</span>
+                    <span class="ar-card-title" id="ar-card-specs-title">DEVICE SPECIFICATIONS</span>
+                </div>
+                <div class="ar-card-body" id="ar-card-specs-body"></div>
+            </div>
+
+            <div id="ar-card-pricing" class="ar-hud-card card-mid-left">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag green-tag">COMMERCIAL INDEX</span>
+                    <span class="ar-card-title">MARKET VALUATION</span>
+                </div>
+                <div class="ar-card-body">
+                    <div class="ar-price-display" id="ar-price-val">$199</div>
+                    <div class="ar-price-thb" id="ar-price-thb">฿7,200 (EST)</div>
+                    <div class="ar-price-status" id="ar-price-status">OFFICIAL MSRP / IN STOCK</div>
+                </div>
+            </div>
+
+            <div id="ar-card-telemetry" class="ar-hud-card card-mid-right">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag yellow-tag">TELEMETRY BENCHMARK</span>
+                    <span class="ar-card-title" id="ar-telemetry-score">88 ENDPOINTS</span>
+                </div>
+                <div class="ar-card-body">
+                    <div class="ar-barchart-container" id="ar-barchart-bars"></div>
+                </div>
+            </div>
+
+            <div id="ar-card-video" class="ar-hud-card card-bottom-center">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag cyan-tag">COMMUNITY STREAM</span>
+                    <span class="ar-card-title">DEVICE SHOWCASE & REVIEW</span>
+                </div>
+                <div class="ar-card-body ar-video-wrapper" id="ar-video-container"></div>
+            </div>
+
+            <div id="ar-card-display" class="ar-hud-card card-bottom-right">
+                <div class="ar-card-header">
+                    <span class="ar-card-tag purple-tag">IO & DISPLAY</span>
+                    <span class="ar-card-title">PHYSICAL INTERFACES</span>
+                </div>
+                <div class="ar-card-body" id="ar-card-display-body"></div>
+            </div>
+        </div>
+
+        <div id="ar-audio-pill" class="ar-audio-pill" style="display: none;">
+            <div class="ar-voice-icon">🎙️</div>
+            <div class="ar-voice-text" id="ar-voice-feedback"></div>
+        </div>
     </div>
 
     <!-- Homography Calibration Overlay Panel -->

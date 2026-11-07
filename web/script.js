@@ -2230,28 +2230,11 @@ function startListening() {
                         }
                         return;
                     }
-                    if (/(สิ่งนี้คืออะไร|นี่คืออะไร|มันคืออะไร)/i.test(lowerCommand)) {
-                        if (!isVisionActive) return;
-                        const snapshotBase64 = captureWebcamFrame();
-                        if (snapshotBase64) {
-                            statusBar.innerText = 'SCANNING COGNITIVE OBJECT...';
-                            fetch('/chat', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ message: "เรียกใช้เครื่องมือ analyze_hud_object", image: snapshotBase64 })
-                            }).then(res => res.json()).then(data => {
-                                const cleanRes = JSON.parse(data.response);
-                                if (cleanRes && cleanRes.box) {
-                                    hudDetectedObject = {
-                                        name: cleanRes.object_name.toUpperCase(),
-                                        english_name: cleanRes.english_name,
-                                        box: cleanRes.box,
-                                        expireTime: Date.now() + 15000
-                                    };
-                                    speak(`สิ่งของสิ่งนี้คือ ${cleanRes.object_name} ครับเจ้านาย`);
-                                }
-                            });
-                        }
+                    if (/(หาข้อมูลเกี่ยวกับสิ่งนี้|สแกนสิ่งนี้|สแกนวัตถุบนโต๊ะ|สแกนวัตถุ|สิ่งนี้คืออะไร|นี่คืออะไร|มันคืออะไร)/i.test(lowerCommand)) {
+                        toggleARWorkbench(true);
+                        setTimeout(() => {
+                            triggerARObjectRecon();
+                        }, 500);
                         return;
                     }
                     if (/(แสดงพิมพ์เขียวการต่อสายไฟ|แสดงพิมพ์เขียว|เปิดแบบประกอบ|show blueprint)/i.test(lowerCommand)) {
@@ -3424,3 +3407,279 @@ function renderOffice() {
     ctx.globalAlpha = 1.0;
 }
 
+
+
+// ==========================================================================
+// J.A.R.V.I.S. AR SPATIAL WORKBENCH & OBJECT RECON ENGINE (STARK LABS / HUW PROSSER)
+// ==========================================================================
+
+let isARWorkbenchActive = false;
+let arLeaderAnimationId = null;
+
+async function toggleARWorkbench(forceState = null) {
+    const container = document.getElementById('ar-workbench-container');
+    const arVideo = document.getElementById('ar-webcam-feed');
+    const toggleBtn = document.getElementById('ar-workbench-toggle');
+
+    if (!container) return;
+
+    const nextState = forceState !== null ? forceState : !isARWorkbenchActive;
+    isARWorkbenchActive = nextState;
+
+    if (isARWorkbenchActive) {
+        container.style.display = 'block';
+        if (toggleBtn) toggleBtn.innerText = '⌖ AR WORKBENCH: ACTIVE';
+
+        // Connect webcam stream to AR Video element
+        try {
+            if (!webcamStream) {
+                webcamStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: { ideal: 1920 }, height: { ideal: 1080 } } 
+                });
+            }
+            if (arVideo) {
+                arVideo.srcObject = webcamStream;
+                await arVideo.play();
+            }
+            playWakeSound();
+            const statusEl = document.getElementById('ar-hud-status');
+            if (statusEl) statusEl.innerText = 'OPTICS SYNCHRONIZED';
+        } catch (camErr) {
+            console.error('[AR WORKBENCH] Camera stream error:', camErr);
+            const statusEl = document.getElementById('ar-hud-status');
+            if (statusEl) statusEl.innerText = 'CAMERA ERROR';
+        }
+
+        window.addEventListener('resize', onARWorkbenchResize);
+    } else {
+        container.style.display = 'none';
+        if (toggleBtn) toggleBtn.innerText = '⌖ AR WORKBENCH';
+        const laser = document.getElementById('ar-scan-laser');
+        if (laser) laser.style.display = 'none';
+        if (arLeaderAnimationId) cancelAnimationFrame(arLeaderAnimationId);
+        window.removeEventListener('resize', onARWorkbenchResize);
+    }
+}
+
+function onARWorkbenchResize() {
+    if (isARWorkbenchActive) {
+        renderARLeaderLines();
+    }
+}
+
+async function triggerARObjectRecon() {
+    const statusBadge = document.getElementById('ar-hud-status');
+    const laser = document.getElementById('ar-scan-laser');
+    const scanBtn = document.getElementById('ar-scan-trigger-btn');
+    const arVideo = document.getElementById('ar-webcam-feed');
+
+    if (statusBadge) statusBadge.innerText = 'ANALYZING SURFACE OPTICS...';
+    if (laser) laser.style.display = 'block';
+    if (scanBtn) {
+        scanBtn.disabled = true;
+        scanBtn.innerText = '⏳ SCANNING...';
+    }
+
+    playHologramWhoosh();
+
+    // Capture current frame from AR Video
+    let frameBase64 = null;
+    if (arVideo && arVideo.videoWidth) {
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = arVideo.videoWidth;
+        offCanvas.height = arVideo.videoHeight;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(arVideo, 0, 0);
+        frameBase64 = offCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+    } else {
+        frameBase64 = captureWebcamFrame();
+    }
+
+    if (!frameBase64) {
+        if (statusBadge) statusBadge.innerText = 'FRAME CAPTURE FAILED';
+        if (laser) laser.style.display = 'none';
+        if (scanBtn) { scanBtn.disabled = false; scanBtn.innerText = '⌖ SCAN DESK OBJECT'; }
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/spatial/ar_recon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image: frameBase64,
+                prompt: 'สแกนวัตถุบนโต๊ะทำงานและกางพิมพ์เขียว HUD'
+            })
+        });
+
+        const data = await response.json();
+        console.log('[AR WORKBENCH] Recon Data Received:', data);
+
+        if (laser) laser.style.display = 'none';
+        if (scanBtn) {
+            scanBtn.disabled = false;
+            scanBtn.innerText = '⌖ RESCAN OBJECT';
+        }
+        if (statusBadge) statusBadge.innerText = 'TARGET LOCKED & GROUNDED';
+
+        renderARReconOverlay(data);
+
+    } catch (err) {
+        console.error('[AR WORKBENCH] API Error:', err);
+        if (laser) laser.style.display = 'none';
+        if (scanBtn) { scanBtn.disabled = false; scanBtn.innerText = '⌖ SCAN DESK OBJECT'; }
+        if (statusBadge) statusBadge.innerText = 'OPTICS ERROR';
+    }
+}
+
+function renderARReconOverlay(data) {
+    const reticle = document.getElementById('ar-target-reticle');
+    const cardsLayer = document.getElementById('ar-cards-layer');
+    const objectName = document.getElementById('reticle-object-name');
+
+    // 1. Position and display Reticle Lock
+    const bbox = data.bbox || [30, 35, 70, 65];
+    const top = bbox[0];
+    const left = bbox[1];
+    const height = Math.max(15, bbox[2] - bbox[0]);
+    const width = Math.max(15, bbox[3] - bbox[1]);
+
+    if (reticle) {
+        reticle.style.top = top + '%';
+        reticle.style.left = left + '%';
+        reticle.style.width = width + '%';
+        reticle.style.height = height + '%';
+        reticle.style.display = 'block';
+    }
+
+    if (objectName) {
+        objectName.innerText = (data.target_name || 'UNKNOWN OBJECT').toUpperCase();
+    }
+
+    // 2. Card 1: Security
+    const secCard = data.specs_card || {};
+    const secTitle = document.getElementById('ar-card-sec-title');
+    const secBody = document.getElementById('ar-card-sec-body');
+    if (secTitle && secCard.title) secTitle.innerText = secCard.title;
+    if (secBody && secCard.items) {
+        secBody.innerHTML = '<ul>' + secCard.items.map(it => '<li>' + it + '</li>').join('') + '</ul>';
+    }
+
+    // 3. Card 2: Specs
+    const hwCard = data.llm_card || {};
+    const specsTitle = document.getElementById('ar-card-specs-title');
+    const specsBody = document.getElementById('ar-card-specs-body');
+    if (specsTitle && hwCard.title) specsTitle.innerText = hwCard.title;
+    if (specsBody && hwCard.items) {
+        specsBody.innerHTML = '<ul>' + hwCard.items.map(it => '<li>' + it + '</li>').join('') + '</ul>';
+    }
+
+    // 4. Card 3: Price
+    const pricing = data.pricing_card || {};
+    const priceVal = document.getElementById('ar-price-val');
+    const priceThb = document.getElementById('ar-price-thb');
+    const priceStatus = document.getElementById('ar-price-status');
+    if (priceVal) priceVal.innerText = pricing.price_usd || '$199';
+    if (priceThb) priceThb.innerText = pricing.price_thb || '฿7,200';
+    if (priceStatus) priceStatus.innerText = pricing.status || 'OFFICIAL MSRP / IN STOCK';
+
+    // 5. Card 4: Telemetry Bar Chart
+    const telem = data.telemetry_card || {};
+    const telemScore = document.getElementById('ar-telemetry-score');
+    const barsContainer = document.getElementById('ar-barchart-bars');
+    if (telemScore) telemScore.innerText = (telem.score || 88) + ' ' + (telem.score_label || 'ENDPOINTS');
+    if (barsContainer && telem.metrics) {
+        barsContainer.innerHTML = telem.metrics.map(m => 
+            '<div class="ar-bar-row">' +
+                '<span class="ar-bar-label">' + m.label + '</span>' +
+                '<div class="ar-bar-track">' +
+                    '<div class="ar-bar-fill" style="width: ' + m.value + '%"></div>' +
+                '</div>' +
+                '<span class="ar-bar-value">' + m.value + '%</span>' +
+            '</div>'
+        ).join('');
+    }
+
+    // 6. Card 5: Video Review Stream
+    const videoContainer = document.getElementById('ar-video-container');
+    if (videoContainer) {
+        const videoId = data.video_id || 'nLIp4wd0oXs';
+        videoContainer.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&mute=1&controls=1&modestbranding=1&loop=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    }
+
+    // 7. Card 6: Display & IO
+    const dispCard = data.display_card || {};
+    const dispBody = document.getElementById('ar-card-display-body');
+    if (dispBody && dispCard.items) {
+        dispBody.innerHTML = '<ul>' + dispCard.items.map(it => '<li>' + it + '</li>').join('') + '</ul>';
+    }
+
+    // Reveal Cards Layer
+    if (cardsLayer) cardsLayer.style.display = 'block';
+
+    // 8. Render Dynamic SVG Leader Lines
+    renderARLeaderLines();
+
+    // 9. Display Audio Voice Pill
+    const audioPill = document.getElementById('ar-audio-pill');
+    const voiceText = document.getElementById('ar-voice-feedback');
+    if (audioPill && voiceText && data.voice_text) {
+        voiceText.innerText = data.voice_text;
+        audioPill.style.display = 'flex';
+    }
+
+    playHologramWhoosh();
+}
+
+function renderARLeaderLines() {
+    const reticle = document.getElementById('ar-target-reticle');
+    const svg = document.getElementById('ar-leader-svg');
+    if (!reticle || !svg || reticle.style.display === 'none') return;
+
+    const rRect = reticle.getBoundingClientRect();
+    const reticleCenter = {
+        x: rRect.left + rRect.width / 2,
+        y: rRect.top + rRect.height / 2
+    };
+
+    const cardIds = [
+        'ar-card-security',
+        'ar-card-specs',
+        'ar-card-pricing',
+        'ar-card-telemetry',
+        'ar-card-video',
+        'ar-card-display'
+    ];
+
+    let svgHtml = '<defs><filter id="ar-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>';
+
+    cardIds.forEach(id => {
+        const card = document.getElementById(id);
+        if (!card) return;
+        const cRect = card.getBoundingClientRect();
+
+        let targetX = cRect.left + cRect.width / 2;
+        let targetY = cRect.top + cRect.height / 2;
+
+        if (cRect.right < reticleCenter.x) {
+            targetX = cRect.right;
+        } else if (cRect.left > reticleCenter.x) {
+            targetX = cRect.left;
+        }
+
+        if (cRect.bottom < reticleCenter.y) {
+            targetY = cRect.bottom;
+        } else if (cRect.top > reticleCenter.y) {
+            targetY = cRect.top;
+        }
+
+        const midX = (reticleCenter.x + targetX) / 2;
+        const midY = (reticleCenter.y + targetY) / 2;
+
+        svgHtml += '<path d="M ' + reticleCenter.x + ' ' + reticleCenter.y + ' Q ' + midX + ' ' + reticleCenter.y + ' ' + targetX + ' ' + targetY + '" stroke="#00ffff" stroke-width="1.5" stroke-dasharray="4, 3" fill="none" opacity="0.8" filter="url(#ar-glow)" />' +
+                   '<circle cx="' + reticleCenter.x + '" cy="' + reticleCenter.y + '" r="3.5" fill="#ff003c" filter="url(#ar-glow)" />' +
+                   '<circle cx="' + targetX + '" cy="' + targetY + '" r="4" fill="#00ffff" filter="url(#ar-glow)" />';
+    });
+
+    svg.innerHTML = svgHtml;
+}

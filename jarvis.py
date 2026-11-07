@@ -9181,6 +9181,35 @@ def handle_chat_logic(data: dict) -> "Response":
                 "intent": "INFO_QUERY"
             })
             
+    # ── [SPATIAL AR WORKBENCH FAST-PATH] สแกนวัตถุบนโต๊ะกาง HUD เต็มรูปแบบ ─────
+    ar_desk_keywords = [
+        "หาข้อมูลเกี่ยวกับสิ่งนี้", "สแกนสิ่งนี้", "สแกนวัตถุบนโต๊ะ", "สแกนวัตถุ",
+        "สิ่งนี้คืออะไร", "อุปกรณ์นี้คืออะไร", "วิเคราะห์สิ่งนี้", "scan this", "what is this object"
+    ]
+    if any(k in user_message.lower() for k in ar_desk_keywords):
+        image_data = data.get("image")
+        if not image_data:
+            try:
+                from modules.jarvis_hardware import capture_webcam_image
+                cam_res = capture_webcam_image(0)
+                if cam_res and "WEBCAM_IMAGE_BASE64:" in cam_res:
+                    image_data = cam_res.split("WEBCAM_IMAGE_BASE64:")[1].rstrip("]")
+            except Exception:
+                pass
+
+        if image_data:
+            from modules.spatial_ar_workbench import spatial_ar_workbench
+            recon_res = spatial_ar_workbench.analyze_desk_object(image_data, user_message)
+            voice_txt = recon_res.get("voice_text", "สแกนวัตถุบนโต๊ะเรียบร้อยครับเจ้านาย")
+            return jsonify({
+                "response": voice_txt,
+                "tts_text": voice_txt,
+                "ar_workbench_data": recon_res,
+                "standby": IS_STANDBY,
+                "thinking_delay": 0,
+                "intent": "AR_OBJECT_RECON"
+            })
+
     spatial_keywords = [
         # ── คีย์เวิร์ดระบุสถานที่จากรูป (Image-based Location ID) ──────────────
         "ที่นี้คือสถานที่ไหน", "ที่นี้คือที่ไหน", "นี่คือที่ไหน",
@@ -11436,6 +11465,23 @@ def analyze_spatial_iconography(image_base64: str) -> None:
         gc.collect()
     except (json.JSONDecodeError, ValueError, KeyError) as e:
         logger.error(f"Spatial Iconography error: {e}")
+
+@app.route('/api/spatial/ar_recon', methods=['POST'])
+def handle_spatial_ar_recon():
+    """[SPATIAL AR WORKBENCH] Endpoint สแกนวิเคราะห์วัตถุบนโต๊ะและกาง HUD เลนส์ AR เต็มรูปแบบ"""
+    try:
+        data = request.get_json(silent=True) or {}
+        img_b64 = data.get("image") or data.get("image_base64", "")
+        user_prompt = data.get("prompt") or data.get("query", "หาข้อมูลเกี่ยวกับสิ่งนี้ให้หน่อย")
+        if not img_b64:
+            return jsonify({"success": False, "error": "กรุณาส่งภาพจากกล้องมาด้วยครับ (field: image)"}), 400
+
+        from modules.spatial_ar_workbench import spatial_ar_workbench
+        result = spatial_ar_workbench.analyze_desk_object(img_b64, user_prompt)
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"[SPATIAL AR] API error: {e}", exc_info=True)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/wearable/stream', methods=['POST'])
 def wearable_stream_endpoint():
