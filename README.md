@@ -4,44 +4,40 @@
 ### *Nachapol Industries Advanced Super AGI Mainframe*
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623?style=for-the-badge)](LICENSE)
-[![CI Pipeline](https://img.shields.io/github/actions/workflow/status/sanior09/JARVIS-Mainframe/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%20PIPELINE)](https://github.com/sanior09/JARVIS-Mainframe/actions)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com)
 [![Mainframe Status](https://img.shields.io/badge/Mainframe-ONLINE%2024%2F7-00C4B4?style=for-the-badge)](#)
+[![CI Pipeline](https://img.shields.io/github/actions/workflow/status/sanior09/JARVIS-Mainframe/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%20PIPELINE)](https://github.com/sanior09/JARVIS-Mainframe/actions)
 
 <p align="center">
-  <b>ระบบผู้ช่วยอัจฉริยะแบบ Autonomous AGI ระดับวิศวกรรมสำหรับ Windows</b><br>
-  Dynamic Island Desktop HUD • สภาสมองกล 6 ขุนพล • โต้ตอบด้วยเสียง Real-Time • AR Spatial Workbench
+  <b>ระบบผู้ช่วยอัจฉริยะแบบ Autonomous AGI ระดับสูงสำหรับ Windows</b><br>
+  วิศวกรรมซอฟต์แวร์ • ควบคุม Windows OS อัตโนมัติ • Dynamic Island HUD • Mobile Companion<br>
+  สั่งการด้วยเสียง Real-Time • สภาสมองกล 6 ขุนพล • AR Spatial Workbench
 </p>
 
 <p align="center">
-  <a href="#highlights"><b>⚡ จุดเด่น</b></a> •
-  <a href="#ai-council"><b>🏛️ สภา AI</b></a> •
-  <a href="#quick-start"><b>🚀 วิธีติดตั้ง</b></a> •
-  <a href="#interfaces"><b>🖥️ ส่วนติดต่อผู้ใช้</b></a> •
-  <a href="#subsystems"><b>🛠️ ระบบย่อย</b></a> •
-  <a href="#skills-ecosystem"><b>🧩 ทักษะ Agentic</b></a> •
-  <a href="#dev-note"><b>📝 บันทึกผู้พัฒนา</b></a>
+  <a href="#architecture"><b>⚡ Architecture</b></a> •
+  <a href="#ai-council"><b>🏛️ AI Council</b></a> •
+  <a href="#quick-start"><b>🚀 Quick Start</b></a> •
+  <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
+  <a href="#mobile-app"><b>📱 Mobile App</b></a> •
+  <a href="#subsystems"><b>🛠️ Subsystems</b></a> •
+  <a href="#skills-ecosystem"><b>🧩 Skills</b></a> •
+  <a href="#roadmap"><b>🚀 Roadmap</b></a> •
+  <a href="#dev-note"><b>📝 Dev Note</b></a>
 </p>
+
+| แกนประมวลผล (Core) | สถาปัตยกรรม (Architecture) | สภาสมองกล (Swarm Quorum) | ความเร็วตอบสนอง (Latency) | ระบบปฏิบัติการ (OS Support) |
+| :---: | :---: | :---: | :---: | :---: |
+| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `6 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
 
 </div>
 
 ---
 
-<a id="highlights"></a>
-## ⚡ ฟีเจอร์หลักเด่นประจำระบบ (System Highlights)
-
-| 🏝️ Desktop Dynamic Island & AR | 🏛️ Multi-Agent Swarm Council |
-| :--- | :--- |
-| • หน้าปัด HUD ลอยตัวสไตล์ Cyberpunk พร้อม 7 มาสคอตสกิน<br>• AR Spatial Workbench สแกนวัตถุบนโต๊ะแบบ Real-time พร้อมการ์ด Bento ข้อมูล | • ระดมพลสภา AI 6 ขุนพล ประชุมคู่ขนานความเร็วแสง (~1s)<br>• สังเคราะห์กลยุทธ์และตรวจทานโค้ดตามความเชี่ยวชาญเฉพาะด้าน |
-| 🎙️ Real-Time Voice & Optical HUD | 🤖 Autonomous Computer Operator |
-| • เสียงพากย์ภาษาไทยเป็นธรรมชาติ พร้อมระบบ VAD Barge-In ตัดบทได้ทันที<br>• หน้าต่างกล้อง Web HUD ขยายเต็มจอภาพ (100vw × 100vh) ส่องโต๊ะทำงาน | • สแกนหน้าจอคอมพิวเตอร์และคลิกเมาส์/พิมพ์คีย์บอร์ด Windows อัตโนมัติ<br>• ทำงานเบื้องหลังพร้อมระบบความปลอดภัย Failsafe Watchdog 24/7 |
-
----
-
 <a id="architecture"></a>
-## 📐 แผนผังสถาปัตยกรรม (System Architecture Blueprint)
-เปิดไฟล์ **[`web/jarvis_architecture.html`](web/jarvis_architecture.html)** บนเบราว์เซอร์ เพื่อดูแผนผังการทำงานแบบ Interactive (Zero-Overlap Pipeline):
+## ⚡ System Architecture Blueprint (5-Stage Pipeline)
+สามารถเปิดไฟล์ **[`web/jarvis_architecture.html`](web/jarvis_architecture.html)** บนเบราว์เซอร์ เพื่อดูแผนผังการทำงานแบบ Interactive (Zero-Overlap Pipeline):
 
 <p align="center">
   <img src="docs/images/architecture_map.png" alt="J.A.R.V.I.S. System Architecture Blueprint" width="100%">
@@ -50,183 +46,245 @@
 ---
 
 <a id="ai-council"></a>
-## 🏛️ สภาสมองกล 6 ขุนพล (Multi-Agent Swarm Council)
-เมื่อพบโจทย์วิศวกรรมที่ซับซ้อน ระบบจะเปิดการประชุมสภา AI แบบคู่ขนาน (**Parallel ThreadPool Deliberation**) เพื่อรวบรวมมุมมองเฉพาะทางและสังเคราะห์คำตอบที่ดีที่สุด:
+## 🏛️ Nachapol Industries Multi-Agent Swarm Council
+(`jarvis_core/cognitive/swarm.py`)
 
-| สมาชิกสภา | บทบาทหลัก (Role) | ขอบเขตความเชี่ยวชาญ (Specialty) |
+เมื่อระบบพบโจทย์วิศวกรรมที่ซับซ้อน **ComplexityClassifier** จะเปิดการประชุมสภา AI แบบคู่ขนาน (**ThreadPool Deliberation**) เพื่อรวบรวมมุมมองเฉพาะทางและสังเคราะห์แผนกลยุทธ์สูงสุดภายใน ~1 วินาที:
+
+| สมาชิกสภา | บทบาทหลัก (Role) | สเปกและหน้าที่ (Official Specs & Focus) |
 | :---: | :--- | :--- |
-| 👔 **J.A.R.V.I.S.** | **Council President** | ประธานสภา วางแผนแม่บท สังเคราะห์มุมมอง และกำกับความปลอดภัย |
-| 👠 **F.R.I.D.A.Y.** | **Technical Lead** | สถาปัตยกรรมโค้ด วิศวกรรมซอฟต์แวร์ และการคำนวณวงจรไฟฟ้า |
-| 🛡️ **V.E.R.O.N.I.C.A.** | **Tactical Sentinel** | ตรวจสอบความปลอดภัย ควบคุมเพดาน RAM/CPU ป้องกันระบบโอเวอร์โหลด |
-| 🕶️ **E.D.I.T.H.** | **Strategic Intel** | วิเคราะห์ทฤษฎีเกม ประเมินความเสี่ยง และคาดการณ์แต้มต่อสูงสุด |
-| 🔧 **U. (ยู)** | **Vision & Maintenance** | วิเคราะห์ภาพหน้าจอ เคลียร์ไฟล์แคช และบำรุงรักษาฐานข้อมูล |
-| 🧯 **D.U.M.-E. (ดัม-อี)** | **Hardware & Safeguard** | ควบคุมเมาส์/คีย์บอร์ด OS, ระบบ Watchdog และตัดความร้อนฉุกเฉิน |
+| 👔 **J.A.R.V.I.S.** | **Council President** | ประธานสภา วางแผนแม่บท (Master Directive) สังเคราะห์มุมมองทุกฝ่าย และดูแลความปลอดภัยระบบ |
+| 👠 **F.R.I.D.A.Y.** | **Socialization & Technical Ops** | สถาปัตยกรรมโค้ด ไวยากรณ์ Python การคำนวณวงจรและคณิตศาสตร์ พร้อมไหวพริบปฏิภาณ |
+| 🛡️ **V.E.R.O.N.I.C.A.** | **Tactical Sentinel** | ตรวจจับช่องโหว่ความปลอดภัย ควบคุมเพดาน RAM/CPU และป้องกันระบบโอเวอร์โหลด |
+| 🕶️ **E.D.I.T.H.** | **Strategic Intelligence** | วิเคราะห์ทฤษฎีเกม (Game Theory) คาดการณ์ความเสี่ยง และคำนวณแต้มต่อสูงสุด |
+| 🔧 **U. (ยู)** | **Maintenance & Perception** | วิเคราะห์ภาพหน้าจอ (`analyze_desktop_screen_context`), Defrag SQLite และเคลียร์ไฟล์แคช |
+| 🧯 **D.U.M.-E. (ดัม-อี)** | **Servo & Safeguard** | ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อนฉุกเฉิน |
 
 ---
 
 <a id="quick-start"></a>
-## 🚀 วิธีติดตั้งและเริ่มใช้งาน (Quick Start)
+## 🚀 Quick Start (Nachapol Protocol)
 
-### ขั้นตอนที่ 1: ติดตั้ง Dependencies
+### 1. เตรียม Mainframe และ Local LLM (Ollama)
+ระบบขับเคลื่อนด้วยสมองหลักจาก **Cloud Neural Engine (Groq: GPT-OSS 120B / Qwen 27B และ Google Gemini 3.6 Flash)** ประมวลผลผ่าน API ความเร็วสูงโดยไม่ต้องโหลดโมเดลหนักเครื่อง
+
+สำหรับ **โหมดออฟไลน์ (Offline Fallback)**, **เฝ้าระวังจิตใต้สำนึก (Subconscious Engine)** และ **Cybersecurity (Uncensored Mode)** ให้ติดตั้ง [Ollama](https://ollama.ai/) และเลือกโมเดลตามต้องการ:
+- **โหมด Reflex ประหยัดแรมสูงสุด:** `ollama pull qwen:4b` (ขนาดเบา เหมาะกับคอมพิวเตอร์ทั่วไป)
+- **โหมด Ethical Pentest & Cybersecurity:** `ollama pull dolphin-llama3` (ปลดล็อก Guardrail สำหรับงาน Security)
+- **โมเดล Local หลัก:** `qwen-uncensored` (แท็กโมเดลที่ลงทะเบียนไว้ในเครื่องผ่าน Modelfile)
+- **โหมดวิเคราะห์วิศวกรรมเชิงลึก:** `ollama pull qwen2.5-coder:7b` (เน้นเขียนโค้ดและการคำนวณ)
+
+### 2. ติดตั้ง Dependencies
 ```bash
-git clone https://github.com/sanior09/JARVIS-Mainframe.git
-cd JARVIS-Mainframe
 pip install -r requirements.txt
 ```
+(รองรับ PyQt6, Edge-TTS, LangGraph, MediaPipe, OpenCV, Flask, Groq, Google Generative AI ครบถ้วน)
 
-### ขั้นตอนที่ 2: ตั้งค่าสภาพแวดล้อมและ API Keys (`.env`)
-คัดลอกไฟล์ `.env.example` เป็น `.env` และระบุคีย์บริการที่ท่านต้องการใช้งาน:
+### 3. ตั้งค่าสภาพแวดล้อม (`.env`)
+คัดลอกไฟล์ `.env.example` เป็น `.env` และระบุคีย์บริการที่ท่านใช้งาน:
 ```env
-# ━━━ 🧠 AI Neural Providers ━━━
+# ━━━ AI Neural Providers ━━━
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=openai/gpt-oss-120b
 GROQ_FAST_MODEL=qwen/qwen3.8-27b
+GROQ_STT_MODEL=whisper-large-v3
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-3.6-flash
+OLLAMA_MODEL=qwen-uncensored
+OLLAMA_FAST_MODEL=qwen:4b
 
-# ━━━ 🎙️ Audio & Streaming STT ━━━
-DEEPGRAM_API_KEY=your_deepgram_api_key
-
-# ━━━ 🏠 Smart Home & IoT (Home Assistant) ━━━
+# ━━━ Smart Home & IoT (Home Assistant) ━━━
 HOME_ASSISTANT_URL=http://homeassistant.local:8123
 HOME_ASSISTANT_TOKEN=your_token
 
-# ━━━ 🌐 External APIs ━━━
-OPENWEATHER_API_KEY=your_weather_key
-YOUTUBE_API_KEY=your_youtube_key
-
-# ━━━ 📲 LINE Messaging & Remote Webhook ━━━
+# ━━━ LINE Messaging API & Remote Webhook ━━━
 LINE_CHANNEL_ACCESS_TOKEN=your_line_token
 LINE_CHANNEL_SECRET=your_line_secret
 NGROK_PUBLIC_URL=https://your-domain.ngrok-free.app
 
-# ━━━ ✉️ Gmail & Notifications ━━━
+# ━━━ Gmail & Notifications ━━━
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=xxxx xxxx xxxx xxxx
 
-# ━━━ 👤 User Identity & OS Controls ━━━
-OWNER_NAME=เจ้านาย
+# ━━━ External APIs & User Identity ━━━
+OPENWEATHER_API_KEY=your_weather_key
+YOUTUBE_API_KEY=your_youtube_key
+DEEPGRAM_API_KEY=your_deepgram_key
+OWNER_NAME=Sir
 COMPUTER_CONTROL_MODE=background
 ```
-> [!TIP]
-> **เริ่มใช้งานอย่างรวดเร็ว (Quick Kickstart):** ระบุเพียง `GROQ_API_KEY` และ `GEMINI_API_KEY` ก็สามารถสั่งการสมองกลหลักได้ทันที ส่วน API คีย์บริการเสริมอื่น ๆ (Smart Home, LINE, พยากรณ์อากาศ) สามารถทยอยเติมได้ตามความต้องการใช้งานครับ
+> [!NOTE]
+> สามารถกำหนดชื่อที่ต้องการให้ J.A.R.V.I.S. เรียกขานได้ที่ตัวแปร `OWNER_NAME` (เช่น `OWNER_NAME=เจ้านาย`)
 
-### ขั้นตอนที่ 3: เริ่มปฏิบัติการ (One-Click Boot)
-ดับเบิลคลิกไฟล์ **`run_jarvis.bat`** หรือรันผ่านเทอร์มินัล:
+### 4. เริ่มปฏิบัติการระบบ (System Execution)
+
+#### 🟢 ตัวเลือกที่ 1: One-Click Boot (แนะนำบน Windows)
+ดับเบิลคลิกไฟล์ **`run_jarvis.bat`** หรือรันผ่าน Command Line:
 ```cmd
 run_jarvis.bat
 ```
-*(ระบบมี **`jarvis_watchdog.py`** คอยเฝ้าระวังโปรเซสและกู้คืนระบบแบบ Auto-Recovery ตลอด 24/7)*
+*(สคริปต์จะตรวจสอบ Environment, สตาร์ท Agent หลังบ้าน และรันผ่าน **`jarvis_watchdog.py`** เพื่อ Auto-Recovery 24/7)*
 
-<details>
-<summary><b>⚙️ ทางเลือกเสริม: การติดตั้ง Local LLM และโหมดออฟไลน์ (Ollama)</b></summary>
+#### ⚪ ตัวเลือกที่ 2: รันแบบ Manual
+```bash
+# รัน Mainframe ผ่าน Watchdog Supervisor
+python jarvis_watchdog.py
 
-<br>
-
-หากต้องการใช้งานโหมดออฟไลน์หรือเฝ้าระวังจิตใต้สำนึก (Subconscious Engine) ติดตั้ง [Ollama](https://ollama.ai/) และเลือกโมเดลตามต้องการ:
-- **โหมด Reflex ประหยัดแรมสูงสุด:** `ollama pull qwen:4b`
-- **โหมด Uncensored สำหรับงาน Cybersecurity:** `ollama pull dolphin-llama3`
-- **โหมดเขียนโค้ดและวิเคราะห์เชิงลึก:** `ollama pull qwen2.5-coder:7b`
-
-</details>
+# หรือรันแกนสมองหลักโดยตรง
+python jarvis.py
+```
 
 ---
 
 <a id="interfaces"></a>
-## 🖥️ ส่วนติดต่อผู้ใช้และแอปพลิเคชันเสริม (Companion Clients)
+## 🖥️ Companion Clients & Interface
 
 <a id="dynamic-island"></a>
 ### 🏝️ 1. Dynamic Island Desktop HUD v3
-แผงควบคุมลอยตัว Cyberpunk เหนือหน้าต่าง Windows เชื่อมต่อผ่าน Named Pipe ความหน่วงต่ำ:
+แผงหน้าปัดลอยตัว Cyberpunk เหนือหน้าต่าง Windows เชื่อมต่อผ่าน Named Pipe ความหน่วงต่ำ:
 ```bash
 python modules/dynamic_island.py
 ```
-- **7 Mascot Skins:** สลับได้ทันทีผ่านคลิกขวา (JARVIS Arc, Mochi, Codex, Cursor, Gemini, Iron Man, Antigravity)
-- **Drag & Drop Ingestion:** ลากไฟล์/เอกสารมาหย่อนใส่ HUD เพื่อให้ AI สรุปและวิเคราะห์ทันที
-- **AI Quota Gauge:** มอนิเตอร์โควตา API (Groq, Gemini, Ollama) แบบเรียลไทม์
-
-<p align="center">
-  <img src="docs/images/dynamic_island.png" alt="J.A.R.V.I.S. Dynamic Island HUD" width="100%">
-</p>
+- **7 Mascot Skins:** สลับได้ทันทีผ่านคลิกขวา (Mochi, Antigravity, Codex, Cursor, JARVIS Arc, Gemini, Iron Man Mark VI)
+- **Visual Skin Palette:** เมนูการ์ดคลิกขวาสำหรับเลือกสกิน
+- **Smart Alert & Toast Banner:** แสดงแถบแจ้งเตือน Toast ยืด-หดอัตโนมัติเมื่อ AI มีการตอบสนอง
+- **Drag & Drop AI Ingestion:** ลากไฟล์/เอกสารมาหย่อนใส่ HUD เพื่อส่งให้ AI วิเคราะห์ทันที
+- **AI Quota Gauge:** แสดงสถานะโควตา API (Groq, Gemini, Ollama) แบบเรียลไทม์
+- **Zero-Latency Named Pipe:** เชื่อมต่อกับคอร์ J.A.R.V.I.S. ผ่าน `\\.\pipe\jarvis_island_pipe`
 
 <a id="mobile-app"></a>
-### 📱 2. Mobile Companion App & Web Portal
-- **Mobile Companion (React Native / Expo):** `cd jarvis-mobile && npx expo start` — ควบคุม สั่งงานด้วยเสียง และส่งภาพวิเคราะห์จากสมาร์ตโฟน
-- **Web Hologram Portal (`http://localhost:5050`):** แผงมอนิเตอร์ภาพรวมระบบ, Optical Camera Feed เต็มหน้าจอ และ AR Workbench
+### 📱 2. JARVIS Mobile Companion App (React Native / Expo Go)
+ควบคุมและสั่งการ J.A.R.V.I.S. จากระยะไกลผ่านสมาร์ตโฟน:
+```bash
+cd jarvis-mobile
+npx expo start
+```
+- **Live Voice Interaction (STT/TTS):** พูดคุยโต้ตอบด้วยเสียงแบบเรียลไทม์
+- **Multi-Modal Image Ingestion:** ถ่ายภาพหรือเลือกรูปจากมือถือส่งให้ AI วิเคราะห์
+- **Remote Document Ingestion:** แนบและส่งไฟล์เอกสารเข้าสู่คลังความรู้ของระบบ
+- **Remote Quick Actions:** สั่ง Sleep, Lockdown, สลับสกิน HUD หรือรันคำสั่งจากระยะไกล
+
+### 🌐 3. Web Portal & Optical Feed / AR Workbench
+เปิดเบราว์เซอร์ไปที่ `http://localhost:5050` เพื่อใช้งานเว็บพอร์ทัล, ระบบรับฟังเสียงผ่านเบราว์เซอร์ และ REST API
+- **Full-Screen Optical Feed (100vw × 100vh):** โหมดภาพกล้องขยายเต็มจอสำหรับส่องโต๊ะทำงาน พร้อมปุ่มสลับกระจกเงา `⇄ FLIP MIRROR`
+- **AR Spatial Workbench:** สแกนระบุตำแหน่งอุปกรณ์บนโต๊ะ วาดกรอบ Reticle ล็อกเป้าหมาย พร้อมกางการ์ด Bento ข้อมูลและวิดีโอรีวิว
 
 <p align="center">
-  <img src="docs/images/web_portal.png" alt="J.A.R.V.I.S. Web Portal Interface" width="100%">
+  <img src="docs/images/web_portal.png" alt="J.A.R.V.I.S. Hologram Web Portal Interface" width="100%">
 </p>
 
 ---
 
 <a id="subsystems"></a>
-## 🛠️ รายละเอียดระบบย่อย (Subsystems Overview)
+## 🛠️ Comprehensive Super AGI Subsystems
 
-<details>
-<summary><b>คลิกเพื่อดูรายละเอียดสถาปัตยกรรมระบบย่อยทั้ง 8 โมดูล</b></summary>
+### 🧠 1. Cognitive & Autonomous Brain
+- **Autonomous Thought Engine (`jarvis.py`):** จำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol) คำนวณความเครียดตามอุณหภูมิ WMI/CPU จริง พร้อม Mutex Lock ป้องกัน Race Condition และ Zero-Delay Shutdown (`self.stop_event`)
+- **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อช่วยแนะนำโค้ด และปิดเสียงเงียบอัตโนมัติเมื่อผู้ใช้กำลังรับชม YouTube หรือ Netflix
+- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 6 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน
+- **Neural AI Router (`jarvis_core/ai_router.py`):** กระจายงานอัตโนมัติไปยัง Groq (GPT-OSS 120B, Qwen 27B), Google Gemini (3.6 Flash) หรือ Local Ollama ตามความเหมาะสมของงาน
+- **Cognitive Evolution (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
+- **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
+- **Resource-Conscious Optimization:** ปรับจูนการใช้ทรัพยากรให้ประหยัด RAM/CPU เหมาะสำหรับคอมพิวเตอร์ทั่วไป
 
-<br>
+### 📊 2. AI Quota Governor & Cost Protection (`modules/ai_quota_tracker.py`)
+- ติดตามและบันทึกปริมาณ Token, RPM, และ TPM ของทุก LLM Provider แบบเรียลไทม์
+- **Dynamic Fallback Routing:** สลับโมเดลอัตโนมัติเมื่อโมเดลหลักติด Limit (เช่น สลับจาก Groq ไป Gemini หรือ Local Engine) ป้องกันปัญหาระบบสะดุด
 
-1. **🧠 Cognitive & Thought Engine:** จำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol) ปรับสมาธิตามโหลดเครื่อง พร้อมระบบ Visual Screen Awareness ตรวจจับหน้าจอแบบไม่ส่งเสียงรบกวนเวลาดูวิดีโอ
-2. **📊 AI Quota Governor:** ติดตาม Token/RPM/TPM แบบเรียลไทม์ และสลับโมเดลอัตโนมัติ (Fallback Routing) เมื่อติด Limit
-3. **🎙️ Low-Latency Voice Engine:** Microsoft Edge Neural TTS ควบคู่กับ VAD Barge-In ตัดเสียงพูดแทรกใน 50ms และ Deepgram Streaming STT
-4. **🤖 Windows Desktop Operator:** ควบคุมเมาส์/คีย์บอร์ด วิเคราะห์ปุ่ม UI และมีเลเยอร์ Laser Grid Takeover ขณะทำงานอัตโนมัติ
-5. **👁️ Vision & Spatial Workbench:** MediaPipe Hand Tracking ควบคุมแบบไร้สัมผัส พร้อม AR Workbench สแกนบอร์ดวงจรและอุปกรณ์บนโต๊ะ
-6. **🛡️ System Resilience & Auto-Healer:** Watchdog เฝ้าระวังตลอด 24 ชม., Code Sentinel สแกน AST ป้องกันคำสั่งอันตราย และระบบแพตช์โค้ดฉุกเฉินอัตโนมัติ
-7. **🕵️ Subconscious & Cyber Guard:** เฝ้าระวังฮาร์ดแวร์ทุก 15 วินาที พร้อมสลับเข้าโหมด Local Uncensored Model อัตโนมัติเมื่อทำ Ethical Pentesting
-8. **🎬 Multimedia Automation:** เชื่อมต่อ CapCut Desktop สำหรับตัดต่อวิดีโอ และ ComfyUI สำหรับสร้างภาพ AI
+### 🎙️ 3. Ultra Low-Latency Voice & Barge-In Engine
+- **Microsoft Edge Neural TTS (`modules/jarvis_tts_edge.py`):** เสียงพากย์ภาษาไทยและอังกฤษคุณภาพสูง ฟรี ความเร็วระดับ Real-time
+- **Voice Activity Detection (VAD) Barge-In (`modules/jarvis_vad_bargein.py`):** ตรวจจับเสียงพูดของผู้ใช้และตัดบทพูดของ J.A.R.V.I.S. ทันทีเมื่อพูดแทรก
+- **Deepgram Streaming STT (`modules/jarvis_stt_stream.py`):** ถอดรหัสเสียงสดผ่าน WebSocket ความหน่วงต่ำ
 
-</details>
+### 🤖 4. Autonomous Computer Agent & Windows Controller
+- **Screen & GUI Operator (`modules/jarvis_computer_agent.py`, `modules/agent_windows_core.py`):** วิเคราะห์หน้าจอด้วย Vision และคลิกเมาส์/พิมพ์คีย์บอร์ดบน Windows อัตโนมัติ
+- **Screen Takeover Overlay (`modules/jarvis_screen_takeover_overlay.py`):** หน้าต่าง HUD พร้อมเอฟเฟกต์ Laser Grid สแกนหน้าจอเมื่อเข้าสู่โหมดควบคุมคอมพิวเตอร์
+
+### 🎬 5. Video Editing & Generative Multimedia
+- **CapCut Automation Launcher (`dynamic_tools/control_capcut.py`):** เปิดและสั่งการ CapCut Desktop พร้อมโหลดโฟลเดอร์มีเดียสำหรับตัดต่อวิดีโอ
+- **ComfyUI Bridge (`modules/comfyui_bridge.py`):** เชื่อมต่อ ComfyUI REST/WebSocket สำหรับสร้างภาพ AI ผ่านคำสั่งเสียง
+
+### 👁️ 6. Computer Vision & Hologram Subsystem
+- **Holographic Gesture Controller (`modules/gesture_controller.py`, `modules/holographic_gestures.py`):** ควบคุมคอมพิวเตอร์และสื่อด้วยภาษามือผ่าน MediaPipe และกล้อง Webcam
+- **3D Wireframe Hologram Visualizer (`modules/hologram_visualizer.py`):** เรนเดอร์โมเดล 3D โครงสร้างทางวิศวกรรมแบบ Wireframe
+- **Spatial Vision & AR Workbench (`modules/spatial_vision.py`, `modules/spatial_ar_workbench.py`):** ตรวจจับความผิดปกติบนแผ่นวงจร (PCB) และสแกนอุปกรณ์บนโต๊ะทำงานพร้อมเส้นโยงเรดาร์
+
+### 🛡️ 7. System Resilience & Self-Healing
+- **Watchdog Process Supervisor (`jarvis_watchdog.py`):** เฝ้าระวังโปรเซส 24/7 รีสตาร์ทระบบอัตโนมัติทันทีที่ตรวจพบข้อผิดพลาด
+- **Auto-Healer & Self-Patch Engine (`modules/jarvis_auto_healer.py`, `modules/jarvis_self_patch.py`):** วิเคราะห์ Stack Trace ข้อผิดพลาดและแพตช์โค้ดฉุกเฉินได้เอง
+- **Code Sentinel (`modules/code_sentinel.py`):** สแกนความปลอดภัยโค้ดในระดับ AST เพื่อป้องกัน Infinite Loop และคำสั่งอันตราย
+- **Predictive Simulator (`modules/predictive_simulator.py`):** จำลองผลกระทบของคำสั่งก่อนส่งไปสั่งการระดับ OS
+
+### 🕵️ 8. Subconscious Engine & Cyber Security Guard
+- **Subconscious Brain (`modules/jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
+- **Uncensored Dark Mode (`jarvis_core/ai_router.py`):** ตรวจจับคำสั่ง Ethical Hacking & Pentesting อัตโนมัติ เพื่อสลับสมองไปยัง Local Uncensored Model (Qwen/Dolphin) ประมวลผลในเครื่อง 100% ไร้การเซ็นเซอร์
+- **Cyber Inspector & Network Scanner (`modules/cyber_inspector.py`):** ตรวจจับอุปกรณ์บน Wi-Fi/LAN สแกนพอร์ต และประเมินความปลอดภัยเบื้องต้น
 
 ---
 
 <a id="skills-ecosystem"></a>
-## 🧩 คลังทักษะ Agentic เฉพาะทาง (The 12 Flagship Protocols)
+## 🧩 Agentic Skills Ecosystem (`.agents/skills/`)
+(คลัง 12 เสาหลักทักษะ Agentic แห่ง Nachapol Industries)
 
-<details>
-<summary><b>คลิกเพื่อดูคลัง 12 เสาหลักทักษะ Agentic ใน `.agents/skills/`</b></summary>
+โครงสร้างคลังทักษะเฉพาะทางที่ยกระดับ J.A.R.V.I.S. ให้ควบคุมระบบและสร้างสรรค์ซอฟต์แวร์ได้อย่างแม่นยำ:
 
-<br>
+#### ⚡ 1. System Core & Architecture
+- **[`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md):** มาตรฐานการขยายฟังก์ชันและโมดูลใหม่แบบ Decoupled ป้องกันไฟล์หลักบวม
+- **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** ควบคุม Thread Safety, Mutex Locks และ Zero-Delay Shutdown Events (`stop_event`)
+- **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลอง WMI, Audio, Camera และ APIs
+- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 6 ขุนพลสมองกล และฉันทามติ Tree of Thoughts
 
-| เสาหลัก | รายชื่อทักษะ (Skill) | หน้าที่และความสามารถหลัก |
-| :--- | :--- | :--- |
-| **System Core** | [`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md) | มาตรฐานขยายฟังก์ชันและโมดูลใหม่แบบ Decoupled ไม่ให้ไฟล์หลักบวม |
-| | [`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md) | ควบคุม Thread Safety, Mutex Locks และ Graceful Shutdown ใน 1 วินาที |
-| | [`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md) | มาตรฐาน Automated Test Suite จำลอง WMI, Audio และ Camera ครบ 100% |
-| | [`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md) | บริหารการระดมพลสภา 6 ขุนพลสมองกล และฉันทามติ Tree of Thoughts |
-| **Autonomous Ops** | [`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md) | จำลองการควบคุม Windows OS, คำนวณพิกัด Multi-Monitor และ Failsafe |
-| | [`autonomous-self-healer`](.agents/skills/autonomous-self-healer/SKILL.md) | ตรวจสอบ Stack Trace ข้อผิดพลาดและ Hot-Patch โค้ดฉุกเฉินไร้ Downtime |
-| | [`cyber-recon-spectre`](.agents/skills/cyber-recon-spectre/SKILL.md) | สแกนพอร์ตเครือข่าย วิเคราะห์คลื่น Wi-Fi และสลับสู่ Local Uncensored |
-| **Sensory & Vision** | [`neural-audio-dsp`](.agents/skills/neural-audio-dsp/SKILL.md) | ตัดบทพูดแทรก VAD Barge-In และประมวลผลเสียง Real-Time WebSocket |
-| | [`holographic-gesture-vision`](.agents/skills/holographic-gesture-vision/SKILL.md) | วิเคราะห์ท่าทางมือ 3D ด้วย MediaPipe และตรวจจับรอยต่อแผ่นวงจร PCB |
-| | [`human-grade-web-designer`](.agents/skills/human-grade-web-designer/SKILL.md) | มาตรฐานดีไซน์ Web UI ระดับพรีเมียม ปราศจากเทมเพลต AI ซ้ำซาก |
-| **Living-Room IoT** | [`iot-home-nexus`](.agents/skills/iot-home-nexus/SKILL.md) | ควบคุม Home Assistant REST/WebSocket และไมโครคอนโทรลเลอร์ ESP32 |
-| | [`smart-tv-adb-controller`](.agents/skills/smart-tv-adb-controller/SKILL.md) | ควบคุม Android TV ไร้สาย ปลดระวาง Bloatware และติดตั้ง Clean Launcher |
+#### 🛡️ 2. Autonomous Operations & Cybersecurity
+- **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop, การจำลอง Win32 Input, คำนวณพิกัด Multi-Monitor และ Failsafe
+- **[`autonomous-self-healer`](.agents/skills/autonomous-self-healer/SKILL.md):** วินิจฉัย Stack Trace อัตโนมัติ, ตรวจสอบไวยากรณ์ด้วย AST และ Hot-Patching โค้ดฉุกเฉินไร้ Downtime
+- **[`cyber-recon-spectre`](.agents/skills/cyber-recon-spectre/SKILL.md):** ตรวจสอบความปลอดภัยไซเบอร์เชิงรุก, Passive Port Scanning, วิเคราะห์ Wi-Fi และสลับสู่ Local Uncensored
 
-</details>
+#### 👁️ 3. Sensory, Voice & Holographic Vision
+- **[`neural-audio-dsp`](.agents/skills/neural-audio-dsp/SKILL.md):** ประมวลผลเสียง Real-Time VAD Barge-In ตัดเสียงแทรกใน 50ms, Edge Neural TTS และ WebSocket STT
+- **[`holographic-gesture-vision`](.agents/skills/holographic-gesture-vision/SKILL.md):** ระบบประมวลผลภาพ Spatial Vision 3D Hand Tracking ผ่าน MediaPipe, เรนเดอร์ 3D Wireframe และตรวจจับรอยต่อแผ่นวงจร PCB
+- **[`human-grade-web-designer`](.agents/skills/human-grade-web-designer/SKILL.md):** มาตรฐาน UI/UX ชั้นเลิศ เน้น Bento Grids, Micro-Interactions และ Glassmorphism ที่ประณีต
+
+#### 🌐 4. Ambient & Living-Room Infrastructure
+- **[`iot-home-nexus`](.agents/skills/iot-home-nexus/SKILL.md):** เชื่อมต่ออุปกรณ์ Smart Home ผ่าน Home Assistant REST/WebSocket และไมโครคอนโทรลเลอร์ ESP32
+- **[`smart-tv-adb-controller`](.agents/skills/smart-tv-adb-controller/SKILL.md):** ควบคุม Android TV / Google TV ผ่าน Wi-Fi ADB ไร้สาย, ปลดระวาง Bloatware และติดตั้ง Clean Launcher
 
 ---
 
 <a id="roadmap"></a>
-## 🚀 แผนพัฒนาสู่อนาคต (ASI Roadmap)
-- ✅ **1. Autonomous Evolution:** ตกผลึกความรู้และปรับปรุงสถาปัตยกรรมอัตโนมัติช่วงดึก
-- ✅ **2. Swarm Intelligence:** การประชุมสภา AI แบบคู่ขนานความหน่วงต่ำ (~1s)
-- ✅ **3. Cognitive Loop & Subconscious:** ตรวจจับอารมณ์และเฝ้าระวังฮาร์ดแวร์เชิงรุก
-- ⏳ **[PENDING] 4. Physical Embodiment:** เชื่อมต่อระบบหุ่นยนต์และแพลตฟอร์ม ROS2
-- ⏳ **[PENDING] 5. Multi-Modal Omniscience:** บูรณาการเครือข่ายเซ็นเซอร์ IoT อัจฉริยะทั่วห้องทดลอง
+## 🚀 The ASI Evolution (Phase 10 Roadmap)
+บันทึกเส้นทางการวิวัฒนาการสู่ **Artificial Superintelligence (ASI)**:
+
+- ✅ **1. Autonomous Evolution (Recursive Self-Improvement):** ระบบตกผลึกความรู้และปรับปรุงสถาปัตยกรรมตนเอง (`modules/jarvis_evolution.py`)
+- ✅ **2. Swarm Intelligence:** โครงข่าย AI แตกตัวช่วยวิเคราะห์แบบ Multi-threading (`modules/jarvis_asi_swarm_intelligence.py`)
+- ✅ **3. Cognitive Loop & Subconscious:** วงจรการเรียนรู้และเฝ้าระวังฮาร์ดแวร์เชิงรุก (`modules/jarvis_cognitive_loop.py`, `modules/jarvis_subconscious.py`)
+- ⏳ **[PENDING] 4. Physical Embodiment:** เชื่อมสมองเข้ากับระบบหุ่นยนต์และ ROS2
+- ⏳ **[PENDING] 5. Multi-Modal Omniscience:** บูรณาการระบบประสาทสัมผัสเข้ากับเซ็นเซอร์ IoT ทั้งแล็บ
 
 ---
 
 <a id="dev-note"></a>
-## 📝 บันทึกจากผู้พัฒนา & การให้เครดิต (Credits)
+## 📝 บันทึกจากผู้พัฒนา (Developer's Note)
 
 > [!NOTE]
-> โปรเจกต์นี้เริ่มต้นขึ้นเพื่อใช้งานจริงในชีวิตประจำวัน ออกแบบให้ประหยัดทรัพยากรและรันได้บนคอมพิวเตอร์ทั่วไป ยินดีต้อนรับทุกท่านร่วม Fork, ต่อยอด หรือส่ง Pull Request ได้เต็มที่ครับ! — **Nachapol Industries**
+> โปรเจกต์นี้เริ่มต้นขึ้นจากการสร้างผู้ช่วยส่วนตัวไว้ใช้งานจริงในชีวิตประจำวัน ออกแบบให้ประหยัดทรัพยากรและรันได้บนคอมพิวเตอร์ทั่วไป หากท่านใดมีฮาร์ดแวร์ที่แรงกว่า หรือต้องการปรับปรุงระบบส่วนไหน **สามารถ Fork, ดัดแปลง หรือสร้าง Pull Request เพื่อพัฒนาต่อยอดได้เต็มที่ครับ!**
+>
+> — **พัฒนาด้วยใจโดย Nachapol Industries**
 
-หากนำโปรเจกต์นี้ไปพัฒนาต่อยอดหรือเผยแพร่ กรุณาให้เครดิต **Nachapol Industries** พร้อมแนบลิงก์กลับมายังคลังต้นฉบับ [https://github.com/sanior09/JARVIS-Mainframe](https://github.com/sanior09/JARVIS-Mainframe) ภายใต้สัญญาอนุญาต [MIT License](LICENSE)
+---
+
+## 🤝 Attribution & Credits (ข้อตกลงการให้เครดิต)
+
+หากท่านนำโปรเจกต์ **J.A.R.V.I.S. Mainframe** หรือส่วนหนึ่งส่วนใดของโค้ดไปใช้งาน, พัฒนาต่อยอด (Fork), ทำคลิปรีวิว/สื่อวิดีโอ, หรือนำไปจัดแสดง:
+- 🌟 **กรุณาให้เครดิตผู้สร้าง:** **Nachapol Industries**
+- 🔗 **แนบลิงก์กลับมายัง Repository ต้นฉบับ:** [https://github.com/sanior09/JARVIS-Mainframe](https://github.com/sanior09/JARVIS-Mainframe)
+- ⚖️ **ข้อกำหนดทางกฎหมาย:** ภายใต้สัญญาอนุญาต **[MIT License](LICENSE)** ผู้ใช้งานจำเป็นต้องเก็บข้อความลิขสิทธิ์ `Copyright (c) 2026 Nachapol Industries` ไว้ในทุกสำเนาของซอฟต์แวร์
+
+---
+
+## 📜 License
+This project is open-source under the [MIT License](LICENSE).
 
 <br>
 <div align="center">
-  <sub>Architected with precision by <b>Nachapol Industries</b> • Mainframe Integrity: <b>100.0% OPTIMAL</b></sub>
+  <sub>Architected & Engineered with precision by <b>Nachapol Industries</b> • Mainframe Operational Status: <b>100.0% OPTIMAL</b></sub>
 </div>
