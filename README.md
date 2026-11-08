@@ -74,17 +74,42 @@ cd JARVIS-Mainframe
 pip install -r requirements.txt
 ```
 
-### ขั้นตอนที่ 2: ตั้งค่า API Keys (`.env`)
-คัดลอก `.env.example` เป็น `.env` และระบุคีย์บริการที่ต้องการใช้งาน:
+### ขั้นตอนที่ 2: ตั้งค่าสภาพแวดล้อมและ API Keys (`.env`)
+คัดลอกไฟล์ `.env.example` เป็น `.env` และระบุคีย์บริการที่ท่านต้องการใช้งาน:
 ```env
-# AI Neural Providers (คลาวด์ความเร็วสูง ไม่กินสเปกเครื่อง)
+# ━━━ 🧠 AI Neural Providers ━━━
 GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
+GROQ_FAST_MODEL=qwen/qwen3.8-27b
 GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.6-flash
 
-# ข้อมูลผู้ใช้งาน
+# ━━━ 🎙️ Audio & Streaming STT ━━━
+DEEPGRAM_API_KEY=your_deepgram_api_key
+
+# ━━━ 🏠 Smart Home & IoT (Home Assistant) ━━━
+HOME_ASSISTANT_URL=http://homeassistant.local:8123
+HOME_ASSISTANT_TOKEN=your_token
+
+# ━━━ 🌐 External APIs ━━━
+OPENWEATHER_API_KEY=your_weather_key
+YOUTUBE_API_KEY=your_youtube_key
+
+# ━━━ 📲 LINE Messaging & Remote Webhook ━━━
+LINE_CHANNEL_ACCESS_TOKEN=your_line_token
+LINE_CHANNEL_SECRET=your_line_secret
+NGROK_PUBLIC_URL=https://your-domain.ngrok-free.app
+
+# ━━━ ✉️ Gmail & Notifications ━━━
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=xxxx xxxx xxxx xxxx
+
+# ━━━ 👤 User Identity & OS Controls ━━━
 OWNER_NAME=เจ้านาย
 COMPUTER_CONTROL_MODE=background
 ```
+> [!TIP]
+> **เริ่มใช้งานอย่างรวดเร็ว (Quick Kickstart):** ระบุเพียง `GROQ_API_KEY` และ `GEMINI_API_KEY` ก็สามารถสั่งการสมองกลหลักได้ทันที ส่วน API คีย์บริการเสริมอื่น ๆ (Smart Home, LINE, พยากรณ์อากาศ) สามารถทยอยเติมได้ตามความต้องการใช้งานครับ
 
 ### ขั้นตอนที่ 3: เริ่มปฏิบัติการ (One-Click Boot)
 ดับเบิลคลิกไฟล์ **`run_jarvis.bat`** หรือรันผ่านเทอร์มินัล:
