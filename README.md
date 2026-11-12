@@ -29,7 +29,7 @@
 
 | แกนประมวลผล (Core) | สถาปัตยกรรม (Architecture) | สภาสมองกล (Swarm Quorum) | ความเร็วตอบสนอง (Latency) | ระบบปฏิบัติการ (OS Support) |
 | :---: | :---: | :---: | :---: | :---: |
-| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `6 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
+| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `7 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
 
 </div>
 
@@ -59,6 +59,8 @@
 | 🕶️ **E.D.I.T.H.** | **Strategic Intelligence** | วิเคราะห์ทฤษฎีเกม (Game Theory) คาดการณ์ความเสี่ยง และคำนวณแต้มต่อสูงสุด |
 | 🔧 **U. (ยู)** | **Maintenance & Perception** | วิเคราะห์ภาพหน้าจอ (`analyze_desktop_screen_context`), Defrag SQLite และเคลียร์ไฟล์แคช |
 | 🧯 **D.U.M.-E. (ดัม-อี)** | **Servo & Safeguard** | ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อนฉุกเฉิน |
+| 🤖 **J.O.C.A.S.T.A.** | **Cyber-Defense & Threat Recon** | สถาปัตยกรรม Cyber-Warfare, ป้องกันการโจมตีทางไซเบอร์, ตรวจสอบการเข้ารหัส และความปลอดภัยคลังข้อมูล |
+| 🕷️ **K.A.R.E.N.** | **Situational Awareness & Empathy** | ตรวจจับบริบทสภาวะผู้ใช้ (Situational & Vitality Sentinel), ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ |
 
 ---
 
@@ -181,7 +183,7 @@ npx expo start
 ### 🧠 1. Cognitive & Autonomous Brain
 - **Autonomous Thought Engine (`jarvis.py`):** จำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol) คำนวณความเครียดตามอุณหภูมิ WMI/CPU จริง พร้อม Mutex Lock ป้องกัน Race Condition และ Zero-Delay Shutdown (`self.stop_event`)
 - **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อช่วยแนะนำโค้ด และปิดเสียงเงียบอัตโนมัติเมื่อผู้ใช้กำลังรับชม YouTube หรือ Netflix
-- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 6 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน
+- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 7 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน
 - **Neural AI Router (`jarvis_core/ai_router.py`):** กระจายงานอัตโนมัติไปยัง Groq (GPT-OSS 120B, Qwen 27B), Google Gemini (3.6 Flash) หรือ Local Ollama ตามความเหมาะสมของงาน
 - **Cognitive Evolution (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
 - **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
@@ -232,7 +234,7 @@ npx expo start
 - **[`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md):** มาตรฐานการขยายฟังก์ชันและโมดูลใหม่แบบ Decoupled ป้องกันไฟล์หลักบวม
 - **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** ควบคุม Thread Safety, Mutex Locks และ Zero-Delay Shutdown Events (`stop_event`)
 - **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลอง WMI, Audio, Camera และ APIs
-- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 6 ขุนพลสมองกล และฉันทามติ Tree of Thoughts
+- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 7 ขุนพลสมองกล และฉันทามติ Tree of Thoughts
 
 #### 🛡️ 2. Autonomous Operations & Cybersecurity
 - **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop, การจำลอง Win32 Input, คำนวณพิกัด Multi-Monitor และ Failsafe

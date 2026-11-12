@@ -1,6 +1,6 @@
 """
 Unit tests for the upgraded Nachapol Industries Multi-Agent Swarm Council.
-Verifies the full 5-AI canonical pantheon and concurrent ThreadPool debate execution.
+Verifies the full canonical pantheon and concurrent ThreadPool debate execution.
 """
 import pytest
 from unittest.mock import patch, MagicMock
@@ -12,26 +12,30 @@ from jarvis_core.cognitive.swarm import (
     edith_agent,
     u_agent,
     dume_agent,
-    athena_agent
+    jocasta_agent,
+    karen_agent
 )
 
 
 def test_canonical_swarm_pantheon_members():
-    """Verify all 6 canonical Nachapol AI agents exist with their official specs."""
+    """Verify all 7 canonical Nachapol AI council agents exist with their official specs."""
     council = AgentCouncil()
     assert "friday" in council.agents
     assert "veronica" in council.agents
     assert "edith" in council.agents
     assert "u" in council.agents
     assert "dume" in council.agents
-    assert "athena" in council.agents
+    assert "jocasta" in council.agents
+    assert "karen" in council.agents
+    assert "athena" not in council.agents
 
     assert council.get_agent("FRIDAY").codename == "friday"
     assert council.get_agent("EDITH").codename == "edith"
     assert council.get_agent("U").codename == "u"
     assert council.get_agent("DUME").codename == "dume"
     assert council.get_agent("VERONICA").codename == "veronica"
-    assert council.get_agent("ATHENA").codename == "athena"
+    assert council.get_agent("JOCASTA").codename == "jocasta"
+    assert council.get_agent("KAREN").codename == "karen"
 
 
 def test_swarm_agent_roles():
@@ -41,7 +45,8 @@ def test_swarm_agent_roles():
     assert "Game Theory" in edith_agent.role_description
     assert "Defragger" in u_agent.role_description
     assert "Fire Suppression" in dume_agent.role_description
-    assert "Theory of Mind" in athena_agent.role_description
+    assert "Cyber-Defense" in jocasta_agent.role_description
+    assert "Situational Awareness" in karen_agent.role_description
 
 
 def test_council_debate_parallel_execution():
@@ -64,6 +69,10 @@ def test_council_debate_parallel_execution():
                 return {"content": "U: System defragmented and clean."}
             elif "D.U.M.-E." in sys_msg:
                 return {"content": "DUM-E: Servos calibrated, fire suppression ready."}
+            elif "J.O.C.A.S.T.A." in sys_msg:
+                return {"content": "Jocasta: Cryptographic protocols intact."}
+            elif "K.A.R.E.N." in sys_msg:
+                return {"content": "Karen: Situational analysis complete, user vitals stable."}
             else:
                 return {"content": "Default response"}
 

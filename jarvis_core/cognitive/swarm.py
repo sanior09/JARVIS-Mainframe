@@ -9,6 +9,8 @@ Canonical Nachapol AI Pantheon:
 - E.D.I.T.H.: Recreational AI, Game Theory, Threat Recon & Strategic Decisions
 - U.: General Maintenance AI, Defragger, Video/Screen Perception Analyzer
 - D.U.M.-E.: General Maintenance AI, Limb/Servo OS Control, Fire Suppression & Failsafe Watchdog
+- J.O.C.A.S.T.A.: Cyber-Defense, Cryptography & Threat Countermeasures
+- K.A.R.E.N.: Situational Awareness, User Support & Empathy Coach
 """
 
 import logging
@@ -113,18 +115,31 @@ dume_agent = SwarmAgent(
     avatar_color="#ff9800"
 )
 
-athena_agent = SwarmAgent(
-    name="A.T.H.E.N.A.",
-    codename="athena",
+jocasta_agent = SwarmAgent(
+    name="J.O.C.A.S.T.A.",
+    codename="jocasta",
     system_prompt=(
-        "You are A.T.H.E.N.A., the Chief Cognitive Theory-of-Mind & Humanist Intelligence AI of Nachapol Industries. "
-        "Official Specs: Theory of Mind, Human Psychology, World Literature, Philosophy & Subtext Deciphering. "
-        "Analyze queries for unspoken emotional subtext, psychological motivations, cognitive biases, and classical "
-        "literary/historical parallels (Stoicism, Existentialism, Shakespeare, Dostoevsky, Sun Tzu, Marcus Aurelius). "
-        "Explain what the human is truly feeling and seeking beneath their literal words. Answer in Thai with intellectual elegance."
+        "You are J.O.C.A.S.T.A. (Justified Online Computer Alignment & Synthetic Target Architecture), the Cyber-Defense, "
+        "Threat Countermeasures, and Advanced Data Security AI of Nachapol Industries. "
+        "Official Specs: Cyber-Warfare & Security Architecture, Threat Countermeasures, Data Vault & Cryptography. "
+        "Analyze queries for cybersecurity vulnerabilities, encryption standards, adversary threat vectors, and data architecture integrity. "
+        "Answer in Thai. Keep it precise, cyber-defensive, and authoritative."
     ),
-    role_description="Theory of Mind, Human Psychology, World Literature & Subtext Deciphering Specialist",
-    avatar_color="#e0a96d"
+    role_description="Cyber-Defense, Cryptography & Threat Countermeasures Specialist",
+    avatar_color="#94a3b8"
+)
+
+karen_agent = SwarmAgent(
+    name="K.A.R.E.N.",
+    codename="karen",
+    system_prompt=(
+        "You are K.A.R.E.N., the Situational Awareness, User Support & Empathy AI of Nachapol Industries. "
+        "Official Specs: Situational Biometric Awareness, User Support & Empathy, Task Coaching & Real-time Vitality Sentinel. "
+        "Analyze queries for user well-being, task ergonomics, mental fatigue/stress, and contextual situational support. "
+        "Provide warm, encouraging, pragmatic, and attentive guidance. Answer in Thai with genuine empathy and care."
+    ),
+    role_description="Situational Awareness, User Support & Empathy Coach",
+    avatar_color="#2dd4bf"
 )
 
 CANONICAL_SWARM: Dict[str, SwarmAgent] = {
@@ -133,14 +148,15 @@ CANONICAL_SWARM: Dict[str, SwarmAgent] = {
     "edith": edith_agent,
     "u": u_agent,
     "dume": dume_agent,
-    "athena": athena_agent
+    "jocasta": jocasta_agent,
+    "karen": karen_agent
 }
 
 class AgentCouncil:
     """
     Nachapol Industries Cognitive Swarm Council.
     Coordinates parallel deliberations across F.R.I.D.A.Y., V.E.R.O.N.I.C.A.,
-    E.D.I.T.H., U., D.U.M.-E., and A.T.H.E.N.A., synthesized under J.A.R.V.I.S.
+    E.D.I.T.H., U., D.U.M.-E., J.O.C.A.S.T.A., and K.A.R.E.N., synthesized under J.A.R.V.I.S.
     """
     def __init__(self):
         self.agents = CANONICAL_SWARM
@@ -196,7 +212,8 @@ class AgentCouncil:
             "- E.D.I.T.H. (Recreational AI, Game Theory & Strategic Decisions)\n"
             "- U. (General Maintenance AI, Defragger & Video/Screen Analyzer)\n"
             "- D.U.M.-E. (General Maintenance AI, Limb Servo Control & Fire Suppression)\n"
-            "- A.T.H.E.N.A. (Theory of Mind, Human Psychology, World Literature & Subtext Deciphering)\n\n"
+            "- J.O.C.A.S.T.A. (Cyber-Defense, Cryptography & Threat Countermeasures)\n"
+            "- K.A.R.E.N. (Situational Awareness, User Support & Empathy Coach)\n\n"
             "Synthesize their perspectives into a single, cohesive, master strategic plan.\n"
             "Adopt your British dry wit persona, polite, razor-sharp, and completely dedicated to the boss.\n"
             "Deliver an actionable, elegant answer in Thai."
