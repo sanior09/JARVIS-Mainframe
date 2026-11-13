@@ -98,7 +98,7 @@ class SystemAnatomyEngine:
         """Returns the canonical catalog of active internal modules and capabilities."""
         return [
             "ระบบเฝ้าระวังเชิงรุก (Proactive Intelligence): สแกนหน้าจอจับ Error โค้ด/Exception อัตโนมัติ (Vision Watchdog), ระบบ Smart Silence เมื่อดูหนัง/เล่นเกม, และระบบเตือนพักสายตา",
-            "สภาปัญญาประดิษฐ์ (Swarm Council - 6 ขุนพล): F.R.I.D.A.Y. (โค้ด/ยุทธวิธี), V.E.R.O.N.I.C.A. (ความปลอดภัยฮาร์ดแวร์), E.D.I.T.H. (ทฤษฎีเกม), U. (ภาพ/บำรุงรักษา), D.U.M.-E. (เซอร์โว/ดับเพลิง), A.T.H.E.N.A. (จิตวิทยา/วรรณกรรม/ซับเท็กซ์)",
+            "สภาปัญญาประดิษฐ์ (Swarm Council - 8 ขุนพล): J.A.R.V.I.S. (ประธานสภา), F.R.I.D.A.Y. (โค้ด/ยุทธวิธี), V.E.R.O.N.I.C.A. (ความปลอดภัยฮาร์ดแวร์), E.D.I.T.H. (ทฤษฎีเกม), U. (ภาพ/บำรุงรักษา), D.U.M.-E. (เซอร์โว/ดับเพลิง), J.O.C.A.S.T.A. (Cyber-Defense), K.A.R.E.N. (รับรู้บริบทและดูแลผู้ใช้)",
             "คลังเครื่องมือปฏิบัติการ (Tool Dispatcher): 47 เครื่องมือควบคุม Windows, จัดการแอปพลิเคชัน, ควบคุมเบราว์เซอร์, ดาวน์โหลดสื่อ, ระบบความปลอดภัย OSINT",
             "แกนจิตสำนึกและสารสื่อประสาท (JarvisCore Endocrine SLM): ควบคุมโดปามีน คอร์ติซอล และเซโรโทนิน แบบเรียลไทม์",
             "ความจำระยะยาว (Long-Term Vector Memory): ChromaDB และ SQLite บันทึกโปรไฟล์ความชอบและโครงการของเจ้านาย"
@@ -108,7 +108,7 @@ class SystemAnatomyEngine:
         """Returns key highlights from the 9U Server Rack hardware roadmap."""
         return (
             "แผนอัปเกรดฮาร์ดแวร์ตู้แร็ค 9U (Roadmap): กำลังเตรียมขยับขยายไปสู่ Dedicated AI Server "
-            "(Intel Core i7-12700, DDR5 64GB, NVIDIA RTX 3090 24GB VRAM สำหรับรัน Local LLM 70B, "
+            "(Intel Core i7-12700, DDR5 64GB, NVIDIA RTX 3090 24GB VRAM สำหรับรัน Local LLM 32B / เทรน JarvisCore 500M-1B+, "
             "SSD 2TB NVMe และโหนดสมาร์ทโฮม Raspberry Pi 5 Home Assistant)"
         )
 
