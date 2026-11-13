@@ -14,9 +14,10 @@ Canonical Nachapol AI Pantheon:
 """
 
 import logging
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Any, List, Optional
-from jarvis_core.ai_router import call_nachapol_core
+from jarvis_core.ai_router import call_nachapol_core, get_active_model
 
 logger = logging.getLogger("JARVIS.Swarm")
 
@@ -28,19 +29,46 @@ class SwarmAgent:
         self.role_description = role_description
         self.avatar_color = avatar_color
 
-    def deliberate(self, context: str, query: str) -> str:
+    def deliberate_native(self, context: str, query: str, max_new_tokens: int = 64) -> str:
+        """Executes 100% offline inference using this agent's dedicated C:\\JarvisCore checkpoint."""
+        try:
+            from modules.jarvis_slm_bridge import get_jarviscore_bridge
+            bridge = get_jarviscore_bridge()
+            prompt_text = f"{query}" if not context else f"[{context[:120]}] {query}"
+            res = bridge.generate_persona_response(
+                persona=self.codename,
+                prompt=prompt_text,
+                max_new_tokens=max_new_tokens,
+            )
+            if res.get("ok"):
+                thought = res.get("thought", "").strip()
+                content = res.get("content", "").strip()
+                latency = res.get("latency_ms", 0)
+                prefix = f"[Native Neural Core: {self.codename}_ckpt.pt | {latency:.0f}ms]"
+                if thought:
+                    return f"{prefix}\n(Think: {thought})\n{content}"
+                return f"{prefix} {content}" if content else f"{prefix} [No tokens generated]"
+            return f"[{self.name} Native Core Error: {res.get('error', 'Unknown')}]"
+        except Exception as e:
+            logger.warning(f"[{self.name}] Native deliberation failed: {e}")
+            return f"[{self.name} Offline - Native Core Unavailable]"
+
+    def deliberate(self, context: str, query: str, use_native_core: bool = False) -> str:
+        if use_native_core or os.getenv("JARVIS_SWARM_NATIVE", "0") == "1":
+            logger.info(f"[{self.name}] Deliberating on dedicated JarvisCore neural checkpoint...")
+            return self.deliberate_native(context, query)
+
         logger.info(f"[{self.name}] Pondering query...")
         messages = [
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": f"Context:\n{context}\n\nTask/Query: {query}"}
         ]
         
-        import os
         fast_model = os.getenv("GROQ_FAST_MODEL", "qwen/qwen3.8-27b")
         response = call_nachapol_core(messages=messages, model=fast_model)
         if "error_message" in response:
-            logger.warning(f"[{self.name}] Failed to deliberate: {response['error_message']}")
-            return f"[{self.name} Offline - Connection Error]"
+            logger.warning(f"[{self.name}] Cloud deliberation failed ({response['error_message']}), falling back to native JarvisCore...")
+            return self.deliberate_native(context, query)
         
         content = response.get("content", "").strip()
         logger.info(f"[{self.name}] Output generated ({len(content)} chars)")
@@ -164,7 +192,13 @@ class AgentCouncil:
     def get_agent(self, codename: str) -> Optional[SwarmAgent]:
         return self.agents.get(codename.lower())
 
-    def hold_council_debate(self, query: str, context: str = "", active_agents: Optional[List[str]] = None) -> str:
+    def hold_council_debate(
+        self,
+        query: str,
+        context: str = "",
+        active_agents: Optional[List[str]] = None,
+        use_native_core: bool = False,
+    ) -> str:
         """
         Orchestrate a concurrent multi-agent debate across the Nachapol AI Council,
         then synthesize with J.A.R.V.I.S. as Council President.
@@ -173,6 +207,7 @@ class AgentCouncil:
             query: The user query or task.
             context: Current workspace/memory context.
             active_agents: Optional list of agent codenames to consult. Defaults to all active council members.
+            use_native_core: If True, forces all deliberations onto dedicated C:\\JarvisCore checkpoints (Zero-Cloud).
         """
         selected_agents = {}
         if active_agents:
@@ -183,13 +218,17 @@ class AgentCouncil:
         if not selected_agents:
             selected_agents = self.agents
 
-        logger.info(f"🏛️ [Swarm] Initiating Council Debate with {len(selected_agents)} agents: {list(selected_agents.keys())}...")
+        native_mode = use_native_core or (get_active_model() == "jarviscore")
+        logger.info(
+            f"🏛️ [Swarm] Initiating Council Debate ({'NATIVE JARVISCORE' if native_mode else 'HYBRID CLOUD'}) "
+            f"with {len(selected_agents)} agents: {list(selected_agents.keys())}..."
+        )
 
         # Run deliberations in parallel using ThreadPoolExecutor
         perspectives = {}
         with ThreadPoolExecutor(max_workers=min(len(selected_agents), 5)) as executor:
             future_to_agent = {
-                executor.submit(agent.deliberate, context, query): (code, agent)
+                executor.submit(agent.deliberate, context, query, native_mode): (code, agent)
                 for code, agent in selected_agents.items()
             }
             for future in as_completed(future_to_agent):
@@ -202,6 +241,21 @@ class AgentCouncil:
 
         # Jarvis Master Synthesis
         logger.info("[J.A.R.V.I.S.] Synthesizing Nachapol Council outputs...")
+
+        perspectives_formatted = ""
+        for name, text in perspectives.items():
+            perspectives_formatted += f"--- {name} Analysis ---\n{text}\n\n"
+
+        if native_mode:
+            from modules.jarvis_slm_bridge import get_jarviscore_bridge
+            bridge = get_jarviscore_bridge()
+            res = bridge.generate_persona_response(persona="jarvis", prompt=query, max_new_tokens=64)
+            jarvis_note = res.get("content", "") if res.get("ok") else ""
+            return (
+                f"[J.A.R.V.I.S. Native Core Synthesis (100% Zero-Cloud)]\n"
+                f"{jarvis_note}\n\n"
+                f"=== Council Deliberations ===\n{perspectives_formatted.strip()}"
+            )
 
         synthesis_prompt = (
             "You are J.A.R.V.I.S., the President of the Nachapol Industries Cognitive Swarm Council.\n"
@@ -219,10 +273,6 @@ class AgentCouncil:
             "Deliver an actionable, elegant answer in Thai."
         )
 
-        perspectives_formatted = ""
-        for name, text in perspectives.items():
-            perspectives_formatted += f"--- {name} Analysis ---\n{text}\n\n"
-
         jarvis_context = (
             f"User Query: {query}\n\n"
             f"{perspectives_formatted}"
@@ -235,4 +285,14 @@ class AgentCouncil:
         ]
 
         final_response = call_nachapol_core(messages=messages)
+        if "error_message" in final_response:
+            from modules.jarvis_slm_bridge import get_jarviscore_bridge
+            bridge = get_jarviscore_bridge()
+            res = bridge.generate_persona_response(persona="jarvis", prompt=query, max_new_tokens=64)
+            jarvis_note = res.get("content", "") if res.get("ok") else ""
+            return (
+                f"[J.A.R.V.I.S. Offline Emergency Synthesis]\n"
+                f"{jarvis_note}\n\n"
+                f"{perspectives_formatted.strip()}"
+            )
         return final_response.get("content", "I am sorry, sir. The council could not reach a conclusion at this time.")

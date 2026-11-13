@@ -183,8 +183,9 @@ npx expo start
 ### 🧠 1. Cognitive & Autonomous Brain
 - **Autonomous Thought Engine (`jarvis.py`):** จำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol) คำนวณความเครียดตามอุณหภูมิ WMI/CPU จริง พร้อม Mutex Lock ป้องกัน Race Condition และ Zero-Delay Shutdown (`self.stop_event`)
 - **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อช่วยแนะนำโค้ด และปิดเสียงเงียบอัตโนมัติเมื่อผู้ใช้กำลังรับชม YouTube หรือ Netflix
-- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 7 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน
-- **Neural AI Router (`jarvis_core/ai_router.py`):** กระจายงานอัตโนมัติไปยัง Groq (GPT-OSS 120B, Qwen 27B), Google Gemini (3.6 Flash) หรือ Local Ollama ตามความเหมาะสมของงาน
+- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 7 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน พร้อมรองรับโหมด Zero-Cloud ผ่านสมองกลเฉพาะทางของแต่ละตัวใน `C:\JarvisCore`
+- **JarvisCore Synaptic Bridge (`modules/jarvis_slm_bridge.py`):** สะพานเชื่อมประสาท Dual-Mode (In-Process / Isolated RPC Worker) ดึงน้ำหนัก BPE SLM ทั้ง 8 ขุนพลจาก `C:\JarvisCore` มาประมวลผลแบบออฟไลน์ 100%
+- **Neural AI Router (`jarvis_core/ai_router.py`):** กระจายงานอัตโนมัติไปยัง Groq (GPT-OSS 120B, Qwen 27B), Google Gemini (3.6 Flash), Local Ollama หรือ `JarvisCore Native SLM` ตามความเหมาะสมของงาน
 - **Cognitive Evolution (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
 - **Autonomous Ingestion Engine (`modules/jarvis_doc_parser.py`):** ตรวจจับและซึมซับเอกสารจาก `jarvis_library/` เข้าสู่ Vector DB อัตโนมัติในเบื้องหลัง
 - **Resource-Conscious Optimization:** ปรับจูนการใช้ทรัพยากรให้ประหยัด RAM/CPU เหมาะสำหรับคอมพิวเตอร์ทั่วไป

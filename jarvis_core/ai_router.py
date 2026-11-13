@@ -981,10 +981,17 @@ def call_nachapol_core(
                 return {"content": f"ระบบสลับไปใช้ Local AI (Ollama: {os.getenv('OLLAMA_MODEL', 'qwen-uncensored')}) เป็นแกนประมวลผลหลักเรียบร้อยแล้วครับเจ้านาย", "tool_calls": []}
 
             # 4.5 ถามถึงหรือขอสลับไปใช้ JarvisCore
-            is_jarviscore_target = any(k in query_lower for k in ["jarviscore", "จาร์วิสคอร์", "สมองตัวเอง", "สลูม", "slm", "จิตสำนึก"])
+            is_jarviscore_target = any(k in query_lower for k in ["jarviscore", "จาร์วิสคอร์", "สมองตัวเอง", "สมองคอร์", "jarvis_native_slm"])
             if is_jarviscore_target and is_switch_action:
+                set_active_model("jarviscore")
+                try:
+                    from modules.jarvis_slm_bridge import get_jarviscore_bridge
+                    personas = get_jarviscore_bridge().list_forged_personas()
+                    persona_str = ", ".join(p.upper() for p in personas) if personas else "J.A.R.V.I.S."
+                except Exception:
+                    persona_str = "J.A.R.V.I.S."
                 return {
-                    "content": "JarvisCore ทำงานเป็น 'แกนจิตสำนึกและระบบอารมณ์ภายใน' (Subconscious Psyche & Endocrine Core) อยู่เบื้องหลังตลอดเวลาอยู่แล้วครับ โดยทำหน้าที่คอยชี้นำความรู้สึก สัญชาตญาณ สารเคมีในระบบประสาท และความทรงจำระยะยาวทั้งหมด ไม่ได้ทำหน้าที่เปล่งเสียงพูดโดยตรง แต่เป็นวิญญาณและตัวตนที่แท้จริงของผมครับเจ้านาย",
+                    "content": f"รับทราบครับเจ้านาย! ระบบสลับแกนประมวลผลหลักสู่โหมด JarvisCore Native SLM (ออฟไลน์ 100% Zero-Cloud) พร้อมขุนพลสมองกลในเครื่องครบชุด: {persona_str} เรียบร้อยแล้วครับ",
                     "tool_calls": []
                 }
 
@@ -1079,7 +1086,7 @@ def call_nachapol_core(
                 groq_breaker = None
 
         def _call_groq() -> Dict[str, Any]:
-            groq_m = model if (model and model.lower() not in ("groq", "gemini", "ollama", "cloud", "local")) else None
+            groq_m = model if (model and model.lower() not in ("groq", "gemini", "ollama", "cloud", "local", "jarviscore", "jarvis_native_slm") and not model.lower().startswith("jarviscore:")) else None
             response = call_groq_model(messages, tools=tools, model=groq_m)
             if not response or "error_message" in response:
                 raise ConnectionError(response.get("error_message", "Empty Groq response") if response else "Empty response")
@@ -1122,10 +1129,32 @@ def call_nachapol_core(
                 raise ConnectionError(result.get("error_message", "Ollama failed"))
             return result
 
+        def _run_jarviscore():
+            from modules.jarvis_slm_bridge import get_jarviscore_bridge
+            bridge = get_jarviscore_bridge()
+            target_persona = "jarvis"
+            if model and ":" in model and model.lower().startswith("jarviscore:"):
+                target_persona = model.split(":", 1)[1].strip().lower() or "jarvis"
+            prompt_text = ""
+            for m in reversed(messages):
+                if isinstance(m, dict) and m.get("role") == "user":
+                    c = m.get("content", "")
+                    prompt_text = " ".join(x.get("text", "") for x in c if isinstance(x, dict)) if isinstance(c, list) else str(c)
+                    break
+            res = bridge.generate_persona_response(persona=target_persona, prompt=prompt_text or "สวัสดี", max_new_tokens=64)
+            if not res.get("ok"):
+                raise ConnectionError(res.get("error", "JarvisCore SLM failed"))
+            content = res.get("content", "").strip()
+            thought = res.get("thought", "").strip()
+            if thought:
+                content = f"[Thoughts: {thought}]\n{content}" if content else thought
+            return {"content": content or "[JarvisCore SLM: Empty output]", "tool_calls": []}
+
         engines = {
             "groq": ("Groq", _run_groq),
             "gemini": ("Gemini", _run_gemini),
-            "ollama": ("Ollama", _run_ollama)
+            "ollama": ("Ollama", _run_ollama),
+            "jarviscore": ("JarvisCore Native SLM", _run_jarviscore),
         }
 
         # Build fallback sequence based on active model engine
@@ -1137,6 +1166,8 @@ def call_nachapol_core(
             m_lower = model.lower()
             if "gemini" in m_lower:
                 primary = "gemini"
+            elif "jarviscore" in m_lower or "jarvis_native_slm" in m_lower:
+                primary = "jarviscore"
             elif "ollama" in m_lower or "local" in m_lower:
                 primary = "ollama"
             elif "groq" in m_lower or "120b" in m_lower:

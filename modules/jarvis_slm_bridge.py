@@ -8,25 +8,32 @@ and Synthetic Endocrine Subsystem from C:\\JarvisCore into the main J.A.R.V.I.S.
 
 from __future__ import annotations
 
+import atexit
+import json
 import logging
 import os
+import subprocess
 import sys
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("JarvisCoreBridge")
 
 _local_core = Path(__file__).resolve().parent.parent / "models" / "jarvis_core"
 JARVIS_CORE_DIR = Path(os.getenv("JARVIS_CORE_DIR", str(_local_core if _local_core.exists() else Path(r"C:\JarvisCore"))))
 CHECKPOINT_PATH = JARVIS_CORE_DIR / "model_ckpt.pt"
+MODELS_DIR = JARVIS_CORE_DIR / "models"
+WORKER_SCRIPT = JARVIS_CORE_DIR / "swarm_rpc_worker.py"
+WORKER_PYTHON = JARVIS_CORE_DIR / ".venv" / "Scripts" / "python.exe"
 
 
 class JarvisCoreBridge:
     """
     Singleton bridge to interface with C:\\JarvisCore.
-    Provides sub-second local reflex inference and real-time endocrine state synchronization.
+    Provides sub-second local reflex inference, multi-persona BPE SLM execution,
+    and real-time endocrine state synchronization via direct PyTorch or isolated RPC worker.
     """
 
     _instance: Optional["JarvisCoreBridge"] = None
@@ -34,6 +41,7 @@ class JarvisCoreBridge:
 
     def __init__(self) -> None:
         self.is_loaded = False
+        self.mode = "uninitialized"  # 'in_process' | 'rpc_worker' | 'uninitialized'
         self.device = "cpu"
         self.model: Any = None
         self.tokenizer: Any = None
@@ -42,6 +50,10 @@ class JarvisCoreBridge:
         self.endocrine_system: Any = None
         self._init_error: Optional[str] = None
         self._load_lock = threading.Lock()
+        self._rpc_lock = threading.Lock()
+        self._worker_proc: Optional[subprocess.Popen] = None
+        self._forged_personas: List[str] = []
+        atexit.register(self.shutdown)
 
     @classmethod
     def get_instance(cls) -> "JarvisCoreBridge":
@@ -50,19 +62,119 @@ class JarvisCoreBridge:
                 cls._instance = JarvisCoreBridge()
             return cls._instance
 
+    def list_forged_personas(self) -> List[str]:
+        """Lists all forged persona checkpoints in C:\\JarvisCore\\models."""
+        if MODELS_DIR.exists():
+            return sorted(p.stem.replace("_ckpt", "") for p in MODELS_DIR.glob("*_ckpt.pt"))
+        return list(self._forged_personas)
+
+    def _ensure_worker_started(self) -> bool:
+        """Starts the persistent C:\\JarvisCore\\.venv RPC daemon if not running."""
+        if self._worker_proc is not None and self._worker_proc.poll() is None:
+            return True
+        if not WORKER_SCRIPT.exists() or not WORKER_PYTHON.exists():
+            return False
+
+        creation_flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        self._worker_proc = subprocess.Popen(
+            [str(WORKER_PYTHON), str(WORKER_SCRIPT)],
+            cwd=str(JARVIS_CORE_DIR),
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+            creationflags=creation_flags,
+        )
+        return True
+
+    def _call_worker_rpc(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Thread-safe JSON-Lines IPC call to the persistent JarvisCore worker."""
+        with self._rpc_lock:
+            if not self._ensure_worker_started() or self._worker_proc is None:
+                return {"ok": False, "error": "JarvisCore RPC worker unavailable"}
+            try:
+                assert self._worker_proc.stdin is not None
+                assert self._worker_proc.stdout is not None
+                self._worker_proc.stdin.write(json.dumps(payload, ensure_ascii=False) + "\n")
+                self._worker_proc.stdin.flush()
+                line = self._worker_proc.stdout.readline()
+                if not line:
+                    raise EOFError("JarvisCore RPC worker closed stdout unexpectedly")
+                return json.loads(line)
+            except Exception as e:
+                logger.warning(f"[JARVIS-CORE RPC] Worker error ({e}), resetting process...")
+                self.shutdown()
+                return {"ok": False, "error": str(e)}
+
+    def shutdown(self) -> None:
+        """Gracefully terminates the isolated JarvisCore RPC worker process."""
+        proc = self._worker_proc
+        self._worker_proc = None
+        if proc is not None and proc.poll() is None:
+            try:
+                if proc.stdin:
+                    proc.stdin.write(json.dumps({"cmd": "shutdown"}) + "\n")
+                    proc.stdin.flush()
+                proc.wait(timeout=2.0)
+            except Exception:
+                try:
+                    proc.terminate()
+                except Exception:
+                    pass
+
     def initialize(self) -> bool:
-        """Loads model checkpoint and tokenizer into memory with fail-safe isolation."""
+        """Connects to JarvisCore via in-process PyTorch or isolated .venv RPC worker."""
         with self._load_lock:
             if self.is_loaded:
                 return True
 
-            if not JARVIS_CORE_DIR.exists() or not CHECKPOINT_PATH.exists():
-                self._init_error = f"JarvisCore path or checkpoint not found at {CHECKPOINT_PATH}"
+            if not JARVIS_CORE_DIR.exists():
+                self._init_error = f"JarvisCore directory not found at {JARVIS_CORE_DIR}"
+                logger.warning(f"[JARVIS-CORE BRIDGE] {self._init_error}")
+                return False
+
+            # Path A: Try isolated RPC worker first if PyTorch is absent in Mainframe venv
+            torch_available = False
+            try:
+                import torch  # noqa: F401
+                torch_available = True
+            except ImportError:
+                torch_available = False
+
+            if not torch_available:
+                if WORKER_SCRIPT.exists() and WORKER_PYTHON.exists():
+                    ping_res = self._call_worker_rpc({"cmd": "ping"})
+                    if ping_res.get("ok"):
+                        self.mode = "rpc_worker"
+                        self.device = ping_res.get("device", "cpu")
+                        self._forged_personas = ping_res.get("personas", self.list_forged_personas())
+                        self.vocab_size = 100293
+                        self.block_size = 128
+                        self.is_loaded = True
+                        self._init_error = None
+                        logger.info(
+                            f"[JARVIS-CORE BRIDGE] Connected via Isolated Neural Worker! "
+                            f"(Personas: {self._forged_personas}, Device: {self.device})"
+                        )
+                        return True
+                    self._init_error = ping_res.get("error", "RPC worker ping failed")
+                    logger.warning(f"[JARVIS-CORE BRIDGE] {self._init_error}")
+                    return False
+
+                self._init_error = "Neither local PyTorch nor JarvisCore .venv worker is available."
+                logger.warning(f"[JARVIS-CORE BRIDGE] {self._init_error}")
+                return False
+
+            # Path B: In-process direct PyTorch loading
+            if not CHECKPOINT_PATH.exists() and not self.list_forged_personas():
+                self._init_error = f"No checkpoints found in {JARVIS_CORE_DIR}"
                 logger.warning(f"[JARVIS-CORE BRIDGE] {self._init_error}")
                 return False
 
             try:
-                # Add C:\JarvisCore to Python module search path
                 core_path_str = str(JARVIS_CORE_DIR)
                 if core_path_str not in sys.path:
                     sys.path.insert(0, core_path_str)
@@ -72,46 +184,52 @@ class JarvisCoreBridge:
                 from brain.tokenizer import CharacterTokenizer
 
                 self.device = "cuda" if torch.cuda.is_available() else "cpu"
-                logger.info(f"[JARVIS-CORE BRIDGE] Loading model_ckpt.pt onto {self.device}...")
+                target_ckpt = MODELS_DIR / "jarvis_ckpt.pt"
+                if not target_ckpt.exists():
+                    target_ckpt = CHECKPOINT_PATH
 
-                checkpoint = torch.load(str(CHECKPOINT_PATH), map_location=self.device, weights_only=True)
-
-                chars: list[str] = checkpoint.get("chars", [])
-                if not chars:
-                    raise ValueError("Checkpoint does not contain vocabulary 'chars'")
-
-                self.tokenizer = CharacterTokenizer()
-                self.tokenizer.chars = chars
-                self.tokenizer.vocab_size = len(chars)
-                self.tokenizer.stoi = {ch: i for i, ch in enumerate(chars)}
-                self.tokenizer.itos = {i: ch for i, ch in enumerate(chars)}
-                self.vocab_size = len(chars)
-
+                logger.info(f"[JARVIS-CORE BRIDGE] Loading {target_ckpt.name} onto {self.device}...")
+                checkpoint = torch.load(str(target_ckpt), map_location=self.device, weights_only=False)
                 config = checkpoint.get("config", {})
-                self.block_size = config.get("block_size", 256)
-                n_embd = config.get("n_embd", 256)
+                chars: list[str] = checkpoint.get("chars", [])
+
+                if config.get("tokenizer") == "bpe" or not chars:
+                    from brain.bpe_tokenizer import JarvisBPETokenizer
+                    self.tokenizer = JarvisBPETokenizer()
+                    self.vocab_size = self.tokenizer.vocab_size
+                else:
+                    self.tokenizer = CharacterTokenizer()
+                    self.tokenizer.chars = chars
+                    self.tokenizer.vocab_size = len(chars)
+                    self.tokenizer.stoi = {ch: i for i, ch in enumerate(chars)}
+                    self.tokenizer.itos = {i: ch for i, ch in enumerate(chars)}
+                    self.vocab_size = len(chars)
+
+                self.block_size = config.get("block_size", 128)
+                n_embd = config.get("n_embd", 128)
                 n_head = config.get("n_head", 4)
                 n_layer = config.get("n_layer", 4)
 
-                # Initialize Model Architecture matching checkpoint
                 self.model = JarvisLanguageModel(
                     vocab_size=self.vocab_size,
                     n_embd=n_embd,
                     n_head=n_head,
                     n_layer=n_layer,
                     block_size=self.block_size,
-                    dropout=0.15,
+                    dropout=0.0,
                 )
 
                 self.model.load_state_dict(checkpoint["model_state_dict"])
                 self.model.to(self.device)
                 self.model.eval()
 
+                self.mode = "in_process"
+                self._forged_personas = self.list_forged_personas()
                 self.is_loaded = True
                 self._init_error = None
                 logger.info(
-                    f"[JARVIS-CORE BRIDGE] Model loaded successfully! "
-                    f"(Vocab: {self.vocab_size}, Device: {self.device}, Checkpoint: {CHECKPOINT_PATH.name})"
+                    f"[JARVIS-CORE BRIDGE] Model loaded in-process! "
+                    f"(Vocab: {self.vocab_size}, Device: {self.device}, Checkpoint: {target_ckpt.name})"
                 )
                 return True
 
@@ -119,6 +237,39 @@ class JarvisCoreBridge:
                 self._init_error = str(e)
                 logger.error(f"[JARVIS-CORE BRIDGE] Initialization failed: {e}", exc_info=True)
                 return False
+
+    def generate_persona_response(
+        self,
+        persona: str,
+        prompt: str,
+        max_new_tokens: int = 64,
+        temperature: float = 0.7,
+    ) -> Dict[str, Any]:
+        """
+        Generates a response using a specific forged persona checkpoint from C:\\JarvisCore\\models.
+        Returns a structured dictionary with 'ok', 'content', 'thought', 'persona', 'latency_ms'.
+        """
+        if not self.is_loaded and not self.initialize():
+            return {"ok": False, "error": self._init_error or "JarvisCore bridge not initialized"}
+
+        if self.mode == "rpc_worker":
+            return self._call_worker_rpc({
+                "cmd": "generate",
+                "persona": persona,
+                "prompt": prompt,
+                "max_new_tokens": max_new_tokens,
+                "temperature": temperature,
+            })
+
+        # Fallback to legacy in-process reflex
+        txt = self.generate_reflex(prompt, max_new_tokens=max_new_tokens, temperature=temperature)
+        return {
+            "ok": bool(txt),
+            "persona": persona,
+            "content": txt or "",
+            "thought": "",
+            "engine": "jarviscore_in_process",
+        }
 
     def generate_reflex(self, prompt: str, max_new_tokens: int = 50, temperature: float = 0.8) -> Optional[str]:
         """
@@ -130,36 +281,46 @@ class JarvisCoreBridge:
             if not self.initialize():
                 return None
 
+        # Inject live hardware context if querying system state
+        lower_p = prompt.lower()
+        context_prefix = ""
+        if any(k in lower_p for k in ["สถานะ", "ระบบ", "แบต", "สเปค", "เครื่อง", "อุณหภูมิ"]):
+            try:
+                import psutil
+                cpu_u = psutil.cpu_percent()
+                ram_u = psutil.virtual_memory().percent
+                bat = psutil.sensors_battery()
+                bat_str = f" แบต {round(bat.percent)}%" if bat else ""
+                context_prefix = f"[สถานะสด: CPU {cpu_u}%, RAM {ram_u}%{bat_str}] "
+            except Exception:
+                pass
+
+        full_prompt = f"{context_prefix}{prompt}"
+
+        if self.mode == "rpc_worker":
+            res = self._call_worker_rpc({
+                "cmd": "generate",
+                "persona": "jarvis",
+                "prompt": full_prompt,
+                "max_new_tokens": max_new_tokens,
+                "temperature": temperature,
+            })
+            if res.get("ok"):
+                return res.get("content") or None
+            return None
+
         try:
             import torch
 
-            # Inject live hardware context if querying system state
-            lower_p = prompt.lower()
-            context_prefix = ""
-            if any(k in lower_p for k in ["สถานะ", "ระบบ", "แบต", "สเปค", "เครื่อง", "อุณหภูมิ"]):
-                try:
-                    import psutil
-                    cpu_u = psutil.cpu_percent()
-                    ram_u = psutil.virtual_memory().percent
-                    bat = psutil.sensors_battery()
-                    bat_str = f" แบต {round(bat.percent)}%" if bat else ""
-                    context_prefix = f"[สถานะสด: CPU {cpu_u}%, RAM {ram_u}%{bat_str}] "
-                except Exception:
-                    pass
-
-            full_prompt = f"{context_prefix}{prompt}"
-
-            # Clean and filter prompt to vocabulary characters
-            safe_chars = set(self.tokenizer.chars)
-            filtered_prompt = "".join(c for c in full_prompt if c in safe_chars)
-            if not filtered_prompt:
-                filtered_prompt = "J.A.R.V.I.S.:"
-
-            # Keep prompt within context window
-            if len(filtered_prompt) > self.block_size - max_new_tokens:
-                filtered_prompt = filtered_prompt[-(self.block_size - max_new_tokens):]
+            if hasattr(self.tokenizer, "chars") and self.tokenizer.chars:
+                safe_chars = set(self.tokenizer.chars)
+                filtered_prompt = "".join(c for c in full_prompt if c in safe_chars) or "J.A.R.V.I.S.:"
+            else:
+                filtered_prompt = full_prompt or "J.A.R.V.I.S.:"
 
             context_tokens = self.tokenizer.encode(filtered_prompt)
+            if len(context_tokens) > self.block_size - max_new_tokens:
+                context_tokens = context_tokens[-(self.block_size - max_new_tokens):]
             context = torch.tensor([context_tokens], dtype=torch.long, device=self.device)
 
             start_t = time.perf_counter()
@@ -167,11 +328,8 @@ class JarvisCoreBridge:
                 generated_idx = self.model.generate(context, max_new_tokens=max_new_tokens)
 
             elapsed_ms = (time.perf_counter() - start_t) * 1000
-            generated_text = self.tokenizer.decode(generated_idx[0].tolist())
-
-            # Strip the initial prompt prefix from generated output
-            clean_output = generated_text[len(filtered_prompt):].strip()
-            # Clean trailing incomplete sentences or artifacts
+            new_tokens = generated_idx[0].tolist()[len(context_tokens):]
+            clean_output = self.tokenizer.decode(new_tokens).strip()
             if "\n" in clean_output:
                 clean_output = clean_output.split("\n")[0].strip()
 
@@ -194,8 +352,11 @@ class JarvisCoreBridge:
 
         return {
             "loaded": self.is_loaded,
+            "mode": self.mode,
             "device": self.device,
             "checkpoint": str(CHECKPOINT_PATH),
+            "forged_personas": self.list_forged_personas(),
+            "worker_alive": bool(self._worker_proc and self._worker_proc.poll() is None),
             "vocab_size": self.vocab_size,
             "block_size": self.block_size,
             "param_count": param_count,
