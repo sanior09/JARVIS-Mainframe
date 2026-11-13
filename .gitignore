@@ -76,6 +76,8 @@ chroma_db/
 jarvis_vector_db/
 personal_memories/
 models/
+*.pt
+*.ckpt
 test_3d_cache/
 
 # Audio & Media Caches

@@ -12,12 +12,13 @@
 <p align="center">
   <b>ระบบผู้ช่วยอัจฉริยะแบบ Autonomous AGI ระดับสูงสำหรับ Windows</b><br>
   วิศวกรรมซอฟต์แวร์ • ควบคุม Windows OS อัตโนมัติ • Dynamic Island HUD • Mobile Companion<br>
-  สั่งการด้วยเสียง Real-Time • สภาสมองกล 6 ขุนพล • AR Spatial Workbench
+  สั่งการด้วยเสียง Real-Time • สภาสมองกล 8 ขุนพล • AR Spatial Workbench
 </p>
 
 <p align="center">
   <a href="#architecture"><b>⚡ Architecture</b></a> •
   <a href="#ai-council"><b>🏛️ AI Council</b></a> •
+  <a href="#native-slm-models"><b>🧪 Native Models (0→1)</b></a> •
   <a href="#quick-start"><b>🚀 Quick Start</b></a> •
   <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
   <a href="#mobile-app"><b>📱 Mobile App</b></a> •
@@ -29,7 +30,7 @@
 
 | แกนประมวลผล (Core) | สถาปัตยกรรม (Architecture) | สภาสมองกล (Swarm Quorum) | ความเร็วตอบสนอง (Latency) | ระบบปฏิบัติการ (OS Support) |
 | :---: | :---: | :---: | :---: | :---: |
-| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `7 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
+| `Python 3.10+ / Win32` | `Decoupled Autonomous AGI` | `8 ขุนพลสมองกลคู่ขนาน` | `~1s Quorum Consensus` | `Windows 10 / 11 Native` |
 
 </div>
 
@@ -61,6 +62,29 @@
 | 🧯 **D.U.M.-E. (ดัม-อี)** | **Servo & Safeguard** | ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อนฉุกเฉิน |
 | 🤖 **J.O.C.A.S.T.A.** | **Cyber-Defense & Threat Recon** | สถาปัตยกรรม Cyber-Warfare, ป้องกันการโจมตีทางไซเบอร์, ตรวจสอบการเข้ารหัส และความปลอดภัยคลังข้อมูล |
 | 🕷️ **K.A.R.E.N.** | **Situational Awareness & Empathy** | ตรวจจับบริบทสภาวะผู้ใช้ (Situational & Vitality Sentinel), ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ |
+
+---
+
+<a id="native-slm-models"></a>
+## 🧪 Native From-Scratch AI Models (`C:\JarvisCore` — 🚧 WIP / Local-Only)
+
+> [!IMPORTANT]
+> **สถานะไฟล์โมเดล (Local-Only Policy):** โมเดล Small Language Model (SLM) ที่สร้างและฝึกสอนตั้งแต่ศูนย์ด้วย PyTorch Decoder-only Transformer ในโปรเจกต์ `C:\JarvisCore` **ยังอยู่ระหว่างการพัฒนาและฝึกสอนต่อเนื่อง (Work In Progress)** จึง **ไม่ได้อัปโหลดไฟล์น้ำหนัก (`.pt` / `.ckpt`) ขึ้น GitHub** และเก็บรักษาไว้เฉพาะภายในเครื่อง Local ของผู้พัฒนาเท่านั้น (เชื่อมต่อกับ Mainframe ผ่าน `modules/jarvis_slm_bridge.py` แบบ Isolated RPC Worker)
+
+รายชื่อโมเดล AI ทั้งหมดที่กำลังสร้างและบ่มเพาะจากศูนย์ในชุดนี้:
+
+| Model ID | ชื่อ / ขุนพล (Persona) | สถาปัตยกรรม & Tokenizer | หน้าที่เฉพาะทาง (Specialization) | สถานะ |
+| :--- | :--- | :--- | :--- | :---: |
+| `jarvis-slm` | **J.A.R.V.I.S. Custom SLM (Base)** | PyTorch Transformer (`ctx 128`) | โมเดลต้นแบบฐานรากสำหรับการทดสอบและ Zero-Cloud Reflex | `🚧 WIP (Local)` |
+| `jarvis-slm-thai` | **J.A.R.V.I.S. Custom SLM Thai** | PyTorch Transformer (`ctx 512`) | โมเดลฐานภาษาไทยสำหรับความเข้าใจบริบทภาษาไทยระดับแกนหลัก | `🚧 WIP (Local)` |
+| `jarvis-slm-jarvis` | **Stark Swarm — J.A.R.V.I.S.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ประธานสภา, วางแผนแม่บท (Master Directive) และสังเคราะห์ฉันทามติ | `🚧 WIP (Local)` |
+| `jarvis-slm-friday` | **Stark Swarm — F.R.I.D.A.Y.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรมโค้ด Python, วิศวกรรมไฟฟ้า/วงจร และคำนวณคณิตศาสตร์ | `🚧 WIP (Local)` |
+| `jarvis-slm-veronica` | **Stark Swarm — V.E.R.O.N.I.C.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเพดาน RAM/CPU, เฝ้าระวังระบบโอเวอร์โหลด และป้องกันความเสียหาย | `🚧 WIP (Local)` |
+| `jarvis-slm-edith` | **Stark Swarm — E.D.I.T.H.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์ทฤษฎีเกม (Game Theory), คาดการณ์ความเสี่ยง และกลยุทธ์เชิงลึก | `🚧 WIP (Local)` |
+| `jarvis-slm-u` | **Stark Swarm — U.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์บริบทภาพหน้าจอ, บำรุงรักษา SQLite และเคลียร์แคชระบบ | `🚧 WIP (Local)` |
+| `jarvis-slm-dume` | **Stark Swarm — D.U.M.-E.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเมาส์/คีย์บอร์ด OS, Failsafe Watchdog และตัดความร้อนฉุกเฉิน | `🚧 WIP (Local)` |
+| `jarvis-slm-jocasta` | **Stark Swarm — J.O.C.A.S.T.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรม Cyber-Warfare, ป้องกันไซเบอร์ และตรวจสอบความปลอดภัยคลังข้อมูล | `🚧 WIP (Local)` |
+| `jarvis-slm-karen` | **Stark Swarm — K.A.R.E.N.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ตรวจจับสภาวะผู้ใช้, ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ | `🚧 WIP (Local)` |
 
 ---
 
@@ -183,7 +207,7 @@ npx expo start
 ### 🧠 1. Cognitive & Autonomous Brain
 - **Autonomous Thought Engine (`jarvis.py`):** จำลองสารสื่อประสาทชีวภาพ (Dopamine, Cortisol) คำนวณความเครียดตามอุณหภูมิ WMI/CPU จริง พร้อม Mutex Lock ป้องกัน Race Condition และ Zero-Delay Shutdown (`self.stop_event`)
 - **Visual Screen Awareness & Smart Silence:** เฝ้ามองหน้าจอคอมพิวเตอร์เพื่อช่วยแนะนำโค้ด และปิดเสียงเงียบอัตโนมัติเมื่อผู้ใช้กำลังรับชม YouTube หรือ Netflix
-- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 7 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน พร้อมรองรับโหมด Zero-Cloud ผ่านสมองกลเฉพาะทางของแต่ละตัวใน `C:\JarvisCore`
+- **Multi-Agent Swarm Council (`jarvis_core/cognitive/swarm.py`):** สภา AI 8 ขุนพล ประชุมคู่ขนานแบบ ThreadPool ผสาน Tree of Thoughts สำหรับโจทย์วิศวกรรมที่ซับซ้อน พร้อมรองรับโหมด Zero-Cloud ผ่านสมองกลเฉพาะทางของแต่ละตัวใน `C:\JarvisCore`
 - **JarvisCore Synaptic Bridge (`modules/jarvis_slm_bridge.py`):** สะพานเชื่อมประสาท Dual-Mode (In-Process / Isolated RPC Worker) ดึงน้ำหนัก BPE SLM ทั้ง 8 ขุนพลจาก `C:\JarvisCore` มาประมวลผลแบบออฟไลน์ 100%
 - **Neural AI Router (`jarvis_core/ai_router.py`):** กระจายงานอัตโนมัติไปยัง Groq (GPT-OSS 120B, Qwen 27B), Google Gemini (3.6 Flash), Local Ollama หรือ `JarvisCore Native SLM` ตามความเหมาะสมของงาน
 - **Cognitive Evolution (`modules/jarvis_evolution.py`):** ตกผลึกองค์ความรู้และสร้าง Synaptic Knowledge Graph ช่วงดึก (01:00-05:00 น.) อัตโนมัติ
@@ -235,7 +259,7 @@ npx expo start
 - **[`jarvis-module-scaffolder`](.agents/skills/jarvis-module-scaffolder/SKILL.md):** มาตรฐานการขยายฟังก์ชันและโมดูลใหม่แบบ Decoupled ป้องกันไฟล์หลักบวม
 - **[`python-concurrency-guardian`](.agents/skills/python-concurrency-guardian/SKILL.md):** ควบคุม Thread Safety, Mutex Locks และ Zero-Delay Shutdown Events (`stop_event`)
 - **[`pytest-mock-master`](.agents/skills/pytest-mock-master/SKILL.md):** มาตรฐานการทดสอบ Automated Test Suite ครอบคลุมการจำลอง WMI, Audio, Camera และ APIs
-- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 7 ขุนพลสมองกล และฉันทามติ Tree of Thoughts
+- **[`swarm-council-orchestrator`](.agents/skills/swarm-council-orchestrator/SKILL.md):** มาตรฐานการระดมพลสภา 8 ขุนพลสมองกล และฉันทามติ Tree of Thoughts
 
 #### 🛡️ 2. Autonomous Operations & Cybersecurity
 - **[`computer-use-controller`](.agents/skills/computer-use-controller/SKILL.md):** มาตรฐานการควบคุม OS Desktop, การจำลอง Win32 Input, คำนวณพิกัด Multi-Monitor และ Failsafe
