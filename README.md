@@ -77,14 +77,14 @@
 | :--- | :--- | :--- | :--- | :---: |
 | `jarvis-slm` | **J.A.R.V.I.S. Custom SLM (Base)** | PyTorch Transformer (`ctx 128`) | โมเดลต้นแบบฐานรากสำหรับการทดสอบและ Zero-Cloud Reflex | `🚧 WIP (Local)` |
 | `jarvis-slm-thai` | **J.A.R.V.I.S. Custom SLM Thai** | PyTorch Transformer (`ctx 512`) | โมเดลฐานภาษาไทยสำหรับความเข้าใจบริบทภาษาไทยระดับแกนหลัก | `🚧 WIP (Local)` |
-| `jarvis-slm-jarvis` | **Stark Swarm — J.A.R.V.I.S.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ประธานสภา, วางแผนแม่บท (Master Directive) และสังเคราะห์ฉันทามติ | `🚧 WIP (Local)` |
-| `jarvis-slm-friday` | **Stark Swarm — F.R.I.D.A.Y.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรมโค้ด Python, วิศวกรรมไฟฟ้า/วงจร และคำนวณคณิตศาสตร์ | `🚧 WIP (Local)` |
-| `jarvis-slm-veronica` | **Stark Swarm — V.E.R.O.N.I.C.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเพดาน RAM/CPU, เฝ้าระวังระบบโอเวอร์โหลด และป้องกันความเสียหาย | `🚧 WIP (Local)` |
-| `jarvis-slm-edith` | **Stark Swarm — E.D.I.T.H.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์ทฤษฎีเกม (Game Theory), คาดการณ์ความเสี่ยง และกลยุทธ์เชิงลึก | `🚧 WIP (Local)` |
-| `jarvis-slm-u` | **Stark Swarm — U.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์บริบทภาพหน้าจอ, บำรุงรักษา SQLite และเคลียร์แคชระบบ | `🚧 WIP (Local)` |
-| `jarvis-slm-dume` | **Stark Swarm — D.U.M.-E.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเมาส์/คีย์บอร์ด OS, Failsafe Watchdog และตัดความร้อนฉุกเฉิน | `🚧 WIP (Local)` |
-| `jarvis-slm-jocasta` | **Stark Swarm — J.O.C.A.S.T.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรม Cyber-Warfare, ป้องกันไซเบอร์ และตรวจสอบความปลอดภัยคลังข้อมูล | `🚧 WIP (Local)` |
-| `jarvis-slm-karen` | **Stark Swarm — K.A.R.E.N.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ตรวจจับสภาวะผู้ใช้, ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ | `🚧 WIP (Local)` |
+| `jarvis-slm-jarvis` | **Nachapol Swarm — J.A.R.V.I.S.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ประธานสภา, วางแผนแม่บท (Master Directive) และสังเคราะห์ฉันทามติ | `🚧 WIP (Local)` |
+| `jarvis-slm-friday` | **Nachapol Swarm — F.R.I.D.A.Y.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรมโค้ด Python, วิศวกรรมไฟฟ้า/วงจร และคำนวณคณิตศาสตร์ | `🚧 WIP (Local)` |
+| `jarvis-slm-veronica` | **Nachapol Swarm — V.E.R.O.N.I.C.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเพดาน RAM/CPU, เฝ้าระวังระบบโอเวอร์โหลด และป้องกันความเสียหาย | `🚧 WIP (Local)` |
+| `jarvis-slm-edith` | **Nachapol Swarm — E.D.I.T.H.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์ทฤษฎีเกม (Game Theory), คาดการณ์ความเสี่ยง และกลยุทธ์เชิงลึก | `🚧 WIP (Local)` |
+| `jarvis-slm-u` | **Nachapol Swarm — U.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์บริบทภาพหน้าจอ, บำรุงรักษา SQLite และเคลียร์แคชระบบ | `🚧 WIP (Local)` |
+| `jarvis-slm-dume` | **Nachapol Swarm — D.U.M.-E.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเมาส์/คีย์บอร์ด OS, Failsafe Watchdog และตัดความร้อนฉุกเฉิน | `🚧 WIP (Local)` |
+| `jarvis-slm-jocasta` | **Nachapol Swarm — J.O.C.A.S.T.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรม Cyber-Warfare, ป้องกันไซเบอร์ และตรวจสอบความปลอดภัยคลังข้อมูล | `🚧 WIP (Local)` |
+| `jarvis-slm-karen` | **Nachapol Swarm — K.A.R.E.N.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ตรวจจับสภาวะผู้ใช้, ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ | `🚧 WIP (Local)` |
 
 ---
 
