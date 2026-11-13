@@ -47,4 +47,4 @@ jobs:
           OWNER_NAME: "Sir"
           COMPUTER_CONTROL_MODE: "background"
         run: |
-          python -m pytest tests/test_advanced_core.py tests/test_config_and_state.py tests/test_metrics.py tests/test_notifier.py tests/test_stark_council.py tests/test_utils.py tests/test_concurrency_dispatcher.py tests/test_automation_agent.py tests/test_web_app.py -v -o addopts=
+          python -m pytest tests/test_advanced_core.py tests/test_config_and_state.py tests/test_metrics.py tests/test_notifier.py tests/test_nachapol_council.py tests/test_utils.py tests/test_concurrency_dispatcher.py tests/test_automation_agent.py tests/test_web_app.py -v -o addopts=

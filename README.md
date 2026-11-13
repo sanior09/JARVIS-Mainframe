@@ -18,11 +18,11 @@
 <p align="center">
   <a href="#architecture"><b>⚡ Architecture</b></a> •
   <a href="#ai-council"><b>🏛️ AI Council</b></a> •
-  <a href="#native-slm-models"><b>🧪 Native Models (0→1)</b></a> •
   <a href="#quick-start"><b>🚀 Quick Start</b></a> •
   <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
   <a href="#mobile-app"><b>📱 Mobile App</b></a> •
   <a href="#subsystems"><b>🛠️ Subsystems</b></a> •
+  <a href="#native-slm-models"><b>🧪 Native Models (0→1)</b></a> •
   <a href="#skills-ecosystem"><b>🧩 Skills</b></a> •
   <a href="#roadmap"><b>🚀 Roadmap</b></a> •
   <a href="#dev-note"><b>📝 Dev Note</b></a>
@@ -62,29 +62,6 @@
 | 🧯 **D.U.M.-E. (ดัม-อี)** | **Servo & Safeguard** | ควบคุมเมาส์/คีย์บอร์ดระดับ OS, กำกับ Failsafe Watchdog และตัดความร้อนฉุกเฉิน |
 | 🤖 **J.O.C.A.S.T.A.** | **Cyber-Defense & Threat Recon** | สถาปัตยกรรม Cyber-Warfare, ป้องกันการโจมตีทางไซเบอร์, ตรวจสอบการเข้ารหัส และความปลอดภัยคลังข้อมูล |
 | 🕷️ **K.A.R.E.N.** | **Situational Awareness & Empathy** | ตรวจจับบริบทสภาวะผู้ใช้ (Situational & Vitality Sentinel), ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ |
-
----
-
-<a id="native-slm-models"></a>
-## 🧪 Native From-Scratch AI Models (`C:\JarvisCore` — 🚧 WIP / Local-Only)
-
-> [!IMPORTANT]
-> **สถานะไฟล์โมเดล (Local-Only Policy):** โมเดล Small Language Model (SLM) ที่สร้างและฝึกสอนตั้งแต่ศูนย์ด้วย PyTorch Decoder-only Transformer ในโปรเจกต์ `C:\JarvisCore` **ยังอยู่ระหว่างการพัฒนาและฝึกสอนต่อเนื่อง (Work In Progress)** จึง **ไม่ได้อัปโหลดไฟล์น้ำหนัก (`.pt` / `.ckpt`) ขึ้น GitHub** และเก็บรักษาไว้เฉพาะภายในเครื่อง Local ของผู้พัฒนาเท่านั้น (เชื่อมต่อกับ Mainframe ผ่าน `modules/jarvis_slm_bridge.py` แบบ Isolated RPC Worker)
-
-รายชื่อโมเดล AI ทั้งหมดที่กำลังสร้างและบ่มเพาะจากศูนย์ในชุดนี้:
-
-| Model ID | ชื่อ / ขุนพล (Persona) | สถาปัตยกรรม & Tokenizer | หน้าที่เฉพาะทาง (Specialization) | สถานะ |
-| :--- | :--- | :--- | :--- | :---: |
-| `jarvis-slm` | **J.A.R.V.I.S. Custom SLM (Base)** | PyTorch Transformer (`ctx 128`) | โมเดลต้นแบบฐานรากสำหรับการทดสอบและ Zero-Cloud Reflex | `🚧 WIP (Local)` |
-| `jarvis-slm-thai` | **J.A.R.V.I.S. Custom SLM Thai** | PyTorch Transformer (`ctx 512`) | โมเดลฐานภาษาไทยสำหรับความเข้าใจบริบทภาษาไทยระดับแกนหลัก | `🚧 WIP (Local)` |
-| `jarvis-slm-jarvis` | **Nachapol Swarm — J.A.R.V.I.S.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ประธานสภา, วางแผนแม่บท (Master Directive) และสังเคราะห์ฉันทามติ | `🚧 WIP (Local)` |
-| `jarvis-slm-friday` | **Nachapol Swarm — F.R.I.D.A.Y.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรมโค้ด Python, วิศวกรรมไฟฟ้า/วงจร และคำนวณคณิตศาสตร์ | `🚧 WIP (Local)` |
-| `jarvis-slm-veronica` | **Nachapol Swarm — V.E.R.O.N.I.C.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเพดาน RAM/CPU, เฝ้าระวังระบบโอเวอร์โหลด และป้องกันความเสียหาย | `🚧 WIP (Local)` |
-| `jarvis-slm-edith` | **Nachapol Swarm — E.D.I.T.H.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์ทฤษฎีเกม (Game Theory), คาดการณ์ความเสี่ยง และกลยุทธ์เชิงลึก | `🚧 WIP (Local)` |
-| `jarvis-slm-u` | **Nachapol Swarm — U.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์บริบทภาพหน้าจอ, บำรุงรักษา SQLite และเคลียร์แคชระบบ | `🚧 WIP (Local)` |
-| `jarvis-slm-dume` | **Nachapol Swarm — D.U.M.-E.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเมาส์/คีย์บอร์ด OS, Failsafe Watchdog และตัดความร้อนฉุกเฉิน | `🚧 WIP (Local)` |
-| `jarvis-slm-jocasta` | **Nachapol Swarm — J.O.C.A.S.T.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรม Cyber-Warfare, ป้องกันไซเบอร์ และตรวจสอบความปลอดภัยคลังข้อมูล | `🚧 WIP (Local)` |
-| `jarvis-slm-karen` | **Nachapol Swarm — K.A.R.E.N.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ตรวจจับสภาวะผู้ใช้, ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ | `🚧 WIP (Local)` |
 
 ---
 
@@ -178,8 +155,15 @@ python modules/dynamic_island.py
 - **AI Quota Gauge:** แสดงสถานะโควตา API (Groq, Gemini, Ollama) แบบเรียลไทม์
 - **Zero-Latency Named Pipe:** เชื่อมต่อกับคอร์ J.A.R.V.I.S. ผ่าน `\\.\pipe\jarvis_island_pipe`
 
+<p align="center">
+  <img src="docs/images/dynamic_island.png" alt="J.A.R.V.I.S. Dynamic Island HUD Interface" width="100%">
+</p>
+
 <a id="mobile-app"></a>
 ### 📱 2. JARVIS Mobile Companion App (React Native / Expo Go)
+> [!NOTE]
+> โฟลเดอร์ `jarvis-mobile/` ถูกสงวนเป็น Private Companion Client (ละเว้นไว้ใน `.gitignore`) ไม่ได้รวมอยู่ใน Repository สาธารณะนี้ โดยเชื่อมต่อกับ Mainframe ผ่าน REST / WebSocket API (`http://localhost:5050`)
+
 ควบคุมและสั่งการ J.A.R.V.I.S. จากระยะไกลผ่านสมาร์ตโฟน:
 ```bash
 cd jarvis-mobile
@@ -246,6 +230,30 @@ npx expo start
 - **Subconscious Brain (`modules/jarvis_subconscious.py`):** เฝ้าระวังฮาร์ดแวร์ เครือข่าย และหน้าจอทุก 15 วินาทีแบบ Local 100% พร้อมแจ้งเตือนล่วงหน้า (Proactive Override)
 - **Uncensored Dark Mode (`jarvis_core/ai_router.py`):** ตรวจจับคำสั่ง Ethical Hacking & Pentesting อัตโนมัติ เพื่อสลับสมองไปยัง Local Uncensored Model (Qwen/Dolphin) ประมวลผลในเครื่อง 100% ไร้การเซ็นเซอร์
 - **Cyber Inspector & Network Scanner (`modules/cyber_inspector.py`):** ตรวจจับอุปกรณ์บน Wi-Fi/LAN สแกนพอร์ต และประเมินความปลอดภัยเบื้องต้น
+
+---
+
+<a id="native-slm-models"></a>
+## 🧪 Native From-Scratch AI Models (`C:\JarvisCore` — 🚧 WIP / Local-Only)
+
+> [!IMPORTANT]
+> **สถานะไฟล์โมเดล (Local-Only Policy):** โมเดล AI ทั้งสาย SLM และ Unified LLM Engine ที่สร้างและฝึกสอนตั้งแต่ศูนย์ด้วย PyTorch ในโปรเจกต์ `C:\JarvisCore` **ยังอยู่ระหว่างการพัฒนาและฝึกสอนต่อเนื่อง (Work In Progress)** จึง **ไม่ได้อัปโหลดไฟล์น้ำหนัก (`.pt` / `.ckpt`) ขึ้น GitHub** และเก็บรักษาไว้เฉพาะภายในเครื่อง Local ของผู้พัฒนาเท่านั้น (เชื่อมต่อกับ Mainframe ผ่าน `modules/jarvis_slm_bridge.py` แบบ Isolated RPC Worker)
+
+รายชื่อโมเดล AI ทั้งหมดที่กำลังสร้างและบ่มเพาะจากศูนย์ในชุดนี้:
+
+| Model ID | ชื่อ / ขุนพล (Persona) | สถาปัตยกรรม & Tokenizer | หน้าที่เฉพาะทาง (Specialization) | สถานะ |
+| :--- | :--- | :--- | :--- | :---: |
+| `jarvis-slm` | **J.A.R.V.I.S. Custom SLM (Base)** | PyTorch Transformer (`ctx 128`) | โมเดลต้นแบบฐานรากสำหรับการทดสอบและ Zero-Cloud Reflex | `🚧 WIP (Local)` |
+| `jarvis-slm-thai` | **J.A.R.V.I.S. Custom SLM Thai** | PyTorch Transformer (`ctx 512`) | โมเดลฐานภาษาไทยสำหรับความเข้าใจบริบทภาษาไทยระดับแกนหลัก | `🚧 WIP (Local)` |
+| `nachapol-llm` | **Nachapol Unified Modern LLM (`nano → 1B+`)** | RoPE + GQA + SwiGLU + FlashAttn (`ctx 512–4096`) | แกนสมอง LLM หลักที่สร้างจากศูนย์ รองรับการสเกลขึ้น Server `RTX 3090 24GB` | `🚧 WIP (Local)` |
+| `jarvis-slm-jarvis` | **Nachapol Swarm — J.A.R.V.I.S.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ประธานสภา, วางแผนแม่บท (Master Directive) และสังเคราะห์ฉันทามติ | `🚧 WIP (Local)` |
+| `jarvis-slm-friday` | **Nachapol Swarm — F.R.I.D.A.Y.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรมโค้ด Python, วิศวกรรมไฟฟ้า/วงจร และคำนวณคณิตศาสตร์ | `🚧 WIP (Local)` |
+| `jarvis-slm-veronica` | **Nachapol Swarm — V.E.R.O.N.I.C.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเพดาน RAM/CPU, เฝ้าระวังระบบโอเวอร์โหลด และป้องกันความเสียหาย | `🚧 WIP (Local)` |
+| `jarvis-slm-edith` | **Nachapol Swarm — E.D.I.T.H.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์ทฤษฎีเกม (Game Theory), คาดการณ์ความเสี่ยง และกลยุทธ์เชิงลึก | `🚧 WIP (Local)` |
+| `jarvis-slm-u` | **Nachapol Swarm — U.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | วิเคราะห์บริบทภาพหน้าจอ, บำรุงรักษา SQLite และเคลียร์แคชระบบ | `🚧 WIP (Local)` |
+| `jarvis-slm-dume` | **Nachapol Swarm — D.U.M.-E.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ควบคุมเมาส์/คีย์บอร์ด OS, Failsafe Watchdog และตัดความร้อนฉุกเฉิน | `🚧 WIP (Local)` |
+| `jarvis-slm-jocasta` | **Nachapol Swarm — J.O.C.A.S.T.A.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | สถาปัตยกรรม Cyber-Warfare, ป้องกันไซเบอร์ และตรวจสอบความปลอดภัยคลังข้อมูล | `🚧 WIP (Local)` |
+| `jarvis-slm-karen` | **Nachapol Swarm — K.A.R.E.N.** | Decoder SLM + BPE (`100,293` vocab, `ctx 128`) | ตรวจจับสภาวะผู้ใช้, ความเหนื่อยล้า และโค้ชแนะนำการทำงานอย่างเข้าอกเข้าใจ | `🚧 WIP (Local)` |
 
 ---
 

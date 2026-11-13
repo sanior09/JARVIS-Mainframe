@@ -2,7 +2,7 @@
 name: swarm-council-orchestrator
 description: |
   Multi-agent parallel deliberation protocols, Selective Quorum routing,
-  and Tree of Thoughts consensus building across the 7 Nachapol AI council personas.
+  and Tree of Thoughts consensus building across the 8 Nachapol AI Swarm personas.
 license: MIT
 metadata:
   version: v1
