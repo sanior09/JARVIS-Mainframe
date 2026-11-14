@@ -11,7 +11,10 @@ import time
 from typing import Optional
 
 from dotenv import load_dotenv
-from faster_whisper import WhisperModel
+try:
+    from faster_whisper import WhisperModel
+except ImportError:
+    WhisperModel = None
 from groq import Groq
 
 load_dotenv()
@@ -72,6 +75,9 @@ class HybridSTTEngine:
 
     def _initialize_local(self) -> None:
         if self.local_model is None:
+            if WhisperModel is None:
+                logger.warning("faster-whisper not installed; skipping Local Backup STT.")
+                return
             logger.info(
                 f"Initializing Backup STT: Local Faster-Whisper "
                 f"({self.local_model_size})"
@@ -242,6 +248,9 @@ class HybridSTTEngine:
 
         return ""
 
+
+# Backward-compatibility alias expected by local_engine
+LocalSTTEngine = HybridSTTEngine
 
 # Expose a global instance
 stt_engine = HybridSTTEngine()

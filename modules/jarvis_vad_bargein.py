@@ -14,10 +14,10 @@ except ImportError:
     logging.warning("[JARVIS VAD] Torch is not installed. Silero VAD requires 'torch' and 'torchaudio'.")
 
 try:
-    import pyaudio
+    import sounddevice as sd
 except ImportError:
-    pyaudio = None
-    logging.warning("[JARVIS VAD] PyAudio is not installed. Required for microphone input.")
+    sd = None
+    logging.warning("[JARVIS VAD] sounddevice is not installed. Required for microphone input.")
 
 class InteractionState(Enum):
     """สถานะการโต้ตอบของ J.A.R.V.I.S."""
@@ -79,7 +79,6 @@ class AudioInteractionManager:
         self.on_speech_end: Optional[Callable[[], None]] = None
         self.on_barge_in: Optional[Callable[[], None]] = None
         
-        self.pa = pyaudio.PyAudio() if pyaudio else None
         self.vad_model = None
         self._using_energy_fallback = False
         self._noise_floor = 400.0
@@ -137,28 +136,29 @@ class AudioInteractionManager:
 
     def _audio_processing_worker(self) -> None:
         """เธรดสำหรับอัดเสียงและประมวลผล VAD แบบ Real-time พร้อม Fast Barge-in"""
-        if not self.pa:
-            logging.error("[JARVIS VAD] PyAudio unavailable. VAD stopped.")
+        if not sd:
+            logging.error("[JARVIS VAD] sounddevice unavailable. VAD stopped.")
             self._is_running = False
             return
 
+        stream = None
         try:
-            stream = self.pa.open(
-                format=pyaudio.paInt16,
+            stream = sd.RawInputStream(
+                samplerate=self.sample_rate,
+                blocksize=self.chunk_size,
                 channels=1,
-                rate=self.sample_rate,
-                input=True,
-                frames_per_buffer=self.chunk_size
+                dtype="int16",
             )
-            logging.info(f"[JARVIS VAD] Microphone listening thread active (Mode: {'Silero' if self.vad_model else 'Adaptive RMS Energy'}).")
+            stream.start()
+            logging.info(f"[JARVIS VAD] Microphone listening thread active via sounddevice default mic (Mode: {'Silero' if self.vad_model else 'Adaptive RMS Energy'}).")
             
             if torch:
                 torch.set_num_threads(1)
             
             while self._is_running:
-                raw_data = stream.read(self.chunk_size, exception_on_overflow=False)
+                raw_data, _ = stream.read(self.chunk_size)
                 
-                audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
+                audio_np = np.frombuffer(bytes(raw_data), dtype=np.int16).astype(np.float32)
                 
                 # Speech detection: Silero neural prob or fast RMS energy
                 if self.vad_model and torch:
@@ -251,9 +251,9 @@ class AudioInteractionManager:
         except Exception as e:
             logging.error(f"[JARVIS VAD] Audio processing error: {e}")
         finally:
-            if 'stream' in locals() and stream.is_active():
+            if stream is not None:
                 try:
-                    stream.stop_stream()
+                    stream.stop()
                     stream.close()
                 except Exception:
                     pass
@@ -276,8 +276,6 @@ class AudioInteractionManager:
 
     def __del__(self):
         self.stop()
-        if self.pa:
-            self.pa.terminate()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

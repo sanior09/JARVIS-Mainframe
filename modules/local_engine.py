@@ -79,7 +79,38 @@ try:
     HAS_SR = True
 except ImportError:
     HAS_SR = False
-    logger.warning("[DEP] SpeechRecognition not installed. STT will be disabled.")
+    logger.warning("[DEP] SpeechRecognition not installed.")
+
+try:
+    import sounddevice as sd
+    HAS_SD = True
+except ImportError:
+    sd = None
+    HAS_SD = False
+    logger.warning("[DEP] sounddevice not installed. Microphone capture will be disabled.")
+
+try:
+    from modules.audio_capture import (
+        CHANNELS,
+        DEFAULT_BLOCKSIZE,
+        DTYPE,
+        SAMPLE_RATE,
+        SAMPLE_WIDTH,
+        pcm16_rms,
+        pcm16_to_wav_bytes,
+        record_utterance_from_stream,
+    )
+except ImportError:
+    from audio_capture import (
+        CHANNELS,
+        DEFAULT_BLOCKSIZE,
+        DTYPE,
+        SAMPLE_RATE,
+        SAMPLE_WIDTH,
+        pcm16_rms,
+        pcm16_to_wav_bytes,
+        record_utterance_from_stream,
+    )
 
 try:
     import edge_tts
@@ -138,62 +169,79 @@ class STTModule:
         self.is_listening: bool = False
         self._last_interaction_time: float = 0.0
 
+        env_thresh = os.getenv("STT_ENERGY_THRESHOLD")
+        if env_thresh and env_thresh.isdigit():
+            energy_threshold = int(env_thresh)
+        self._energy_threshold = float(energy_threshold)
+        self._device_index = None  # Use Windows Default Microphone
+
         if HAS_SR:
             self._recognizer = sr.Recognizer()
-            env_thresh = os.getenv("STT_ENERGY_THRESHOLD")
-            if env_thresh and env_thresh.isdigit():
-                energy_threshold = int(env_thresh)
             self._recognizer.energy_threshold = energy_threshold
             self._recognizer.pause_threshold = pause_threshold
             self._recognizer.non_speaking_duration = min(0.3, pause_threshold - 0.1)
             self._recognizer.dynamic_energy_threshold = False
-            
-            mic_idx_str = os.getenv("MIC_INDEX")
-            self._device_index = int(mic_idx_str) if mic_idx_str and mic_idx_str.isdigit() else None
-            
-            logger.info(f"STT: Initialized (Language={language}, Threshold={energy_threshold}, MicIndex={self._device_index})")
         else:
             self._recognizer = None
-            logger.error("STT: SpeechRecognition not available.")
+
+        logger.info(f"STT: Initialized sounddevice default mic (Language={language}, Threshold={energy_threshold})")
 
     def listen_and_transcribe(self) -> str:
         """
-        [Blocking I/O] เปิดไมโครโฟน รอเสียง และแปลงเป็นข้อความ
+        [Blocking I/O] เปิดไมโครโฟน Default ของ Windows ผ่าน sounddevice รอเสียง และแปลงเป็นข้อความ
         
         Returns:
             str: ข้อความที่แปลงได้, หรือ "" หากฟังไม่ได้ยิน/เกิด Error
         """
-        if not HAS_SR or self._recognizer is None:
-            logger.error("STT: Module unavailable. Returning empty string.")
+        if not HAS_SD or sd is None:
+            logger.error("STT: sounddevice unavailable. Returning empty string.")
             return ""
 
         self.is_listening = True
-        logger.info("STT: 🎤 Microphone active — waiting for speech...")
+        logger.info("STT: 🎤 Microphone active via sounddevice default mic — waiting for speech...")
         send_to_island("LISTENING", "Waiting for command...")
 
         try:
+            pcm_bytes = b""
             with MIC_LOCK:
-                with sr.Microphone(device_index=self._device_index) as source:
-                    
-                    audio = self._recognizer.listen(
-                        source,
-                        timeout=self.listen_timeout,
-                        phrase_time_limit=self.phrase_limit,
+                stream = sd.RawInputStream(
+                    samplerate=SAMPLE_RATE,
+                    blocksize=DEFAULT_BLOCKSIZE,
+                    channels=CHANNELS,
+                    dtype=DTYPE,
+                )
+                try:
+                    stream.start()
+                    pcm_bytes = record_utterance_from_stream(
+                        stream,
+                        sample_rate=SAMPLE_RATE,
+                        blocksize=DEFAULT_BLOCKSIZE,
+                        energy_threshold=self._energy_threshold,
+                        pause_threshold=self.pause_threshold,
+                        listen_timeout=self.listen_timeout,
+                        phrase_limit=self.phrase_limit,
                     )
-            
+                finally:
+                    try:
+                        stream.stop()
+                        stream.close()
+                    except Exception:
+                        pass
+
+            if not pcm_bytes:
+                return ""
+
             send_to_island("THINKING", "Processing speech...")
-            import os
             
-            duration = len(audio.frame_data) / (audio.sample_rate * audio.sample_width)
+            duration = len(pcm_bytes) / (SAMPLE_RATE * SAMPLE_WIDTH)
             if duration < 0.5:
                 logger.warning(f"STT: Audio too short ({duration:.2f}s). Skipping.")
                 return ""
 
-            wav_data = audio.get_wav_data()
-            logger.info("STT: Audio captured — transcribing via Local Faster-Whisper...")
+            wav_data = pcm16_to_wav_bytes(pcm_bytes, sample_rate=SAMPLE_RATE, channels=CHANNELS)
+            logger.info("STT: Audio captured — transcribing via Local Faster-Whisper / Groq Whisper...")
             
-            import audioop
-            rms = audioop.rms(audio.frame_data, audio.sample_width)
+            rms = int(pcm16_rms(pcm_bytes))
             emotion_tag = ""
             min_rms = int(os.getenv("STT_MIN_RMS", "700"))
             if rms < min_rms:
@@ -1801,30 +1849,24 @@ class LocalPipelineController:
 
     def _bargein_worker(self) -> None:
         """[VAD Barge-in] ตรวจจับเสียงพูดแทรกขณะกำลังเล่นเสียง TTS"""
-        import struct
-        import math
-        import time
+        if not HAS_SD or sd is None:
+            logger.warning("Pipeline: Barge-in monitor unavailable (sounddevice missing).")
+            return
+
+        CHUNK = 1024
+        logger.info("Pipeline: 🛑 Barge-in Monitor Active (sounddevice default mic)")
+        stream = None
         try:
-            import pyaudio
-            p = pyaudio.PyAudio()
-            CHUNK = 1024
-            FORMAT = pyaudio.paInt16
-            CHANNELS = 1
-            RATE = 16000
-            
-            logger.info("Pipeline: 🛑 Barge-in Monitor Active")
-            
-            stream = None
-            
             while self._is_running:
                 is_playing = getattr(self._audio_player, '_is_playing', False)
                 
                 if not is_playing:
                     if stream is not None:
                         try:
-                            stream.stop_stream()
+                            stream.stop()
                             stream.close()
-                        except: pass
+                        except Exception:
+                            pass
                         stream = None
                     time.sleep(0.1)
                     continue
@@ -1836,18 +1878,20 @@ class LocalPipelineController:
                 if stream is None:
                     try:
                         with MIC_LOCK:
-                            stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True,
-                                            frames_per_buffer=CHUNK, input_device_index=self._stt._device_index)
-                    except Exception as e:
-                        
+                            stream = sd.RawInputStream(
+                                samplerate=SAMPLE_RATE,
+                                blocksize=CHUNK,
+                                channels=CHANNELS,
+                                dtype=DTYPE,
+                            )
+                            stream.start()
+                    except Exception:
                         time.sleep(0.2)
                         continue
                         
                 try:
-                    data = stream.read(CHUNK, exception_on_overflow=False)
-                    samples = struct.unpack(f'<{CHUNK}h', data)
-                    rms = math.sqrt(sum(s*s for s in samples) / max(1, CHUNK))
-                    
+                    raw_data, _ = stream.read(CHUNK)
+                    rms = pcm16_rms(bytes(raw_data))
                     if rms > 1500: 
                         logger.warning(f'Pipeline: 🛑 Barge-in Detected (RMS={int(rms)})! Stopping TTS...')
                         self._audio_player.interrupt()
@@ -1862,10 +1906,10 @@ class LocalPipelineController:
                     
             if stream is not None:
                 try:
-                    stream.stop_stream()
+                    stream.stop()
                     stream.close()
-                except: pass
-            p.terminate()
+                except Exception:
+                    pass
         except Exception as e:
             logger.warning(f'Pipeline: Barge-in monitor unavailable: {e}')
 
