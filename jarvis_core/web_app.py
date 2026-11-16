@@ -268,4 +268,10 @@ def create_app() -> Flask:
             logger.error(f"[SPATIAL AR] API error: {e}", exc_info=True)
             return jsonify({"success": False, "error": str(e)}), 500
 
+    try:
+        from modules.agent_office import register_agent_office_routes
+        register_agent_office_routes(app)
+    except Exception as e:
+        logger.warning(f"[WEB_APP] Optional AgentOffice blueprint skipped: {e}")
+
     return app

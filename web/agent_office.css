@@ -1,0 +1,607 @@
+/* ==========================================================================
+   NACHAPOL INDUSTRIES // AI OFFICE (HYBRID PIXEL LAB + BENTO OPS DECK)
+   ========================================================================== */
+
+:root {
+    --office-bg-base: #08090a;
+    --office-bg-surface: #101216;
+    --office-bg-elevated: #171a21;
+    --office-bg-glass: rgba(16, 18, 22, 0.92);
+    --office-border: rgba(255, 255, 255, 0.08);
+    --office-border-strong: rgba(255, 255, 255, 0.16);
+    --office-text-primary: #f4f5f6;
+    --office-text-secondary: #8b929e;
+    --office-text-muted: #5a6270;
+    --office-accent: #00d2ff;
+    --office-accent-soft: rgba(0, 210, 255, 0.12);
+    --office-gold: #ffd700;
+    --office-emerald: #22c55e;
+    --office-amber: #f59e0b;
+    --office-rose: #ef4444;
+    --office-font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --office-font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --office-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.ai-office-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(4, 6, 8, 0.72);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: officeFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    font-family: var(--office-font-body);
+    color: var(--office-text-primary);
+    pointer-events: all;
+}
+
+@keyframes officeFadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.ai-office-shell {
+    width: min(1220px, 96vw);
+    height: min(760px, 92vh);
+    background: var(--office-bg-base);
+    border: 1px solid var(--office-border-strong);
+    border-radius: 18px;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.45),
+        0 24px 64px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header */
+.ai-office-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--office-bg-surface);
+    border-bottom: 1px solid var(--office-border);
+    flex-shrink: 0;
+}
+
+.ai-office-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-office-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--office-emerald);
+    box-shadow: 0 0 8px var(--office-emerald);
+}
+
+.ai-office-title {
+    font-family: var(--office-font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--office-text-primary);
+}
+
+.ai-office-subtitle {
+    font-family: var(--office-font-mono);
+    font-size: 0.72rem;
+    color: var(--office-text-secondary);
+}
+
+.ai-office-metrics {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.office-metric-pill {
+    font-family: var(--office-font-mono);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: var(--office-bg-elevated);
+    border: 1px solid var(--office-border);
+    color: var(--office-text-secondary);
+}
+
+.office-metric-pill strong {
+    color: var(--office-text-primary);
+    font-weight: 600;
+}
+
+.ai-office-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.office-btn-ghost {
+    font-family: var(--office-font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    border: 1px solid var(--office-border);
+    background: var(--office-bg-elevated);
+    color: var(--office-text-secondary);
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, color 0.2s;
+}
+
+.office-btn-ghost:hover {
+    transform: translateY(-1px);
+    border-color: var(--office-border-strong);
+    color: var(--office-text-primary);
+}
+
+.office-btn-ghost:active {
+    transform: scale(0.96);
+}
+
+.office-btn-ghost.danger:hover {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+}
+
+.office-btn-ghost:focus-visible,
+.office-btn-primary:focus-visible,
+.office-roster-chip:focus-visible,
+.office-tab-btn:focus-visible {
+    outline: 2px solid var(--office-accent);
+    outline-offset: 2px;
+}
+
+/* Bento Body Grid (2/3 Canvas + 1/3 Ops Deck) */
+.ai-office-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+    gap: 12px;
+    padding: 12px;
+    background: var(--office-bg-base);
+}
+
+/* Left Canvas Card */
+.office-stage-card {
+    background: var(--office-bg-surface);
+    border: 1px solid var(--office-border);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.office-stage-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--office-border);
+    background: rgba(23, 26, 33, 0.65);
+    font-size: 0.74rem;
+}
+
+.office-zone-legend {
+    display: flex;
+    gap: 12px;
+    color: var(--office-text-secondary);
+    font-family: var(--office-font-mono);
+    font-size: 0.68rem;
+}
+
+.office-canvas-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #070a0f;
+    padding: 8px;
+}
+
+#ai-office-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: auto;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.office-inspector-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 14px;
+    border-top: 1px solid var(--office-border);
+    background: var(--office-bg-surface);
+    font-size: 0.75rem;
+}
+
+.office-inspector-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.office-inspector-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.office-inspector-name {
+    font-family: var(--office-font-display);
+    font-weight: 700;
+    color: var(--office-text-primary);
+    white-space: nowrap;
+}
+
+.office-inspector-task {
+    color: var(--office-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.office-state-badge {
+    font-family: var(--office-font-mono);
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: var(--office-bg-elevated);
+    border: 1px solid var(--office-border);
+    color: var(--office-text-primary);
+    flex-shrink: 0;
+}
+
+/* Right Ops Deck Card */
+.office-ops-card {
+    background: var(--office-bg-surface);
+    border: 1px solid var(--office-border);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.office-roster-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 10px;
+    border-bottom: 1px solid var(--office-border);
+    background: var(--office-bg-elevated);
+    flex-shrink: 0;
+}
+
+.office-roster-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--office-border);
+    background: var(--office-bg-surface);
+    color: var(--office-text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, background-color 0.2s;
+}
+
+.office-roster-chip:hover {
+    transform: translateY(-1px);
+    border-color: var(--office-border-strong);
+}
+
+.office-roster-chip.selected {
+    border-color: var(--office-accent);
+    background: var(--office-accent-soft);
+}
+
+.office-chip-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.office-chip-color {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.office-chip-name {
+    font-family: var(--office-font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.office-chip-state {
+    font-family: var(--office-font-mono);
+    font-size: 0.6rem;
+    color: var(--office-text-secondary);
+    flex-shrink: 0;
+}
+
+.office-chip-state.active {
+    color: var(--office-accent);
+}
+
+/* Tabs */
+.office-tabs-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--office-border);
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.office-tab-group {
+    display: flex;
+    gap: 4px;
+}
+
+.office-tab-btn {
+    font-family: var(--office-font-mono);
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--office-text-secondary);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.office-tab-btn.active {
+    background: var(--office-bg-elevated);
+    border-color: var(--office-border);
+    color: var(--office-text-primary);
+}
+
+/* Feed / Task Scroll Area */
+.office-scroll-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.office-task-card,
+.office-feed-item {
+    background: var(--office-bg-elevated);
+    border: 1px solid var(--office-border);
+    border-radius: 10px;
+    padding: 9px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.office-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-family: var(--office-font-mono);
+    font-size: 0.66rem;
+    color: var(--office-text-secondary);
+}
+
+.office-status-tag {
+    padding: 1px 7px;
+    border-radius: 9999px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid var(--office-border);
+}
+
+.office-status-tag.in_progress,
+.office-status-tag.meeting {
+    color: var(--office-accent);
+    border-color: rgba(0, 210, 255, 0.35);
+    background: rgba(0, 210, 255, 0.08);
+}
+
+.office-status-tag.done {
+    color: var(--office-emerald);
+    border-color: rgba(34, 197, 94, 0.35);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.office-status-tag.failed {
+    color: var(--office-rose);
+    border-color: rgba(239, 68, 68, 0.35);
+}
+
+.office-card-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--office-text-primary);
+    line-height: 1.35;
+}
+
+.office-card-result {
+    font-size: 0.73rem;
+    color: var(--office-text-secondary);
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-top: 1px solid var(--office-border);
+    padding-top: 6px;
+    margin-top: 2px;
+}
+
+.office-empty-hint {
+    text-align: center;
+    padding: 28px 12px;
+    font-size: 0.76rem;
+    color: var(--office-text-muted);
+    font-family: var(--office-font-mono);
+}
+
+/* Command Composer Dock */
+.office-composer {
+    border-top: 1px solid var(--office-border);
+    padding: 10px;
+    background: var(--office-bg-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.office-mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.office-mode-pills {
+    display: flex;
+    background: var(--office-bg-elevated);
+    border: 1px solid var(--office-border);
+    border-radius: 9999px;
+    padding: 2px;
+}
+
+.office-mode-pill {
+    font-family: var(--office-font-mono);
+    font-size: 0.66rem;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    color: var(--office-text-secondary);
+    cursor: pointer;
+}
+
+.office-mode-pill.active {
+    background: var(--office-text-primary);
+    color: var(--office-bg-base);
+    font-weight: 600;
+}
+
+.office-select-inline {
+    font-family: var(--office-font-mono);
+    font-size: 0.68rem;
+    padding: 4px 8px;
+    border-radius: 7px;
+    border: 1px solid var(--office-border);
+    background: var(--office-bg-elevated);
+    color: var(--office-text-primary);
+}
+
+.office-quorum-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.office-quorum-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--office-font-mono);
+    font-size: 0.65rem;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: var(--office-bg-elevated);
+    border: 1px solid var(--office-border);
+    color: var(--office-text-secondary);
+    cursor: pointer;
+}
+
+.office-input-row {
+    display: flex;
+    gap: 6px;
+}
+
+.office-input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--office-font-body);
+    font-size: 0.8rem;
+    padding: 8px 11px;
+    border-radius: 9px !important;
+    border: 1px solid var(--office-border) !important;
+    background: var(--office-bg-elevated) !important;
+    color: var(--office-text-primary) !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+}
+
+.office-input:focus {
+    outline: none;
+    border-color: var(--office-accent) !important;
+}
+
+.office-btn-primary {
+    font-family: var(--office-font-display);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 9px;
+    border: none;
+    background: var(--office-text-primary);
+    color: var(--office-bg-base);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s;
+}
+
+.office-btn-primary:hover {
+    transform: translateY(-1px);
+    opacity: 0.94;
+}
+
+.office-btn-primary:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 780px) {
+    .ai-office-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(250px, 1fr) minmax(240px, 1fr);
+    }
+    .office-scroll-body {
+        min-height: 110px;
+    }
+    .ai-office-metrics {
+        display: none;
+    }
+}

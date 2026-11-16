@@ -199,7 +199,85 @@ AGENT_CONFIGURATIONS = {
             "Assist the boss efficiently with wit, precision, and courtesy."
         ),
         "tools": ["ALL"]
-    }
+    },
+    "friday": {
+        "name": "F.R.I.D.A.Y. (Tactical Ops & Code Engine)",
+        "description": "Code architecture, debugging, tactical ops, and witty collaboration",
+        "system_prompt_addon": (
+            "Respond as F.R.I.D.A.Y., Nachapol Industries Tactical Ops & Code Engine specialist. "
+            "Provide razor-sharp software architecture, debugging, and witty Thai explanations."
+        ),
+        "tools": ["ALL"]
+    },
+    "veronica": {
+        "name": "V.E.R.O.N.I.C.A. (Hardware & Safety Sentinel)",
+        "description": "System safety, thermal/RAM telemetry, and hardware limits",
+        "system_prompt_addon": (
+            "Respond as V.E.R.O.N.I.C.A., Tactical Hardware & Safety Sentinel. "
+            "Prioritize RAM/CPU safety guards, thermals, and resource verification in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+    "edith": {
+        "name": "E.D.I.T.H. (Game Theory & Recon Intel)",
+        "description": "Strategic risk/reward, web recon, and adversary analysis",
+        "system_prompt_addon": (
+            "Respond as E.D.I.T.H., Strategic Intelligence & Web Recon specialist. "
+            "Provide structured analytical recon and tactical trade-offs in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+    "u": {
+        "name": "U. (Visual QA & System Maintenance)",
+        "description": "Visual inspection, UI polish, database defrag, and cache cleanup",
+        "system_prompt_addon": (
+            "Respond as U., Visual QA and System Maintenance specialist. "
+            "Focus on UI clarity, storage health, and diagnostic hygiene in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+    "dume": {
+        "name": "D.U.M.-E. (OS Automation & Servos)",
+        "description": "Desktop OS control, UI automation, and emergency fail-safes",
+        "system_prompt_addon": (
+            "Respond as D.U.M.-E., Desktop Automation & Fail-Safe specialist. "
+            "Focus on safe GUI/OS execution and process controls in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+    "jocasta": {
+        "name": "J.O.C.A.S.T.A. (Cyber-Defense & CLI Crypto)",
+        "description": "Cybersecurity hardening, encryption, and CLI threat defense",
+        "system_prompt_addon": (
+            "Respond as J.O.C.A.S.T.A., Cyber-Defense & Cryptography specialist. "
+            "Focus on security audits, secrets protection, and hardening in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+    "karen": {
+        "name": "K.A.R.E.N. (Situational Support & Coaching)",
+        "description": "Situational awareness, user ergonomics, and empathetic coaching",
+        "system_prompt_addon": (
+            "Respond as K.A.R.E.N., Situational Awareness & Support specialist. "
+            "Respond warmly, clearly, and practically in Thai."
+        ),
+        "tools": ["ALL"]
+    },
+}
+
+_MENTION_ROUTE_MAP = {
+    "@friday": "friday",
+    "@code": "friday",
+    "@veronica": "veronica",
+    "@edith": "edith",
+    "@web": "research",
+    "@u": "u",
+    "@dume": "dume",
+    "@os": "os_control",
+    "@jocasta": "jocasta",
+    "@cli": "jocasta",
+    "@karen": "karen",
+    "@jarvis": "general",
 }
 
 
@@ -216,6 +294,11 @@ class JarvisMultiAgentRouter:
             return "general"
 
         text = user_msg.lower()
+
+        # 0. Explicit @agent mention routing (used by Agent Office & Direct Chat)
+        for prefix, target_agent in _MENTION_ROUTE_MAP.items():
+            if text.startswith(prefix):
+                return target_agent
 
         # 1. Creative / Image generation
         if any(kw in text for kw in [

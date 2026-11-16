@@ -21,6 +21,7 @@
   <a href="#quick-start"><b>🚀 Quick Start</b></a> •
   <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
   <a href="#mobile-app"><b>📱 Mobile App</b></a> •
+  <a href="#agent-office"><b>🏢 AI Agent Office</b></a> •
   <a href="#subsystems"><b>🛠️ Subsystems</b></a> •
   <a href="#native-slm-models"><b>🧪 Native Models (0→1)</b></a> •
   <a href="#skills-ecosystem"><b>🧩 Skills</b></a> •
@@ -181,6 +182,18 @@ npx expo start
 
 <p align="center">
   <img src="docs/images/web_portal.png" alt="J.A.R.V.I.S. Hologram Web Portal Interface" width="100%">
+</p>
+
+<a id="agent-office"></a>
+### 🏢 4. NACHAPOL // AI OFFICE (Shared Neural Studio)
+ห้องทำงานจำลองแบบ 2.5D/3D ของทีมขุนพล AI ทั้ง 8 ตัว (`modules/agent_office.py`, `web/agent_office.js`) ที่เชื่อมต่อตรงเข้ากับแกนประมวลผลจริงของ J.A.R.V.I.S. (`jarvis.py`, `jarvis_core/cognitive/swarm.py`):
+- **Shared Functional Rooms (8 โซนงานเฉพาะทาง):** ตัวละครเดินตามเส้นทางผ่านประตูห้องแบบไม่ทะลุกำแพง (`INTEL LAB`, `COMMAND DECK`, `UI LAB`, `DEV LAB`, `DATA / NET`, `IOT & MAKER`, `SYS OPS`, `MEDIA & QA`) และปรับเปลี่ยนห้องทำงานตามลักษณะภารกิจอัตโนมัติ
+- **Living Idle & Seated Behavior:** เมื่อไม่มีงาน ตัวละครสามารถเดินผ่อนคลาย นั่งเก้าอี้ประจำโต๊ะทำงาน หรือมานั่งพักบนโซฟาและมุมกาแฟที่โถงกลาง (`Atrium & Coffee Bar`) ได้
+- **Live Sync · JARVIS Core Telemetry:** แสดงผลทุกคำสั่งจริงจากหน้า HUD, Voice, LINE, การเรียก Tool (`⚡ Tool Call`) และมติสภา AI (`Swarm Council`) บน Task Board และ Agent Comms แบบเรียลไทม์ พร้อมปุ่มแสดงสถานะบนหน้า HUD หลัก
+- **Direct `@agent` & Meeting Handoff:** สั่งงานเจาะจงผู้เชี่ยวชาญ หรือสั่ง `MEETING MISSION` เพื่อประสานงานและส่งต่อภารกิจ (`handoff`) ภายในห้องได้โดยตรง
+
+<p align="center">
+  <img src="docs/images/ai_agent_office.png" alt="NACHAPOL // AI OFFICE — Live Multi-Agent Studio Room" width="100%">
 </p>
 
 ---

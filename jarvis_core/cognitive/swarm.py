@@ -224,6 +224,15 @@ class AgentCouncil:
             f"with {len(selected_agents)} agents: {list(selected_agents.keys())}..."
         )
 
+        office_mgr = None
+        council_ctx = None
+        try:
+            from modules.agent_office import agent_office_manager as _aom
+            office_mgr = _aom
+            council_ctx = office_mgr.notify_live_council_start(query, list(selected_agents.keys()))
+        except Exception:
+            pass
+
         # Run deliberations in parallel using ThreadPoolExecutor
         perspectives = {}
         with ThreadPoolExecutor(max_workers=min(len(selected_agents), 5)) as executor:
@@ -234,7 +243,13 @@ class AgentCouncil:
             for future in as_completed(future_to_agent):
                 code, agent = future_to_agent[future]
                 try:
-                    perspectives[agent.name] = future.result()
+                    out_txt = future.result()
+                    perspectives[agent.name] = out_txt
+                    if office_mgr:
+                        try:
+                            office_mgr.notify_live_council_member(code, query, out_txt)
+                        except Exception:
+                            pass
                 except Exception as e:
                     logger.error(f"[Swarm] Error deliberating {agent.name}: {e}")
                     perspectives[agent.name] = f"[{agent.name} Unavailable: {e}]"
@@ -251,11 +266,17 @@ class AgentCouncil:
             bridge = get_jarviscore_bridge()
             res = bridge.generate_persona_response(persona="jarvis", prompt=query, max_new_tokens=64)
             jarvis_note = res.get("content", "") if res.get("ok") else ""
-            return (
+            out_native = (
                 f"[J.A.R.V.I.S. Native Core Synthesis (100% Zero-Cloud)]\n"
                 f"{jarvis_note}\n\n"
                 f"=== Council Deliberations ===\n{perspectives_formatted.strip()}"
             )
+            if office_mgr and council_ctx:
+                try:
+                    office_mgr.notify_live_council_end(council_ctx, out_native[:180])
+                except Exception:
+                    pass
+            return out_native
 
         synthesis_prompt = (
             "You are J.A.R.V.I.S., the President of the Nachapol Industries Cognitive Swarm Council.\n"
@@ -290,9 +311,21 @@ class AgentCouncil:
             bridge = get_jarviscore_bridge()
             res = bridge.generate_persona_response(persona="jarvis", prompt=query, max_new_tokens=64)
             jarvis_note = res.get("content", "") if res.get("ok") else ""
-            return (
+            out = (
                 f"[J.A.R.V.I.S. Offline Emergency Synthesis]\n"
                 f"{jarvis_note}\n\n"
                 f"{perspectives_formatted.strip()}"
             )
-        return final_response.get("content", "I am sorry, sir. The council could not reach a conclusion at this time.")
+            if office_mgr and council_ctx:
+                try:
+                    office_mgr.notify_live_council_end(council_ctx, out[:180])
+                except Exception:
+                    pass
+            return out
+        final_out = final_response.get("content", "I am sorry, sir. The council could not reach a conclusion at this time.")
+        if office_mgr and council_ctx:
+            try:
+                office_mgr.notify_live_council_end(council_ctx, final_out[:180])
+            except Exception:
+                pass
+        return final_out

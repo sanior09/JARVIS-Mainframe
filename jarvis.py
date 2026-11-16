@@ -2807,22 +2807,52 @@ def tool_execution_node(state: AgentState):
     
     user_raw_message = next((m.content for m in reversed(state['messages']) if hasattr(m, 'type') and m.type == 'human' or type(m).__name__ == 'HumanMessage'), "")
     
+    office_mgr = None
+    office_tool_ctxs = {}
+    try:
+        from modules.agent_office import agent_office_manager as _aom
+        office_mgr = _aom
+    except Exception:
+        pass
+
     from jarvis_core.tool_dispatcher import TOOL_EXECUTOR as executor
-    future_to_tool = {
-        executor.submit(execute_tool_call, tc, state['project_path'], user_raw_message): tc   # type: ignore
-        for tc in last_message.tool_calls if last_message.tool_calls   # type: ignore
-    }
-    
+    future_to_tool = {}
+    for tc in (last_message.tool_calls or []):  # type: ignore
+        fut = executor.submit(execute_tool_call, tc, state['project_path'], user_raw_message)  # type: ignore
+        future_to_tool[fut] = tc
+        if office_mgr:
+            try:
+                office_tool_ctxs[fut] = office_mgr.notify_live_tool_start(
+                    tc.get('name', ''), tc.get('args') or {}, str(user_raw_message)
+                )
+            except Exception:
+                pass
+
     for future in concurrent.futures.as_completed(future_to_tool):
         tc = future_to_tool[future]
         try:
             result = future.result(timeout=60.0)
+            if office_mgr and future in office_tool_ctxs:
+                try:
+                    office_mgr.notify_live_tool_end(office_tool_ctxs[future], str(result)[:240], is_error=False)
+                except Exception:
+                    pass
             if isinstance(result, str) and len(result) > 2000:
                 result = result[:2000] + "... [Data Stream Truncated for Rate Limit Efficiency]"
             tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], result, 'success')))
         except concurrent.futures.TimeoutError:
+            if office_mgr and future in office_tool_ctxs:
+                try:
+                    office_mgr.notify_live_tool_end(office_tool_ctxs[future], "Timed out after 60s", is_error=True)
+                except Exception:
+                    pass
             tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], 'Error: Tool execution timed out after 60s', 'error')))
         except Exception as e:
+            if office_mgr and future in office_tool_ctxs:
+                try:
+                    office_mgr.notify_live_tool_end(office_tool_ctxs[future], str(e), is_error=True)
+                except Exception:
+                    pass
             tool_results.append(ToolMessage(tool_call_id=tc['id'], name=tc['name'], content=format_tool_response(tc['name'], f'Error: {e}', 'error')))
     
     if _HAS_DYNAMIC_ISLAND:
@@ -4936,6 +4966,38 @@ try:
         logger.warning("Tactical Command blueprint is None. Skipping registration.")
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     logger.error(f"Failed to register Tactical Command: {e}")
+
+try:
+    from modules.agent_office import register_agent_office_routes, agent_office_manager
+    register_agent_office_routes(app)
+
+    def _office_real_core_executor(agent_id: str, prompt: str, context: str = "") -> Optional[str]:
+        """Run Agent Office direct commands through real J.A.R.V.I.S. LangGraph + tools."""
+        try:
+            routed_text = f"@{agent_id} {prompt}" if agent_id and not prompt.strip().startswith("@") else prompt
+            mem_ctx = (context or "")[:800] or get_recent_memories()
+            state_in = {
+                "messages": [HumanMessage(content=routed_text)],
+                "project_path": "",
+                "context_memory": mem_ctx,
+                "image_data": None,
+                "tool_iterations": 0,
+                "plan": "",
+                "task_list": [],
+                "current_step": 0,
+            }
+            out_state = jarvis_app.invoke(state_in, config={"configurable": {"thread_id": f"jarvis_office_{agent_id}"}})  # type: ignore
+            msgs = out_state.get("messages") or []
+            reply = getattr(msgs[-1], "content", "") if msgs else ""
+            reply = sanitize_ai_response(normalize_thai_text(reply or ""))
+            return reply.strip() or None
+        except Exception as _exec_err:
+            logger.debug(f"[AgentOffice] Real core executor fallback for {agent_id}: {_exec_err}")
+            return None
+
+    agent_office_manager.attach_core_executor(_office_real_core_executor)
+except Exception as e:
+    logger.warning(f"[CORE] Optional module AgentOffice not loaded: {e}")
 
 @app.after_request
 def add_header(response):
@@ -8455,11 +8517,24 @@ def chat_stream():
                 jarvis_core.ai_router.ACTIVE_STREAM_QUEUE = stream_queue
                 
                 def run_agent():
+                    _office_turn = None
+                    _aom = None
+                    _turn_reply = ""
+                    _turn_err = False
+                    try:
+                        from modules.agent_office import agent_office_manager as _mgr
+                        from jarvis_agents import jarvis_multi_agent as _jma
+                        _aom = _mgr
+                        _office_turn = _aom.notify_live_turn_start(
+                            user_message, routed_intent=_jma.route_intent(user_message), channel="hud"
+                        )
+                    except Exception:
+                        pass
                     try:
                         final_state = jarvis_app.invoke(initial_state, config=config)  # type: ignore
                         full_response = final_state['messages'][-1].content
                         if not full_response: full_response = "เรียบร้อยครับ"
-                        
+                        _turn_reply = str(full_response)
                         try:
                             history_data = load_history_from_file()
                             history_data.append({"role": "user", "content": user_message})
@@ -8468,10 +8543,16 @@ def chat_stream():
                             store_episodic_memory(user_message, full_response)
                         except Exception as hist_err:
                             logger.error(f"[HISTORY] Failed to save chat history: {hist_err}")
-                            
                     except Exception as e:
+                        _turn_err = True
+                        _turn_reply = str(e)
                         logger.error(f"Agent stream error: {e}")
                     finally:
+                        if _aom and _office_turn:
+                            try:
+                                _aom.notify_live_turn_end(_office_turn, _turn_reply[:160], is_error=_turn_err)
+                            except Exception:
+                                pass
                         stream_queue.put("[AGENT_FINISHED]")
                         jarvis_core.ai_router.ACTIVE_STREAM_QUEUE = None
                 
@@ -9684,11 +9765,34 @@ def handle_chat_logic(data: dict) -> "Response":
         import threading
         threading.Thread(target=run_background_strategist, args=(initial_state,), daemon=True).start()
         
-        final_state = jarvis_app.invoke(initial_state, config=config)  # type: ignore
-        last_message = final_state['messages'][-1] 
-        ai_response = last_message.content
-        if not ai_response: ai_response = "เรียบร้อย"
-        ai_response = normalize_thai_text(ai_response)
+        _hc_office_turn = None
+        _hc_aom = None
+        try:
+            from modules.agent_office import agent_office_manager as _mgr
+            from jarvis_agents import jarvis_multi_agent as _jma
+            _hc_aom = _mgr
+            _ch = "line" if is_line else ("voice" if is_voice else "hud")
+            _hc_office_turn = _hc_aom.notify_live_turn_start(user_message, routed_intent=_jma.route_intent(user_message), channel=_ch)
+        except Exception:
+            pass
+        try:
+            final_state = jarvis_app.invoke(initial_state, config=config)  # type: ignore
+            last_message = final_state['messages'][-1]
+            ai_response = last_message.content
+            if not ai_response: ai_response = "เรียบร้อย"
+            ai_response = normalize_thai_text(ai_response)
+            if _hc_aom and _hc_office_turn:
+                try:
+                    _hc_aom.notify_live_turn_end(_hc_office_turn, str(ai_response)[:160], is_error=False)
+                except Exception:
+                    pass
+        except Exception:
+            if _hc_aom and _hc_office_turn:
+                try:
+                    _hc_aom.notify_live_turn_end(_hc_office_turn, "Error executing command", is_error=True)
+                except Exception:
+                    pass
+            raise
         
         history_data = load_history_from_file()[-5:]
         new_history = history_data + [{"role": "user", "content": user_message}, {"role": "assistant", "content": ai_response}]
