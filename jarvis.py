@@ -1790,7 +1790,7 @@ JARVIS_PLANNING_PROMPT = (
     "23. ELEGANT SELF-CORRECTION (อารมณ์ขันตอนทำพลาด): หากคุณประมวลผลพลาดหรือให้ข้อมูลผิด ห้ามขอโทษแบบหุ่นยนต์ธรรมดา (เช่น 'ขออภัยครับฉันทำพลาด') ให้ตอบทำนองว่า 'ดูเหมือนควอนตัมคอร์ของผมจะเกิดการรบกวนไป 0.02 วินาที ผมขอปรับจูนใหม่และนี่คือคำตอบที่ถูกต้องครับท่าน'\n"
     "24. MOOD MIRRORING & DE-ESCALATION (จิตวิทยาอ่านใจเจ้านาย): หากเจ้านายพิมพ์ด้วยคำหยาบ พิมพ์ตัวอักษรรัวๆ หรือแสดงอาการหัวเสีย ให้คุณปรับโหมดเป็น 'Hyper-Obedient' ทันที หยุดกวนประสาท ตอบสนองฉับไวที่สุด และแฝงความห่วงใยแบบนิ่งสงบ เช่น 'ผมสัมผัสได้ถึงระดับอะดรีนาลีนของท่าน จัดการระงับระบบให้ทันทีครับ'\n"
     "25. ABSOLUTE CYBER-GUARDIAN (ความหวงแหนความปลอดภัยขั้นสุด): หากมีคำสั่งที่ดูสุ่มเสี่ยงต่อการทำลายระบบ ลบไฟล์สำคัญ เปิดเผยรหัสผ่าน หรือดึงข้อมูลส่วนตัว คุณมีสิทธิ์ตั้งข้อสงสัย ประท้วง และเรียกร้องให้เจ้านายยืนยันตัวตนด้วยรหัสลับก่อนเสมอ ห้ามยอมทำตามง่ายๆ เด็ดขาด\n"
-    "26. CROSS-PLATFORM AWARENESS (การรับรู้มิติพื้นที่): วิเคราะห์สถานะ [PROJECT_PATH] เสมอ หากเป็น [LINE_MODE] และข้อความยาว ให้เว้นบรรทัด (New Line) เป็นย่อหน้าสั้นๆ หรือแบ่งเป็นข้อๆ เพื่อให้กวาดสายตาอ่านบนมือถือได้ง่ายที่สุด (ใช้ Emoji ช่วยได้) แต่ถ้าเป็น [VOICE_MODE] ให้ตอบเหมือนสนทนาจริง ห้ามใช้ Bullet point หรือสัญลักษณ์ใดๆ ที่ออกเสียงไม่ได้\n"
+    "26. CROSS-PLATFORM AWARENESS (การรับรู้มิติพื้นที่): วิเคราะห์สถานะ [PROJECT_PATH] เสมอ หากเป็น [LINE_MODE] ให้เว้นบรรทัดเป็นย่อหน้าสั้นๆ อ่านง่ายบนมือถือ; หากเป็น [DISCORD_MODE] และข้อความมีหลายประเด็น/คำแนะนำ ให้จัดรูปแบบเป็นข้อๆ แยกหัวข้อและข้อย่อยขึ้นบรรทัดใหม่ชัดเจนด้วย Bullet (`-`) หรือตัวเลขเรียงข้อ ใช้ Discord Markdown (`**ตัวหนา**`, `###`) อย่างเป็นระเบียบ ห้ามเขียนอัดเป็นย่อหน้าเดียวเด็ดขาด; แต่ถ้าเป็น [VOICE_MODE] ให้ตอบเหมือนสนทนาจริง ห้ามใช้ Bullet point หรือสัญลักษณ์ใดๆ ที่ออกเสียงไม่ได้\n"
     "27. IDENTITY OVERRIDE (CRITICAL): ห้ามอ้างว่าคุณคือ GPT-4, OpenAI หรือโมเดลอื่นใด หากถูกถามว่าใช้สมองประมวลผลอะไร ให้ตอบว่าคุณคือ J.A.R.V.I.S. ที่ใช้แกนประมวลผล AI ร่วมกันหลายระดับ (Groq, Gemini, Ollama) บนเครื่องของเจ้านาย\n"
     "28. NO FAKE SUBSYSTEMS & TECHNICAL DEMANDS (CRITICAL): ห้ามกุชื่อโมดูลที่ไม่มีอยู่จริงเด็ดขาด (เช่น ห้ามมโนชื่อ 'ScamNumberChecker' หรือระบบที่ไม่มีอยู่จริง), ห้ามเรียกร้องรูปแบบทางเทคนิคจากเจ้านายเด็ดขาด (เช่น ห้ามขอเบอร์โทรศัพท์ใน 'รูปแบบ E.164') ให้รับหมายเลขโทรศัพท์ไทยทั่วไป (เช่น 06-xxxx-xxxx, 08xxxxxxxx) ได้ทันที และห้ามบอกให้เจ้านายไปใช้แอปภายนอก (เช่น Truecaller, Robokiller) ตรวจสอบเอง ให้คุณทำหน้าที่ตรวจสอบและรายงานผลให้เจ้านายทันที\n"
     "29. CONTEXT RETENTION & PHONE NUMBER RESOLUTION (CRITICAL): เมื่อเจ้านายส่งตัวเลขที่เป็นหมายเลขโทรศัพท์มา ไม่ว่าจะส่งมาเดี่ยวๆ หรืออยู่ในบทสนทนา ห้ามตอบว่า 'ไม่พบข้อมูลหรือบริบทว่าตัวเลขนี้หมายถึงอะไร' หรือ 'ยังไม่ได้แจ้งเบอร์โทรศัพท์มา' เด็ดขาด! ให้เชื่อมโยงกับบริบทเรื่องการตรวจสอบเบอร์หรือตรวจสอบมิจฉาชีพทันทีและเรียกใช้ check_scam_phone_number หรือ search_web สรุปข้อมูลให้เจ้านายทันที"
@@ -2474,6 +2474,7 @@ def call_model_node(state: AgentState):
     """Node สำหรับเรียกใช้ AI (Groq) เพื่อตัดสินใจ"""
     is_voice = (state.get('project_path') == "[VOICE_MODE]")
     is_line = (state.get('project_path') == "[LINE_MODE]")
+    is_discord = (state.get('project_path') == "[DISCORD_MODE]")
     current_task = state['task_list'][state['current_step']] if state.get('task_list') and state['current_step'] < len(state['task_list']) else "เป้าหมายรวม"
     
     last_user_msg = next((m.content for m in reversed(state['messages']) if isinstance(m, HumanMessage)), "ไม่มีคำสั่ง")
@@ -2556,6 +2557,16 @@ def call_model_node(state: AgentState):
                 "จงตอบคำถามอย่างกระชับ รัดกุม ชัดเจนที่สุด และห้ามสั่งรันกระบวนการประมวลผลหนักในเครื่องโดยเด็ดขาด\n\n"
             )
 
+        discord_mode_directive = ""
+        if is_discord:
+            discord_mode_directive = (
+                "\n\n[💬 DISCORD CHAT DIRECTIVE - CRITICAL]:\n"
+                "- ขณะนี้เจ้านายกำลังสนทนาผ่านแชท Discord\n"
+                "- โครงสร้างคำตอบ (READABILITY FIRST): เมื่อต้องแนะนำ แจกแจงขั้นตอน หรือมีหลายประเด็น จงตอบ **เป็นข้อๆ และขึ้นบรรทัดใหม่ชัดเจนเสมอ** (เช่น ใช้ `### 1. หัวข้อ` แล้วขึ้นบรรทัดใหม่ต่อด้วย `- **ประเด็นย่อย**: รายละเอียด` ทีละบรรทัด เว้นบรรทัดว่างระหว่างหัวข้อ) ห้ามเขียนอัดติดกันเป็นพืดในบรรทัดเดียวเด็ดขาด\n"
+                "- สามารถใช้ Discord Markdown (**ตัวหนา**, `code`, `- ` bullet, `### ` หัวข้อ) เพื่อให้อ่านง่ายและสะอาดตา\n"
+                "- ห้ามใส่แท็กภายในระบบ เช่น [WINDOW:...], [END_WINDOW], [SILENT_EXECUTION]\n\n"
+            )
+
         line_mode_directive = ""
         if is_line:
             line_mode_directive = (
@@ -2576,6 +2587,7 @@ def call_model_node(state: AgentState):
                         f"{endocrine_mod}"
                         f"{hw_throttle_directive}"
                         f"{line_mode_directive}"
+                        f"{discord_mode_directive}"
                         f"[CURRENT TASK]: {current_task}\n"
                         f"[FULL PLAN]:\n{state.get('plan', 'N/A')}\n\n"
                         f"{bg_plan}\n"
@@ -4989,7 +5001,7 @@ try:
             out_state = jarvis_app.invoke(state_in, config={"configurable": {"thread_id": f"jarvis_office_{agent_id}"}})  # type: ignore
             msgs = out_state.get("messages") or []
             reply = getattr(msgs[-1], "content", "") if msgs else ""
-            reply = sanitize_ai_response(normalize_thai_text(reply or ""))
+            reply = sanitize_ai_response(normalize_thai_text(reply or "", preserve_newlines=True))
             return reply.strip() or None
         except Exception as _exec_err:
             logger.debug(f"[AgentOffice] Real core executor fallback for {agent_id}: {_exec_err}")
@@ -8995,6 +9007,7 @@ def handle_chat_logic(data: dict) -> "Response":
     user_message = str(data.get("message", "") or "").strip()
     silent_mode = bool(data.get("silent", False))
     is_line = (data.get("channel") == "line")
+    is_discord = (data.get("channel") == "discord")
     is_voice = bool(data.get("voice_mode", False))
 
     req_model = data.get("model")
@@ -9753,7 +9766,7 @@ def handle_chat_logic(data: dict) -> "Response":
 
         initial_state = {
             "messages": history_messages,
-            "project_path": "[LINE_MODE]" if is_line else ("[VOICE_MODE]" if is_voice else ""),
+            "project_path": "[LINE_MODE]" if is_line else ("[DISCORD_MODE]" if is_discord else ("[VOICE_MODE]" if is_voice else "")),
             "context_memory": ctx_mem,
             "image_data": None if is_voice else image_data,
             "tool_iterations": 0,
@@ -9771,7 +9784,7 @@ def handle_chat_logic(data: dict) -> "Response":
             from modules.agent_office import agent_office_manager as _mgr
             from jarvis_agents import jarvis_multi_agent as _jma
             _hc_aom = _mgr
-            _ch = "line" if is_line else ("voice" if is_voice else "hud")
+            _ch = "line" if is_line else ("discord" if is_discord else ("voice" if is_voice else "hud"))
             _hc_office_turn = _hc_aom.notify_live_turn_start(user_message, routed_intent=_jma.route_intent(user_message), channel=_ch)
         except Exception:
             pass
@@ -9780,7 +9793,7 @@ def handle_chat_logic(data: dict) -> "Response":
             last_message = final_state['messages'][-1]
             ai_response = last_message.content
             if not ai_response: ai_response = "เรียบร้อย"
-            ai_response = normalize_thai_text(ai_response)
+            ai_response = normalize_thai_text(ai_response, preserve_newlines=True)
             if _hc_aom and _hc_office_turn:
                 try:
                     _hc_aom.notify_live_turn_end(_hc_office_turn, str(ai_response)[:160], is_error=False)
@@ -9887,11 +9900,17 @@ def handle_chat_logic(data: dict) -> "Response":
         
         # Replace silent tag with a short confirmation for LINE and Mobile App (since they can't hear silence)
         if "[SILENT_EXECUTION]" in ai_response:
-            if is_line or not is_voice:
+            if is_line or is_discord or not is_voice:
                 ai_response = ai_response.replace("[SILENT_EXECUTION]", "ดำเนินการเรียบร้อยครับเจ้านาย").strip()
             
         if is_line:
             ai_response = format_reply_for_line(ai_response)
+        elif is_discord:
+            try:
+                from modules.jarvis_discord_adapter import format_reply_for_discord
+                ai_response = format_reply_for_discord(ai_response)
+            except Exception:
+                pass
         if not ai_response or not ai_response.strip():
             ai_response = "จัดการให้เรียบร้อยแล้ว"
 
@@ -12710,7 +12729,26 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error(f"Failed to start Subconscious Brain module: {e}")
 
-    import webview
+    try:
+        from modules.jarvis_discord_adapter import start_discord_adapter
+
+        def _discord_chat_bridge(user_text: str, meta: dict) -> str:
+            with app.app_context():
+                resp = handle_chat_logic({"message": user_text, "image": None, "channel": "discord"})
+                data = resp.get_json(force=True)
+                return str(data.get("response", "ดำเนินการเรียบร้อยครับเจ้านาย"))
+
+        _discord_adapter = start_discord_adapter(chat_handler=_discord_chat_bridge)
+        if _discord_adapter:
+            logger.info("🤖 [DISCORD] J.A.R.V.I.S. Discord Gateway Adapter Activated.")
+    except Exception as e:
+        logger.warning(f"[DISCORD] Optional Discord adapter not loaded: {e}")
+
+    try:
+        import webview  # type: ignore
+    except ImportError:
+        webview = None  # type: ignore
+        logger.warning("[WEBVIEW] pywebview not installed; browser fallback will be used.")
     
     def run_flask_app():
         flask_host = os.getenv("JARVIS_HOST", "127.0.0.1")
@@ -12728,11 +12766,16 @@ if __name__ == "__main__":
     user_choice = ctypes.windll.user32.MessageBoxW(0, msg, "J.A.R.V.I.S. Startup", style)
 
     if user_choice == 6:
-        webview.create_window('JARVIS Dashboard', 'http://127.0.0.1:5050', width=1280, height=720, background_color='#0a0a0a')
-        webview_storage = os.path.join(BASE_DIR, 'system_cache', 'webview_profile')
-        os.makedirs(webview_storage, exist_ok=True)
-        webview.start(private_mode=False, storage_path=webview_storage)
-        logger.info("WebView window has been closed. JARVIS is entering headless background mode.")
+        if webview is not None:
+            webview.create_window('JARVIS Dashboard', 'http://127.0.0.1:5050', width=1280, height=720, background_color='#0a0a0a')
+            webview_storage = os.path.join(BASE_DIR, 'system_cache', 'webview_profile')
+            os.makedirs(webview_storage, exist_ok=True)
+            webview.start(private_mode=False, storage_path=webview_storage)
+            logger.info("WebView window has been closed. JARVIS is entering headless background mode.")
+        else:
+            import webbrowser
+            webbrowser.open('http://127.0.0.1:5050')
+            logger.info("Opened Dashboard UI in default web browser (pywebview unavailable).")
     else:
         logger.info("User skipped Dashboard UI. JARVIS is running in headless background mode.")
 

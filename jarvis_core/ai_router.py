@@ -113,20 +113,22 @@ def _normalize_tool_calls(raw_tool_calls: Optional[List[Any]]) -> Optional[List[
 
 def sanitize_thai_cadence(text: str) -> str:
     """
-    Polishes Thai prosody and cadence:
-    1. Removes unnatural mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -'.
+    Polishes Thai prosody and cadence while preserving all intentional newlines
+    (for Markdown headings, bullet lists, and numbered items):
+    1. Removes unnatural mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -' on the same line.
     2. Strips orphaned trailing 'เจ้านาย.' or 'เจ้านาย' at the very end of sentences.
-    3. Normalizes whitespace.
+    3. Normalizes horizontal whitespace without collapsing line breaks.
     """
     if not text or not isinstance(text, str):
         return text
     import re
-    # 1. Clean mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -'
-    text = re.sub(r'(\w+)\s+(ครับ|ครับผม|ครับเจ้านาย)\s*[-–—]\s*', r'\1 - ', text)
+    # 1. Clean mid-sentence 'ครับ -' or 'ครับผม -' or 'ครับเจ้านาย -' (same line only, never across \n)
+    text = re.sub(r'(\w+)[ \t]+(ครับ|ครับผม|ครับเจ้านาย)[ \t]*[-–—][ \t]+', r'\1 - ', text)
     # 2. Fix dangling isolated 'เจ้านาย.' or 'เจ้านาย' at the very end of text (not preceded by ครับ)
-    text = re.sub(r'(?<!ครับ)(?<!ครับผม)\s+เจ้านาย[\.\s]*$', '.', text)
-    # 3. Clean double spaces
-    text = re.sub(r'\s{2,}', ' ', text).strip()
+    text = re.sub(r'(?<!ครับ)(?<!ครับผม)[ \t]+เจ้านาย[\. \t]*$', '.', text)
+    # 3. Clean double horizontal spaces per line while preserving newlines
+    text = re.sub(r'[ \t]{2,}', ' ', text)
+    text = re.sub(r'\n{3,}', '\n\n', text).strip()
     return text
 
 
@@ -266,14 +268,22 @@ def call_groq_model(
         kwargs["tool_choice"] = "auto"
 
     if has_image:
-        candidate_list = ["llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview"]
+        candidate_list = [
+            os.getenv("GROQ_VISION_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct"),
+            "meta-llama/llama-4-scout-17b-16e-instruct",
+            "meta-llama/llama-4-maverick-17b-128e-instruct",
+        ]
+        seen_v: set[str] = set()
+        candidate_list = [
+            m for m in candidate_list
+            if m and "llama-3.2-" not in m and not (m in seen_v or seen_v.add(m))
+        ]
     else:
         model_candidates = [
             selected_model,
             "openai/gpt-oss-120b",
             "openai/gpt-oss-20b",
             os.getenv("GROQ_FAST_MODEL", "qwen/qwen3.8-27b"),
-            "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
         ]
         seen: set[str] = set()
@@ -434,8 +444,29 @@ def call_gemini_fallback(
     if not gemini_key or "YOUR_GEMINI" in gemini_key or gemini_key.startswith("YOUR_") or len(gemini_key) < 20:
         raise ValueError("GEMINI_API_KEY not configured or is placeholder")
 
-    from google import genai
-    from google.genai import types
+    try:
+        from google import genai
+        from google.genai import types
+    except ImportError:
+        import google.generativeai as _legacy_genai  # type: ignore
+        _legacy_genai.configure(api_key=gemini_key)
+        _g_model = _legacy_genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
+        _prompt_parts = []
+        for m in messages:
+            c = m.get("content", "") if isinstance(m, dict) else getattr(m, "content", "")
+            r = m.get("role", "user") if isinstance(m, dict) else getattr(m, "type", "user")
+            if isinstance(c, list):
+                c = " ".join(x.get("text", "") for x in c if isinstance(x, dict) and x.get("type") == "text")
+            if c:
+                _prompt_parts.append(f"[{r}]: {c}")
+        _resp = _g_model.generate_content("\n\n".join(_prompt_parts) or "Hello")
+        _ans = getattr(_resp, "text", "") or ""
+        try:
+            from modules.ai_quota_tracker import record_call
+            record_call("gemini")
+        except Exception:
+            pass
+        return {"content": _ans.strip(), "tool_calls": []}
     import base64 as _b64
 
     client = genai.Client(api_key=gemini_key)
@@ -920,14 +951,15 @@ def call_nachapol_core(
             # ----------------------------------------------------
             # JARVIS Internal Subsystem: Active Window / Screen Context
             # ----------------------------------------------------
-            try:
+            if "โจทย์ที่ต้องวางแผน:" not in user_text and "วิเคราะห์สถานะและดำเนินการ" not in user_text:
                 try:
-                    from modules.jarvis_screen_context import enrich_messages_with_screen_context
-                except ImportError:
-                    from jarvis_screen_context import enrich_messages_with_screen_context
-                enrich_messages_with_screen_context(messages)
-            except Exception as _screen_err:
-                logger.debug(f"[SCREEN CONTEXT] {_screen_err}")
+                    try:
+                        from modules.jarvis_screen_context import enrich_messages_with_screen_context
+                    except ImportError:
+                        from jarvis_screen_context import enrich_messages_with_screen_context
+                    enrich_messages_with_screen_context(messages)
+                except Exception as _screen_err:
+                    logger.debug(f"[SCREEN CONTEXT] {_screen_err}")
             # ----------------------------------------------------
 
             # Intercept Engine Switch & Model Status Commands

@@ -9,7 +9,7 @@ import re
 from typing import Optional
 
 
-def normalize_thai_text(text: str) -> str:
+def normalize_thai_text(text: str, preserve_newlines: bool = False) -> str:
     """
     ปรับแต่งและสะกดคำภาษาไทยที่พบบ่อยให้ถูกต้องตามมาตรฐานตัวอักษร Unicode
     แก้ปัญหาการพิมพ์เบิ้ล สระซ้อน หรือการพิมพ์สระผิดโครงสร้าง พร้อมจัดวรรคตอน
@@ -36,8 +36,20 @@ def normalize_thai_text(text: str) -> str:
     # ปรับการตัดช่องว่างระหว่างคำลงท้ายภาษาไทยที่พบบ่อย (เช่น สวัสดี ครับ -> สวัสดีครับ)
     common_thai_particles = ["ครับ", "ค่ะ", "คะ", "จ้า", "จ๊ะ", "นะ", "คับ", "ฮะ"]
     for p in common_thai_particles:
-        text = re.sub(rf'([\u0e00-\u0e7f])\s+{p}\b', rf'\1{p}', text)
-        
+        text = re.sub(rf'([\u0e00-\u0e7f])[ \t]+{p}\b', rf'\1{p}', text)
+
+    if preserve_newlines:
+        text = text.replace("\r\n", "\n").replace("\r", "\n").replace("\t", "  ")
+        cleaned_lines = []
+        for line in text.split("\n"):
+            leading_len = len(line) - len(line.lstrip(" "))
+            leading = line[:leading_len]
+            body = re.sub(r' {2,}', ' ', line[leading_len:].rstrip())
+            cleaned_lines.append(f"{leading}{body}" if body else "")
+        text = "\n".join(cleaned_lines)
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        return text.strip()
+
     # แทนที่ newlines และ tabs ด้วยช่องว่างเดี่ยว
     text = re.sub(r'[\r\n\t]+', ' ', text)
     

@@ -23,7 +23,7 @@ except (ImportError, ModuleNotFoundError):
     try:
         from modules.jarvis_text_utils import normalize_thai_text
     except (ImportError, ModuleNotFoundError):
-        def normalize_thai_text(text: str) -> str:
+        def normalize_thai_text(text: str, preserve_newlines: bool = False) -> str:
             if not text:
                 return ""
             text = text.replace("เเ", "แ").replace("ะา", "ำ").replace("ํา", "ำ").replace("ํ้า", "้ำ")
@@ -154,8 +154,8 @@ def format_reply_for_line(text: str) -> str:
     s = s.replace('\u200d', '')
     s = s.replace('\ufeff', '')
 
-    # 8. ปรับแก้สระและวรรณยุกต์ภาษาไทยให้ถูกต้องตามมาตรฐาน Unicode
-    s = normalize_thai_text(s)
+    # 8. ปรับแก้สระและวรรณยุกต์ภาษาไทยให้ถูกต้องตามมาตรฐาน Unicode โดยยังคงการขึ้นบรรทัดใหม่ไว้
+    s = normalize_thai_text(s, preserve_newlines=True)
 
     # 9. จัดระยะบรรทัดและการเว้นวรรค
     s = re.sub(r'[ \t]+', ' ', s)

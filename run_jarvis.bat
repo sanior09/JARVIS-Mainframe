@@ -64,7 +64,7 @@ echo %GREEN%  [*] Core Engine: Python Verified.%RESET%
 python scripts\boot_fx.py --status "Core Runtime: Python Environment" "ONLINE"
 
 :: ตรวจสอบและติดตั้ง Dependencies ที่จำเป็น
-set "REQUIRED_PACKAGES=langchain_core langgraph beautifulsoup4 python-dotenv chromadb psutil requests waitress duckduckgo_search langgraph-checkpoint-sqlite pyautogui opencv-python mediapipe aiohttp websockets line-bot-sdk groq apscheduler sqlalchemy"
+set "REQUIRED_PACKAGES=langchain_core langgraph beautifulsoup4 python-dotenv chromadb psutil requests waitress duckduckgo_search langgraph-checkpoint-sqlite pyautogui opencv-python mediapipe aiohttp websockets line-bot-sdk groq apscheduler sqlalchemy pygame pywebview"
 
 set /a PKG_TOTAL=0
 set /a PKG_OK=0

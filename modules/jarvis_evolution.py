@@ -18,7 +18,7 @@ load_dotenv()
 
 logger = logging.getLogger("JarvisEvolution")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip().strip('"').strip("'")
-GROQ_DEFAULT_MODEL = os.getenv("GROQ_DEFAULT_MODEL", "llama-3.3-70b-versatile").strip().strip('"').strip("'")
+GROQ_DEFAULT_MODEL = os.getenv("GROQ_MODEL", os.getenv("GROQ_DEFAULT_MODEL", "openai/gpt-oss-120b")).strip().strip('"').strip("'")
 
 class FreeThinker:
     @staticmethod
@@ -66,7 +66,7 @@ class FreeThinker:
                     "Content-Type": "application/json"
                 }
                 payload = {
-                    "model": "llama-3.3-70b-versatile",
+                    "model": GROQ_DEFAULT_MODEL if GROQ_DEFAULT_MODEL != "llama-3.3-70b-versatile" else "openai/gpt-oss-120b",
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": "Brainstorm one new capability now."}

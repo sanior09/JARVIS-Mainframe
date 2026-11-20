@@ -135,7 +135,7 @@ def _check_screen_anomaly():
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "llama-3.2-11b-vision-preview",
+            "model": os.getenv("GROQ_VISION_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct"),
             "messages": [
                 {
                     "role": "user",

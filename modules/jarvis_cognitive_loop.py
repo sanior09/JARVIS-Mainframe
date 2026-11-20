@@ -73,7 +73,7 @@ class CognitiveLoop:
             prompt = "Describe what you see in a short, concise sentence (e.g., 'A person sitting at a desk looking at a screen' or 'An empty chair')."
             
             response = client.chat.completions.create(
-                model="llama-3.2-11b-vision-preview",
+                model=os.getenv("GROQ_VISION_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct"),
                 messages=[
                     {
                         "role": "user",

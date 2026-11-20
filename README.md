@@ -11,8 +11,8 @@
 
 <p align="center">
   <b>ระบบผู้ช่วยอัจฉริยะแบบ Autonomous AGI ระดับสูงสำหรับ Windows</b><br>
-  วิศวกรรมซอฟต์แวร์ • ควบคุม Windows OS อัตโนมัติ • Dynamic Island HUD • Mobile Companion<br>
-  สั่งการด้วยเสียง Real-Time • สภาสมองกล 8 ขุนพล • AR Spatial Workbench
+  วิศวกรรมซอฟต์แวร์ • ควบคุม Windows OS อัตโนมัติ • Dynamic Island HUD • Mobile & Discord Bot<br>
+  สั่งการด้วยเสียง Real-Time • สภาสมองกล 8 ขุนพล • AI Agent Office 3D • AR Spatial Workbench
 </p>
 
 <p align="center">
@@ -22,6 +22,7 @@
   <a href="#dynamic-island"><b>🏝️ Dynamic Island</b></a> •
   <a href="#mobile-app"><b>📱 Mobile App</b></a> •
   <a href="#agent-office"><b>🏢 AI Agent Office</b></a> •
+  <a href="#discord-bot"><b>🤖 Discord Bot</b></a> •
   <a href="#subsystems"><b>🛠️ Subsystems</b></a> •
   <a href="#native-slm-models"><b>🧪 Native Models (0→1)</b></a> •
   <a href="#skills-ecosystem"><b>🧩 Skills</b></a> •
@@ -105,6 +106,14 @@ HOME_ASSISTANT_TOKEN=your_token
 LINE_CHANNEL_ACCESS_TOKEN=your_line_token
 LINE_CHANNEL_SECRET=your_line_secret
 NGROK_PUBLIC_URL=https://your-domain.ngrok-free.app
+
+# ━━━ Discord Bot Adapter (24/7 Gateway + Server Command Center) ━━━
+DISCORD_TOKEN=your_discord_bot_token
+DISCORD_ALLOWED_CHANNELS=your_command_channel_id
+DISCORD_NOTIFY_CHANNEL_ID=your_notify_channel_id
+DISCORD_OWNER_USER_ID=your_discord_user_id
+DISCORD_AUTO_ROLE_ID=your_auto_role_id
+DISCORD_WELCOME_CHANNEL_ID=your_welcome_channel_id
 
 # ━━━ Gmail & Notifications ━━━
 EMAIL_USER=your_email@gmail.com
@@ -195,6 +204,14 @@ npx expo start
 <p align="center">
   <img src="docs/images/ai_agent_office.png" alt="NACHAPOL // AI OFFICE — Live Multi-Agent Studio Room" width="100%">
 </p>
+
+<a id="discord-bot"></a>
+### 🤖 5. J.A.R.V.I.S. Discord Bot & Server Command Center (`modules/jarvis_discord_adapter.py`)
+เชื่อมต่อ J.A.R.V.I.S. Mainframe เข้าเป็นบอทประจำเซิร์ฟเวอร์ Discord และแชทส่วนตัว (DM) แบบ 24/7 ผ่าน Discord Gateway v10 & REST API v10 โดยตรง:
+- **Real-Time Gateway v10 & ThreadPool Execution:** รับ-ส่งข้อความสดพร้อม Typing Indicator โดยแยกเธรดประมวลผล LLM ออกจาก Gateway Heartbeat เพื่อไม่ให้บอทหลุดการเชื่อมต่อ
+- **Multi-Channel & Mention Routing:** สั่งการได้ทั้งในห้องที่กำหนดไว้ใน `DISCORD_ALLOWED_CHANNELS`, การแท็ก `@J.A.R.V.I.S.`, คำนำหน้า `!jarvis`, หรือคุยผ่าน DM ส่วนตัว พร้อมซิงก์สถานะการทำงานเข้าสู่ **NACHAPOL // AI OFFICE** แบบเรียลไทม์
+- **Structured Discord Markdown (`[DISCORD_MODE]`):** จัดรูปแบบคำตอบที่มีหลายประเด็นให้ออกมาเป็นข้อๆ แยกหัวข้อ (`###`) และข้อย่อย (`-`) ขึ้นบรรทัดใหม่อย่างเป็นระเบียบ พร้อมแบ่งข้อความยาวอัตโนมัติ (Chunk Splitting ≤ 2,000 ตัวอักษร)
+- **Server Automation (`Auto-Role`, `Welcome Embed` & `!clear`):** มอบยศสมาชิกใหม่อัตโนมัติ (`DISCORD_AUTO_ROLE_ID`), ส่งการ์ดต้อนรับลงห้อง (`DISCORD_WELCOME_CHANNEL_ID`), ส่ง Rich Embed แจ้งเตือนสถานะระบบ (`DISCORD_NOTIFY_CHANNEL_ID`), และรองรับคำสั่ง `!clear` / `!ล้างแชท` ที่ล้างข้อความในห้องโดยรักษาการ์ดต้อนรับและข้อความปักหมุดไว้
 
 ---
 

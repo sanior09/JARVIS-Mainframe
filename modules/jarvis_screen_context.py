@@ -67,6 +67,14 @@ def enrich_messages_with_screen_context(messages: list) -> None:
     # ถ้าส่งมาเป็น list อยู่แล้ว แปลว่ามีรูปภาพแนบมาแล้วข้ามไป
     if isinstance(user_content, list):
         return 
+
+    # ข้าม prompt ภายในระบบ (Strategist / Subconscious / Data Critic) เพื่อไม่ให้แนบภาพหน้าจอโดยไม่ตั้งใจ
+    if any(internal_marker in user_content for internal_marker in (
+        "โจทย์ที่ต้องวางแผน:",
+        "ข้อมูลบริบทและระบบปัจจุบัน:",
+        "วิเคราะห์สถานะและดำเนินการ",
+    )):
+        return
         
     if should_attach_screen(user_content):
         title = get_active_window_title()

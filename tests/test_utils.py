@@ -20,10 +20,14 @@ except ImportError:
 def test_normalize_thai_text():
     # Test spaces formatting
     assert normalize_thai_text("สวัสดี ครับ") == "สวัสดีครับ"
-    # Test newlines and tabs
+    # Test newlines and tabs (default collapses newlines for legacy/voice callers)
     assert normalize_thai_text("บรรทัดที่ 1\nบรรทัดที่ 2\tจบ") == "บรรทัดที่ 1 บรรทัดที่ 2 จบ"
     # Test duplicate spaces
     assert normalize_thai_text("มี  ช่องว่าง   หลายตัว") == "มี ช่องว่าง หลายตัว"
+    # Test preserve_newlines keeps structured list/section line breaks intact
+    multiline = "### 1. หัวข้อ\n- ข้อแรก  ย่อย\n  - ข้อย่อย\n\n### 2. ถัดไป\nสวัสดี ครับ"
+    expected = "### 1. หัวข้อ\n- ข้อแรก ย่อย\n  - ข้อย่อย\n\n### 2. ถัดไป\nสวัสดีครับ"
+    assert normalize_thai_text(multiline, preserve_newlines=True) == expected
 
 def test_is_safe_path():
     base = os.path.abspath("C:/JARVIS")
